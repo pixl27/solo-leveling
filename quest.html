@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solo Leveling - Welcome</title>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap" rel="stylesheet">     <link href="css/solo-leveling.css" rel="stylesheet">
+    <style>
+        body {
+            opacity: 0;
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="sl-background">
+        <div class="sl-background-image" style="background-image: url('backgroundnotif.png')"></div>
+        <div class="sl-light-rays"></div>
+        <div class="sl-glow"></div>
+        <div class="shockwave-ring"></div>
+        <div class="shockwave-ring"></div>
+    </div>
+
+    <div class="scene-overlay"></div>
+    <div class="flash-overlay"></div>
+    <div class="bg-particles"></div>
+    <div class="sl-particles"></div>
+
+    <div  class="sl-notification">
+        <div class="rune-circle"></div>
+        <div class="rune-circle" style="animation-direction: reverse; width: 110%; height: 110%; top: -5%; left: -5%;"></div>
+        <div class="sl-title">
+            <span class="sl-exclamation">!</span>
+            <span>INFOS DE QUETE</span>
+        </div>
+        <p>[Quete journaliere: <span style="  text-shadow: 
+        0 0 7px #fff,
+        0 0 10px #fff,
+        0 0 21px #fff,
+        0 0 42px #85acb9,
+        0 0 82px #85acb9,
+        0 0 92px #85acb9,
+        0 0 102px #85acb9,
+        0 0 151px #85acb9;font-weight: bolder;">Test d'amour est arrivé</span>] 
+        </p>
+        <div class="quest-divider"></div>
+        <p class="quest-section-title">OBJECTIFS</p>
+        <div class="quest-tasks">
+            <div class="quest-task">
+                <span class="task-description">Allez dans un Restau</span>
+                <div class="task-completion">
+                    <span class="completion-rate">[0/1]</span>
+                    <label class="checkbox-container">
+                        <input type="checkbox" class="task-checkbox">
+                        <span class="checkmark"></span>
+                    </label>
+                </div>
+            </div>
+            <div class="quest-task">
+                <span class="task-description">Netflix and Chill</span>
+                <div class="task-completion">
+                    <span class="completion-rate">[0/69]</span>
+                    <label class="checkbox-container">
+                        <input type="checkbox" class="task-checkbox">
+                        <span class="checkmark"></span>
+                    </label>
+                </div>
+            </div>
+            
+        </div>
+        <div class="quest-divider"></div>
+        <p class="quest-warning">ATTENTION: Un échec entrainera votre séparation.</p>
+    </div>
+
+    <script src="js/solo-leveling.js"></script>
+</body>
+</html>

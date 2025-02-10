@@ -1,0 +1,1296 @@
+/* Solo Leveling Animation and Effects Library */
+/* Base styles */
+body {
+    background: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    font-family: 'Lato', serif;
+    overflow: hidden;
+    position: relative;
+}
+/* button effect */
+
+.btn-custom {
+    background: transparent;
+    border: 1px solid #fff;
+    color: #85acb9;
+    padding: 15px 40px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 1.2em;
+    letter-spacing: 2px;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    text-shadow: 0 0 5px #85acb9, 0 0 10px #85acb9;
+    -webkit-text-stroke: 0.3px #fff;
+    transform-style: preserve-3d;
+    perspective: 1000px;
+    min-width: 150px;
+    transform-style: preserve-3d;
+    backface-visibility: hidden;
+    opacity: 1;
+}
+
+.btn-custom::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    border: 1px solid #fff;
+    z-index: -1;
+    transition: all 0.3s ease;
+}
+
+.btn-custom::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(133, 172, 185, 0.2),
+        transparent
+    );
+    transition: 0.5s;
+}
+
+.btn-glow {
+    position: absolute;
+    inset: -2px;
+    background: transparent;
+    border: 1px solid #85acb9;
+    opacity: 0;
+    transition: opacity 0.3s, transform 0.3s;
+    pointer-events: none;
+}
+
+.btn-custom:hover .btn-glow {
+    opacity: 1;
+    animation: borderGlow 2s infinite;
+}
+.btn-custom:active::before {
+    transform: scale(1.2);
+    opacity: 0;
+    transition: all 0.3s ease-out;
+}
+.btn-press-effect {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, rgba(133, 172, 185, 0.8) 0%, transparent 70%);
+    opacity: 0;
+    pointer-events: none;
+}
+
+@keyframes buttonPress {
+    0% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 0.8;
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(2);
+        opacity: 0;
+    }
+}
+@keyframes borderGlow {
+    0%, 100% {
+        opacity: 0.5;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1.02);
+    }
+}
+
+.btn-custom:hover {
+    color: #85acb9;
+    text-shadow: 0 0 5px #85acb9, 
+                 0 0 10px #85acb9, 
+                 0 0 20px #85acb9;
+    box-shadow: 
+        0 0 20px rgba(133, 172, 185, 0.4),
+        inset 0 0 10px rgba(133, 172, 185, 0.2);
+    transform: translateY(-2px) translateZ(10px);
+}
+
+.btn-custom:active {
+    transform: translateY(1px) translateZ(-5px);
+}
+.btn-custom .btn-glow {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(133, 172, 185, 0.2);
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.btn-custom:hover .btn-glow {
+    opacity: 1;
+    animation: glowPulse 2s infinite;
+}
+
+@keyframes glowPulse {
+    0%, 100% { opacity: 0.2; }
+    50% { opacity: 0.5; }
+}
+
+@keyframes floatUp {
+    0% {
+        transform: translateY(100vh) scale(0);
+        opacity: 0;
+    }
+    50% {
+        opacity: 0.5;
+    }
+    100% {
+        transform: translateY(-100px) scale(1);
+        opacity: 0;
+    }
+}
+
+/* Power surge effect for button hover */
+.power-surge {
+    position: absolute;
+    inset: -20px;
+    background: radial-gradient(circle at center, 
+        rgba(133, 172, 185, 0.2) 0%,
+        transparent 70%);
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+    z-index: -1;
+}
+
+.btn-custom:hover .power-surge {
+    opacity: 1;
+    animation: surgePulse 2s infinite;
+}
+
+@keyframes surgePulse {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 0.2;
+    }
+    50% {
+        transform: scale(1.1);
+        opacity: 0.4;
+    }
+}
+
+/* Energy particles around buttons */
+.energy-particle {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    background: #85acb9;
+    border-radius: 50%;
+    pointer-events: none;
+    opacity: 0;
+}
+
+@keyframes energyFloat {
+    0% {
+        transform: translate(var(--startX), var(--startY));
+        opacity: 0;
+    }
+    50% {
+        opacity: 0.8;
+    }
+    100% {
+        transform: translate(var(--endX), var(--endY));
+        opacity: 0;
+    }
+}
+
+/* Solo Leveling style button focus ring */
+.btn-custom:focus {
+    outline: none;
+}
+
+.btn-custom:focus::before {
+    animation: focusRing 1s infinite;
+}
+
+@keyframes focusRing {
+    0% {
+        box-shadow: 0 0 0 0 rgba(133, 172, 185, 0.4);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(133, 172, 185, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(133, 172, 185, 0);
+    }
+}
+
+/* Button click shockwave */
+.shockwave {
+    position: absolute;
+    border: 2px solid #85acb9;
+    border-radius: 50%;
+    animation: shockwaveEffect 0.5s ease-out;
+    pointer-events: none;
+}
+
+@keyframes shockwaveEffect {
+    0% {
+        transform: scale(0);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(2);
+        opacity: 0;
+    }
+}
+
+
+.buttons-container {
+    display: flex;
+    gap: 50px;
+    justify-content: center;
+    margin-top: 40px;
+    animation: buttonsAppear 0.5s ease-out;
+    animation-delay: 0.8s;
+    opacity: 0;
+    animation-fill-mode: forwards;
+    position: relative;
+    z-index: 10;
+}
+
+@keyframes buttonsAppear {
+    0% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+.btn-ripple {
+    position: absolute;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(133, 172, 185, 0.8) 0%, transparent 70%);
+    pointer-events: none;
+    transform: scale(0);
+    animation: rippleEffect 0.8s ease-out;
+}
+
+@keyframes rippleEffect {
+    to {
+        transform: scale(4);
+        opacity: 0;
+    }
+}
+
+.btn-flash {
+    position: absolute;
+    inset: 0;
+    background: rgba(133, 172, 185, 0.3);
+    opacity: 0;
+    pointer-events: none;
+}
+
+.btn-flash.active {
+    animation: buttonFlash 0.3s ease-out;
+}
+
+@keyframes buttonFlash {
+    0% { opacity: 1; }
+    100% { opacity: 0; }
+}
+
+/* Background Effects */
+.sl-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    overflow: hidden;
+}
+
+.sl-background-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    animation: backgroundEntrance 1.5s ease-out forwards,
+               backgroundPulse 5s ease-in-out infinite;
+    filter: brightness(1.1) contrast(1.1);
+}
+
+/* Particle Effects */
+.sl-particles {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.sl-particle {
+    position: absolute;
+    background: #85acb9;
+    border-radius: 50%;
+    pointer-events: none;
+}
+.glowing {
+    text-shadow: 
+        0 0 7px #fff,
+        0 0 10px #fff,
+        0 0 21px #fff,
+        0 0 42px #85acb9,
+        0 0 82px #85acb9,
+        0 0 92px #85acb9,
+        0 0 102px #85acb9,
+        0 0 151px #85acb9;
+        font-weight: bolder;
+}
+
+/* Notification Styles */
+.sl-notification {
+    background: transparent;
+    padding: 56px;
+    color: #fff;
+    text-align: left;
+    width: 781px;
+    position: fixed;
+    /* bottom: 50%; */
+    font-weight: 300;
+    transform: translate(-50%, -50%) scale(0);
+    animation: appearEffect 0.5s ease-out 0.5s forwards;
+    opacity: 0;
+    z-index: 1;
+    border: 2px solid #fff;
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+}
+
+.sl-notification p {
+    text-align: center;
+    font-size: 1.5em;
+    margin: 20px 0;
+    font-weight: 300;
+    letter-spacing: 1px;
+    text-shadow: 0 0 10px #85acb9;
+    color: #fff;
+    text-align: center;
+    -webkit-text-stroke: 0.5px #fff;
+}
+
+/* Notification Title Styles */
+.sl-title {
+    color: #fff;
+    letter-spacing: 3px;
+    margin-bottom: 25px;
+    text-shadow: 
+        0 0 5px #85acb9,
+        0 0 10px #85acb9,
+        0 0 20px #85acb9,
+        0 0 40px #63aac2;
+    position: relative;
+    font-size: 1em;
+    -webkit-text-stroke: 1px #fff;
+    display: flex;
+    font-weight: 300;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+}
+
+.sl-title span {
+    border: 1px solid #fff;
+    padding: 5px 10px;
+}
+
+.sl-title::before,
+.sl-title::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 1px;
+}
+
+.sl-title::before {
+    top: 0;
+    animation: slideLeft 1s ease-out forwards;
+}
+
+.sl-title::after {
+    bottom: 0;
+    animation: slideRight 1s ease-out forwards;
+}
+
+@keyframes slideLeft {
+    from {
+        transform: translateX(-100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.sl-title .sl-exclamation {
+    opacity: 0;
+    animation: fadeIn 0.5s forwards;
+}
+
+.sl-title span:last-child {
+    color: #fff;
+    font-size: 2em;
+    letter-spacing: 3px;
+    text-shadow: 0 0 5px #85acb9, 
+                 0 0 10px #85acb9, 
+                 0 0 20px #85acb9,
+                 0 0 40px #63aac2;
+    -webkit-text-stroke: 1px #fff;
+    opacity: 0;
+    animation: fadeIn 0.5s forwards;
+    animation-delay: 0.2s;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Exclamation mark styles */
+.sl-exclamation {
+    position: relative;
+    width: 40px;
+    height: 40px;
+    border: 2px solid #fff !important;
+    border-radius: 50% !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2em;
+    color: #fff;
+    text-shadow: 0 0 5px #85acb9, 
+                 0 0 10px #85acb9, 
+                 0 0 20px #85acb9, 
+                 0 0 40px #63aac2;
+    -webkit-text-stroke: 1px #fff;
+    margin-right: 5px;
+    padding: 0 !important;
+}
+
+/* Outer square border for the exclamation mark */
+.sl-exclamation::after {
+    content: "";
+    position: absolute;
+    top: -4px;
+    left: -4px;
+    right: -4px;
+    bottom: -4px;
+    border: 1px solid #fff;
+    border-radius: 0;
+}
+
+.sl-text {
+    font-size: 1.5em;
+    margin: 20px 0;
+    letter-spacing: 1px;
+    text-shadow: 0 0 10px #85acb9;
+    color: #fff;
+}
+
+/* Animations */
+@keyframes backgroundEntrance {
+    0% {
+        transform: scale(2);
+        filter: brightness(0) blur(10px);
+    }
+    40% {
+        transform: scale(1.2);
+        filter: brightness(1.5) blur(5px);
+    }
+    70% {
+        transform: scale(1.1);
+        filter: brightness(1.2) blur(0px);
+    }
+    100% {
+        transform: scale(1);
+        filter: brightness(1) blur(0px);
+    }
+}
+
+@keyframes backgroundPulse {
+    0%, 100% {
+        filter: brightness(1) saturate(1);
+    }
+    50% {
+        filter: brightness(1.1) saturate(1.1);
+    }
+}
+
+@keyframes appearEffect {
+    0% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0);
+    }
+    70% {
+        transform: translate(-50%, -50%) scale(1.1);
+    }
+    100% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+}
+.quest-text {
+    color: #03a9f4;
+    font-size: 1.3em;
+    font-weight: 600;
+    margin: 20px 0;
+    opacity: 0.9;
+    position: relative;
+    padding: 10px 15px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    text-shadow: 0 0 15px rgba(3, 169, 244, 0.9);
+}
+
+.quest-text::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(45deg, transparent, rgba(33, 150, 243, 0.1), transparent);
+    animation: questGlow 2s linear infinite;
+}
+
+@keyframes questGlow {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+/* Glow Effects */
+.sl-glow {
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(circle at center, 
+        rgba(133, 172, 185, 0.1) 0%,
+        rgba(99, 170, 194, 0.05) 50%,
+        transparent 70%);
+    mix-blend-mode: screen;
+    animation: glowPulse 4s ease-in-out infinite;
+    pointer-events: none;
+    z-index: 2;
+    opacity: 0.8;
+}
+
+@keyframes glowPulse {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 0.7; }
+}
+
+/* Light Rays */
+.sl-light-rays {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 200%;
+    height: 200%;
+    background: conic-gradient(
+        from 0deg at 50% 50%,
+        transparent 0deg,
+        rgba(133, 172, 185, 0.1) 20deg,
+        transparent 40deg,
+        rgba(133, 172, 185, 0.1) 60deg,
+        transparent 80deg
+    );
+    opacity: 0;
+    animation: rayRotate 30s linear infinite,
+               rayFadeIn 2s ease-out forwards;
+    pointer-events: none;
+    z-index: 2;
+}
+
+@keyframes rayRotate {
+    from { transform: translate(-50%, -50%) rotate(0deg); }
+    to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+@keyframes rayFadeIn {
+    from { opacity: 0; }
+    to { opacity: 0.7; }
+}
+
+/* Congratulations Text Specific */
+.sl-congratulations {
+    text-align: center;
+    margin-top: 40px;
+    font-size: 2.5em;
+    color: #fff;
+    text-shadow: 
+        0 0 10px #85acb9,
+        0 0 20px #85acb9,
+        0 0 30px #85acb9;
+    opacity: 0;
+    animation: congratsAppear 1.5s ease-out forwards;
+    animation-delay: 0.8s;
+    position: relative;
+    white-space: nowrap;
+    perspective: 1000px;
+    transform-style: preserve-3d;
+    z-index: 2;
+}
+
+.sl-congratulations::before {
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #85acb9, transparent);
+    animation: lineExpand 1s ease-out forwards;
+    animation-delay: 1.3s;
+}
+
+.sl-congratulations::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #85acb9, transparent);
+    animation: lineExpand 1s ease-out forwards;
+    animation-delay: 1.3s;
+}
+
+.sl-congratulations div {
+    overflow: hidden;
+    margin: 5px 0;
+}
+
+.sl-congratulations span {
+    display: inline-block;
+    transform-origin: bottom;
+    will-change: transform, opacity;
+}
+
+/* Text glow animation keyframes */
+@keyframes textGlow {
+    0%, 100% {
+        text-shadow: 
+            0 0 5px #85acb9,
+            0 0 10px #85acb9,
+            0 0 20px #85acb9;
+    }
+    50% {
+        text-shadow: 
+            0 0 10px #85acb9,
+            0 0 20px #85acb9,
+            0 0 40px #85acb9;
+    }
+}
+
+/* Text Animation Styles */
+.sl-text-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    transform-style: preserve-3d;
+    animation: floatText 6s ease-in-out infinite;
+    opacity: 0;
+    animation: textWrapperFadeIn 0.5s ease-out 0.5s forwards;
+}
+
+@keyframes textWrapperFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.sl-text-line {
+    color: #fff;
+    font-size: 2.5em;
+    letter-spacing: 2px;
+    opacity: 0;
+    transform: translateY(20px);
+    text-shadow: 0 0 10px #85acb9;
+    -webkit-text-stroke: 0.3px #fff;
+    position: relative;
+    overflow: hidden;
+}
+
+.sl-text-line.first {
+    animation: slideIn 0.6s ease-out 0.8s forwards,
+               textGlow 2s ease-in-out 1.4s infinite,
+               slideFromBottom 0.8s ease-out forwards,
+               glowPulse 2s ease-in-out 0.8s infinite;
+}
+
+.sl-text-line.second {
+    animation: slideIn 0.6s ease-out 1.4s forwards,
+               textGlow 2s ease-in-out 2s infinite,
+               slideFromBottom 0.8s ease-out 0.4s forwards,
+               glowPulse 2s ease-in-out 1.2s infinite;
+}
+
+@keyframes slideIn {
+    0% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes glowPulse {
+    0%, 100% {
+        text-shadow: 
+            0 0 10px #85acb9,
+            0 0 20px #85acb9,
+            0 0 30px #85acb9;
+    }
+    50% {
+        text-shadow: 
+            0 0 15px #85acb9,
+            0 0 30px #85acb9,
+            0 0 45px #85acb9;
+    }
+}
+
+@keyframes floatText {
+    0%, 100% {
+        transform: translateZ(0);
+    }
+    50% {
+        transform: translateZ(20px);
+    }
+}
+
+@keyframes slideFromBottom {
+    from {
+        transform: translateY(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Reset any previous text animation styles */
+.sl-congratulations span {
+    animation: none;
+    opacity: 1;
+    transform: none;
+}
+
+.sl-text-line span {
+    display: inline;
+    opacity: 1;
+    animation: none;
+    transform: none;
+}
+
+/* Particle container for text */
+.sl-text-particles {
+    position: absolute;
+    inset: -50px;
+    pointer-events: none;
+    z-index: 1;
+    overflow: hidden;
+}
+
+.sl-text-particle {
+    position: absolute;
+    background: #85acb9;
+    width: 2px;
+    height: 2px;
+    border-radius: 50%;
+    box-shadow: 0 0 4px #85acb9;
+    opacity: 0;
+    animation: textParticleFloat 3s ease-out infinite;
+}
+
+@keyframes textParticleFloat {
+    0% {
+        opacity: 0;
+        transform: translate(var(--startX, 0), var(--startY, 0));
+    }
+    50% {
+        opacity: 0.8;
+    }
+    100% {
+        opacity: 0;
+        transform: translate(var(--endX, 0), var(--endY, 0));
+    }
+}
+
+/* Particles */
+.sl-particles {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.bg-particles {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+    filter: blur(1px);
+}
+
+.bg-particle {
+    position: absolute;
+    background: linear-gradient(to right, #85acb9, #63aac2);
+    width: 2px;
+    height: 2px;
+    border-radius: 50%;
+    animation: floatUpDiagonal 4s linear infinite;
+    opacity: 0;
+    box-shadow: 0 0 10px #85acb9;
+}
+
+@keyframes floatUpDiagonal {
+    0% {
+        transform: translate(0, 100vh) scale(0) rotate(0deg);
+        opacity: 0;
+    }
+    50% {
+        opacity: 0.7;
+        transform: translate(50px, 50vh) scale(1.5) rotate(180deg);
+    }
+    100% {
+        transform: translate(100px, -100px) scale(0) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+/* Energy particles */
+.energy-particle {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    background: #85acb9;
+    border-radius: 50%;
+    pointer-events: none;
+    opacity: 0;
+}
+
+@keyframes energyFloat {
+    0% {
+        transform: translate(var(--startX), var(--startY));
+        opacity: 0;
+    }
+    50% {
+        opacity: 0.8;
+    }
+    100% {
+        transform: translate(var(--endX), var(--endY));
+        opacity: 0;
+    }
+}
+
+/* Shockwave effect */
+.shockwave-ring {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100vmax;
+    height: 100vmax;
+    border: 2px solid rgba(133, 172, 185, 0.5);
+    border-radius: 50%;
+    opacity: 0;
+    z-index: 1;
+}
+
+.shockwave-ring:nth-child(1) {
+    animation: shockwaveExpand 1.5s ease-out 0.2s;
+}
+
+.shockwave-ring:nth-child(2) {
+    animation: shockwaveExpand 1.5s ease-out 0.4s;
+}
+
+@keyframes shockwaveExpand {
+    0% {
+        width: 0;
+        height: 0;
+        opacity: 0.8;
+    }
+    100% {
+        width: 200vmax;
+        height: 200vmax;
+        opacity: 0;
+    }
+}
+
+/* Scene overlay */
+.scene-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at center, 
+        rgba(133, 172, 185, 0.1) 0%,
+        rgba(99, 170, 194, 0.05) 50%,
+        transparent 70%);
+    pointer-events: none;
+    animation: pulseOverlay 4s ease-in-out infinite;
+    mix-blend-mode: screen;
+    z-index: 2;
+}
+
+@keyframes pulseOverlay {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 0.7; }
+}
+
+/* Flash overlay */
+.flash-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: white;
+    pointer-events: none;
+    z-index: 10;
+    animation: flashEffect 1s ease-out forwards;
+}
+
+@keyframes flashEffect {
+    0% {
+        opacity: 0;
+    }
+    50% {
+        opacity: 0.7;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+
+/* Rune circles */
+.rune-circle {
+    position: absolute;
+    width: 120%;
+    height: 120%;
+    border: 2px solid rgba(33, 150, 243, 0.3);
+    border-radius: 50%;
+    top: -10%;
+    left: -10%;
+    animation: runeRotate 10s linear infinite;
+    box-shadow: 0 0 20px rgba(33, 150, 243, 0.2);
+}
+
+@keyframes runeRotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* Text appear animation */
+@keyframes appearEffect {
+    0% {
+        transform: scale(0);
+        opacity: 0;
+    }
+    70% {
+        transform: scale(1.1);
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.quest-divider {
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(90deg, 
+        transparent 0%,
+        rgba(133, 172, 185, 0.3) 20%,
+        rgba(133, 172, 185, 0.5) 50%,
+        rgba(133, 172, 185, 0.3) 80%,
+        transparent 100%
+    );
+    margin: 20px 0;
+    position: relative;
+    animation: glowPulse 2s ease-in-out infinite;
+}
+
+.quest-section-title {
+    color: #85acb9;
+    font-size: 1.4em;
+    font-weight: 600;
+    margin: 20px 0;
+    letter-spacing: 3px;
+    text-shadow: 
+        0 0 5px #85acb9,
+        0 0 10px #85acb9,
+        0 0 20px #85acb9;
+    -webkit-text-stroke: 0.5px #fff;
+}
+
+.quest-tasks {
+    margin: 20px 0;
+}
+
+.quest-task {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+}
+
+.task-description {
+    font-size: 1em;
+    font-weight: 300;
+    text-shadow: 0 0 10px #85acb9;
+    color: #fff;
+    -webkit-text-stroke: 0.5px #fff;
+}
+
+.task-completion {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.completion-rate {
+    color: #85acb9;
+    font-weight: 600;
+    text-shadow: 0 0 10px rgba(133, 172, 185, 0.5);
+}
+
+.checkbox-container {
+    position: relative;
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+}
+.checkbox-container .checkmark {
+    position: relative;
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #fff;
+    background: transparent;
+}
+
+.checkbox-container input:checked + .checkmark:after {
+    content: '';
+    position: absolute;
+    left: 6px;
+    top: 2px;
+    width: 5px;
+    height: 10px;
+    border: solid #00ff00;  /* Green color */
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+    box-shadow: 
+        0 0 5px #00ff00,
+
+}
+
+.checkbox-container input {
+    display: none;
+}
+.task-checkbox {
+    opacity: 0;
+    position: absolute;
+}
+
+.checkmark {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 24px;
+    height: 24px;
+    border: 2px solid #85acb9;
+    background: transparent;
+    transition: all 0.3s ease;
+}
+
+.checkmark::after {
+    content: '';
+    position: absolute;
+    display: none;
+    left: 8px;
+    top: 4px;
+    width: 5px;
+    height: 10px;
+    border: solid #85acb9;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+.task-checkbox:checked ~ .checkmark {
+    background: rgba(133, 172, 185, 0.1);
+    box-shadow: 0 0 15px rgba(133, 172, 185, 0.5);
+}
+
+.task-checkbox:checked ~ .checkmark::after {
+    display: block;
+    animation: checkmarkAppear 0.2s ease-out forwards;
+}
+.dramatic-reveal {
+    position: fixed;
+    inset: 0;
+    background: black;
+    z-index: 100;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s ease;
+}
+
+.dramatic-reveal.active {
+    opacity: 1;
+    pointer-events: all;
+}
+
+.dramatic-reveal .shine-lines {
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+        45deg,
+        transparent,
+        transparent 10px,
+        rgba(133, 172, 185, 0.1) 10px,
+        rgba(133, 172, 185, 0.1) 20px
+    );
+    opacity: 0;
+}
+
+.dramatic-reveal.active .shine-lines {
+    animation: shineEffect 2s ease-in-out infinite;
+}
+
+@keyframes shineEffect {
+    0%, 100% { opacity: 0; transform: translateX(-100%); }
+    50% { opacity: 0.5; transform: translateX(100%); }
+}
+
+.dramatic-text {
+    color: #85acb9;
+    font-size: 3em;
+    text-transform: uppercase;
+    opacity: 0;
+    transform: scale(0.5);
+    transition: all 0.5s ease;
+    text-shadow: 
+        0 0 10px #85acb9,
+        0 0 20px #85acb9,
+        0 0 30px #85acb9;
+    -webkit-text-stroke: 1px white;
+}
+
+.dramatic-reveal.active .dramatic-text {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.power-circle {
+    position: absolute;
+    border: 2px solid #85acb9;
+    border-radius: 50%;
+    opacity: 0;
+}
+
+@keyframes powerCircle {
+    0% {
+        transform: translate(-50%, -50%) scale(0);
+        opacity: 0.8;
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(4);
+        opacity: 0;
+    }
+}
+@keyframes checkmarkAppear {
+    from {
+        transform: rotate(45deg) scale(0);
+        opacity: 0;
+    }
+    to {
+        transform: rotate(45deg) scale(1);
+        opacity: 1;
+    }
+}
+
+.quest-warning {
+    color: #ff4757;
+    font-size: 1.1em;
+    margin: 20px 0;
+    text-align: center;
+    text-shadow: 
+        0 0 5px #ff4757,
+        0 0 10px #ff4757;
+    animation: warningPulse 2s ease-in-out infinite;
+}
+
+@keyframes warningPulse {
+    0%, 100% {
+        opacity: 0.8;
+    }
+    50% {
+        opacity: 1;
+        text-shadow: 
+            0 0 7px #ff4757,
+            0 0 15px #ff4757,
+            0 0 20px #ff4757;
+    }
+}

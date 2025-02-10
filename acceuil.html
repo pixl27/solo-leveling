@@ -1,0 +1,1618 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solo Leveling Notification</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap" rel="stylesheet"> 
+    <style>
+        .background-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .background-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('backgroundnotif.png') no-repeat center center;
+            background-size: cover;
+            animation: backgroundEntrance 1.5s ease-out forwards,
+                       backgroundPulse 5s ease-in-out infinite;
+            transform-origin: center;
+        }
+
+        @keyframes backgroundEntrance {
+            0% {
+                transform: scale(2);
+                filter: brightness(0) blur(10px);
+            }
+            40% {
+                transform: scale(1.2);
+                filter: brightness(1.5) blur(5px);
+            }
+            70% {
+                transform: scale(1.1);
+                filter: brightness(1.2) blur(0px);
+            }
+            100% {
+                transform: scale(1);
+                filter: brightness(1) blur(0px);
+            }
+        }
+
+        @keyframes backgroundPulse {
+            0%, 100% {
+                filter: brightness(1) saturate(1);
+            }
+            50% {
+                filter: brightness(1.1) saturate(1.1);
+            }
+        }
+
+        .shockwave-ring {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100vmax;
+            height: 100vmax;
+            border: 2px solid rgba(133, 172, 185, 0.5);
+            border-radius: 50%;
+            opacity: 0;
+            z-index: 1;
+        }
+
+        .shockwave-ring:nth-child(1) {
+            animation: shockwaveExpand 1.5s ease-out 0.2s;
+        }
+
+        .shockwave-ring:nth-child(2) {
+            animation: shockwaveExpand 1.5s ease-out 0.4s;
+        }
+
+        @keyframes shockwaveExpand {
+            0% {
+                width: 0;
+                height: 0;
+                opacity: 0.8;
+            }
+            100% {
+                width: 200vmax;
+                height: 200vmax;
+                opacity: 0;
+            }
+        }
+
+        body {
+            background: none;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: 'Lato', serif;
+            overflow: hidden;
+            position: relative;
+            animation: backgroundPop 1s ease-out forwards;
+        }
+
+        @keyframes backgroundPop {
+            0% {
+                transform: scale(1.5);
+                filter: brightness(0);
+            }
+            50% {
+                filter: brightness(1.2);
+            }
+            100% {
+                transform: scale(1);
+                filter: brightness(1);
+            }
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, transparent 30%, rgba(0, 0, 0, 0.8) 100%);
+            /* animation: pulseBackground 4s ease-in-out infinite; */
+            z-index: 0;
+        }
+
+        @keyframes pulseBackground {
+            0%, 100% {
+                background: radial-gradient(circle at center, transparent 0%, rgba(0, 0, 0, 0.7) 100%);
+            }
+            50% {
+                background: radial-gradient(circle at center, transparent 30%, rgba(0, 0, 0, 0.8) 100%);
+            }
+        }
+        
+        .notification {
+            background: transparent;
+            padding: 56px;
+            color: #fff;
+            text-align: center;
+            width: 897px;
+            position: relative;
+            animation: appearEffect 0.5s ease-out;
+            border: 2px solid #fff;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+            z-index: 1;
+        }
+
+        @keyframes appearEffect {
+            0% {
+                transform: scale(0);
+                opacity: 0;
+            }
+            70% {
+                transform: scale(1.1);
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+.notification h4 {
+    color: #fff;
+    letter-spacing: 3px;
+    margin-bottom: 25px;
+    font-weight: 300;
+    text-shadow: 
+        0 0 5px #85acb9,
+        0 0 10px #85acb9,
+        0 0 20px #85acb9,
+        0 0 40px #63aac2;
+        
+            position: relative;
+    font-size: 2em;
+    -webkit-text-stroke: 1px #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    /* No border here so that each element can have its own border */
+}
+
+.notification h4 span {
+    border: 1px solid #fff;
+    padding: 5px 10px;
+}
+
+/* Exclamation mark styles */
+.notification h4 .exclamation {
+    position: relative;
+    width: 40px;
+    height: 40px;
+    border: 2px solid #fff;  /* Circle border */
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2em;
+    color: #fff;
+    text-shadow: 0 0 5px #85acb9, 0 0 10px #85acb9, 0 0 20px #85acb9, 0 0 40px #63aac2;
+        -webkit-text-stroke: 1px #fff;
+    margin-right: 5px;
+}
+
+/* Outer square border for the exclamation mark */
+.notification h4 .exclamation::after {
+    content: "";
+    position: absolute;
+    top: -4px;
+    left: -4px;
+    right: -4px;
+    bottom: -4px;
+    border: 1px solid #fff;
+    border-radius: 0; /* square (carre) border */
+}
+
+.notification h4::before {
+    width: 40px;
+    height: 40px;
+    border: 2px solid #fff;  /* Circle border */
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2em;
+    color: #fff;
+    text-shadow: 0 0 15px #85acb9;
+}
+
+        .notification h4::after {
+            font-size: 0.5em;
+            position: absolute;
+            top: -20px;
+            right: 50%;
+            transform: translateX(50%);
+            opacity: 0.8;
+            color: #fff;
+            text-shadow: 0 0 15px #85acb9;
+            -webkit-text-stroke: 0.5px #fff;
+        }
+
+        .quest-text {
+            color: #03a9f4;
+            font-size: 1.3em;
+            font-weight: 300;
+            margin: 20px 0;
+            opacity: 0.9;
+            position: relative;
+            padding: 10px 15px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 0 15px rgba(3, 169, 244, 0.9);
+        }
+
+        .quest-text::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, transparent, rgba(33, 150, 243, 0.1), transparent);
+            animation: questGlow 2s linear infinite;
+        }
+
+        @keyframes questGlow {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .rank {
+            color: #ffd700;
+            font-size: 1.4em;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin: 15px 0;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
+            font-weight: 700;
+            background: linear-gradient(45deg, #ffd700, #ffeb3b);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.5));
+        }
+
+        .btn-custom {
+            background: transparent;
+            border: 1px solid #fff;
+            color: #85acb9;
+            padding: 15px 40px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1.2em;
+            letter-spacing: 2px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            text-shadow: 0 0 5px #85acb9, 0 0 10px #85acb9;
+            -webkit-text-stroke: 0.3px #fff;
+            transform-style: preserve-3d;
+            perspective: 1000px;
+            min-width: 150px;
+            transform-style: preserve-3d;
+            backface-visibility: hidden;
+        }
+
+        .btn-custom::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            border: 1px solid #fff;
+            z-index: -1;
+            transition: all 0.3s ease;
+        }
+
+        .btn-custom::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(133, 172, 185, 0.2),
+                transparent
+            );
+            transition: 0.5s;
+        }
+
+        .btn-glow {
+            position: absolute;
+            inset: -2px;
+            background: transparent;
+            border: 1px solid #85acb9;
+            opacity: 0;
+            transition: opacity 0.3s, transform 0.3s;
+            pointer-events: none;
+        }
+
+        .btn-custom:hover .btn-glow {
+            opacity: 1;
+            animation: borderGlow 2s infinite;
+        }
+
+        @keyframes borderGlow {
+            0%, 100% {
+                opacity: 0.5;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.02);
+            }
+        }
+
+        .btn-custom:hover {
+            color: #85acb9;
+            text-shadow: 0 0 5px #85acb9, 
+                         0 0 10px #85acb9, 
+                         0 0 20px #85acb9;
+            box-shadow: 
+                0 0 20px rgba(133, 172, 185, 0.4),
+                inset 0 0 10px rgba(133, 172, 185, 0.2);
+            transform: translateY(-2px) translateZ(10px);
+        }
+
+        .btn-custom:active {
+            transform: translateY(1px) translateZ(-5px);
+        }
+
+        .btn-ripple {
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(133, 172, 185, 0.8) 0%, transparent 70%);
+            pointer-events: none;
+            transform: scale(0);
+            animation: rippleEffect 0.8s ease-out;
+        }
+
+        @keyframes rippleEffect {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+
+        .btn-flash {
+            position: absolute;
+            inset: 0;
+            background: rgba(133, 172, 185, 0.3);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .btn-flash.active {
+            animation: buttonFlash 0.3s ease-out;
+        }
+
+        @keyframes buttonFlash {
+            0% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .particle {
+            position: absolute;
+            background: #2196f3;
+            border-radius: 50%;
+            opacity: 0;
+            animation: particleFloat 3s infinite;
+            box-shadow: 0 0 10px #2196f3;
+        }
+
+        @keyframes particleFloat {
+            0% {
+                transform: translateY(0) scale(1);
+                opacity: 0;
+            }
+            50% {
+                opacity: 0.5;
+            }
+            100% {
+                transform: translateY(-100px) scale(0);
+                opacity: 0;
+            }
+        }
+
+        .rune-circle {
+            position: absolute;
+            width: 120%;
+            height: 120%;
+            border: 2px solid rgba(33, 150, 243, 0.3);
+            border-radius: 50%;
+            top: -10%;
+            left: -10%;
+            animation: runeRotate 10s linear infinite;
+            box-shadow: 0 0 20px rgba(33, 150, 243, 0.2);
+        }
+
+        @keyframes runeRotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes fadeInOut {
+            0%, 100% { opacity: 0.2; }
+            50% { opacity: 0.6; }
+        }
+
+        .notification p {
+            font-size: 1.5em;
+            margin: 20px 0;
+            letter-spacing: 1px;
+            text-shadow: 0 0 10px #85acb9;
+            color: #fff;
+            -webkit-text-stroke: 0.5px #fff;
+        }
+
+        .hexagon {
+            position: absolute;
+            width: 15px;
+            height: 8.66px;
+            background: rgba(33, 150, 243, 0.3);
+            transform: rotate(30deg);
+            opacity: 0.5;
+        }
+
+        .hexagon::before,
+        .hexagon::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            border-left: 7.5px solid transparent;
+            border-right: 7.5px solid transparent;
+        }
+
+        .hexagon::before {
+            bottom: 100%;
+            border-bottom: 4.33px solid rgba(33, 150, 243, 0.3);
+        }
+
+        .hexagon::after {
+            top: 100%;
+            border-top: 4.33px solid rgba(33, 150, 243, 0.3);
+        }
+
+        .bg-particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            filter: blur(1px);
+        }
+
+        .bg-particle {
+            position: absolute;
+            background: linear-gradient(to right, #85acb9, #63aac2);
+            width: 2px;
+            height: 2px;
+            border-radius: 50%;
+            animation: floatUpDiagonal 4s linear infinite;
+            opacity: 0;
+            box-shadow: 0 0 10px #85acb9;
+        }
+
+        @keyframes floatUpDiagonal {
+            0% {
+                transform: translate(0, 100vh) scale(0) rotate(0deg);
+                opacity: 0;
+            }
+            50% {
+                opacity: 0.7;
+                transform: translate(50px, 50vh) scale(1.5) rotate(180deg);
+            }
+            100% {
+                transform: translate(100px, -100px) scale(0) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .scene-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, 
+                rgba(133, 172, 185, 0.1) 0%,
+                rgba(99, 170, 194, 0.05) 50%,
+                transparent 70%);
+            pointer-events: none;
+            animation: pulseOverlay 4s ease-in-out infinite;
+            mix-blend-mode: screen;
+            z-index: 2;
+        }
+
+        @keyframes pulseOverlay {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.7; }
+        }
+
+        .btn-custom:active {
+            transform: scale(0.95) !important;
+            transition: transform 0.1s;
+        }
+
+        .btn-custom .btn-glow {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(133, 172, 185, 0.2);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .btn-custom:hover .btn-glow {
+            opacity: 1;
+            animation: glowPulse 2s infinite;
+        }
+
+        @keyframes glowPulse {
+            0%, 100% { opacity: 0.2; }
+            50% { opacity: 0.5; }
+        }
+
+        @keyframes floatUp {
+            0% {
+                transform: translateY(100vh) scale(0);
+                opacity: 0;
+            }
+            50% {
+                opacity: 0.5;
+            }
+            100% {
+                transform: translateY(-100px) scale(1);
+                opacity: 0;
+            }
+        }
+
+        /* Power surge effect for button hover */
+        .power-surge {
+            position: absolute;
+            inset: -20px;
+            background: radial-gradient(circle at center, 
+                rgba(133, 172, 185, 0.2) 0%,
+                transparent 70%);
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .btn-custom:hover .power-surge {
+            opacity: 1;
+            animation: surgePulse 2s infinite;
+        }
+
+        @keyframes surgePulse {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 0.2;
+            }
+            50% {
+                transform: scale(1.1);
+                opacity: 0.4;
+            }
+        }
+
+        /* Energy particles around buttons */
+        .energy-particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: #85acb9;
+            border-radius: 50%;
+            pointer-events: none;
+            opacity: 0;
+        }
+
+        @keyframes energyFloat {
+            0% {
+                transform: translate(var(--startX), var(--startY));
+                opacity: 0;
+            }
+            50% {
+                opacity: 0.8;
+            }
+            100% {
+                transform: translate(var(--endX), var(--endY));
+                opacity: 0;
+            }
+        }
+
+        /* Solo Leveling style button focus ring */
+        .btn-custom:focus {
+            outline: none;
+        }
+
+        .btn-custom:focus::before {
+            animation: focusRing 1s infinite;
+        }
+
+        @keyframes focusRing {
+            0% {
+                box-shadow: 0 0 0 0 rgba(133, 172, 185, 0.4);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(133, 172, 185, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(133, 172, 185, 0);
+            }
+        }
+
+        /* Button click shockwave */
+        .shockwave {
+            position: absolute;
+            border: 2px solid #85acb9;
+            border-radius: 50%;
+            animation: shockwaveEffect 0.5s ease-out;
+            pointer-events: none;
+        }
+
+        @keyframes shockwaveEffect {
+            0% {
+                transform: scale(0);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(2);
+                opacity: 0;
+            }
+        }
+
+        .buttons-container {
+            display: flex;
+            gap: 50px;
+            justify-content: center;
+            margin-top: 40px;
+            animation: buttonsAppear 0.5s ease-out;
+            animation-delay: 0.8s;
+            opacity: 0;
+            animation-fill-mode: forwards;
+            position: relative;
+            z-index: 10;
+        }
+
+        @keyframes buttonsAppear {
+            0% {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .flash-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: white;
+            pointer-events: none;
+            z-index: 10;
+            animation: flashEffect 1s ease-out forwards;
+        }
+
+        @keyframes flashEffect {
+            0% {
+                opacity: 0;
+            }
+            50% {
+                opacity: 0.7;
+            }
+            100% {
+                opacity: 0;
+            }
+        }
+
+        .radial-reveal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, transparent 0%, #000 100%);
+            z-index: 3;
+            animation: radialReveal 1.5s ease-out forwards;
+            pointer-events: none;
+        }
+
+        @keyframes radialReveal {
+            0% {
+                background: radial-gradient(circle at center, transparent 0%, #000 20%);
+            }
+            100% {
+                background: radial-gradient(circle at center, transparent 100%, #000 100%);
+            }
+        }
+
+        .light-rays {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(
+                from 0deg at 50% 50%,
+                transparent 0deg,
+                rgba(133, 172, 185, 0.1) 20deg,
+                transparent 40deg,
+                rgba(133, 172, 185, 0.1) 60deg,
+                transparent 80deg,
+                rgba(133, 172, 185, 0.1) 100deg,
+                transparent 120deg,
+                rgba(133, 172, 185, 0.1) 140deg,
+                transparent 160deg,
+                rgba(133, 172, 185, 0.1) 180deg,
+                transparent 200deg,
+                rgba(133, 172, 185, 0.1) 220deg,
+                transparent 240deg,
+                rgba(133, 172, 185, 0.1) 260deg,
+                transparent 280deg,
+                rgba(133, 172, 185, 0.1) 300deg,
+                transparent 320deg,
+                rgba(133, 172, 185, 0.1) 340deg,
+                transparent 360deg
+            );
+            opacity: 0;
+            animation: rayRotate 30s linear infinite, rayFadeIn 2s ease-out forwards;
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        @keyframes rayRotate {
+            from { transform: translate(-50%, -50%) rotate(0deg); }
+            to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        @keyframes rayFadeIn {
+            from { opacity: 0; }
+            to { opacity: 0.7; }
+        }
+
+        .energy-burst {
+            position: absolute;
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        .energy-burst-particle {
+            position: absolute;
+            background: #85acb9;
+            width: 2px;
+            height: 2px;
+            border-radius: 50%;
+        }
+
+        @keyframes screenShake {
+            0%, 100% { transform: translate(0, 0); }
+            25% { transform: translate(-5px, 5px); }
+            50% { transform: translate(5px, -5px); }
+            75% { transform: translate(-3px, -3px); }
+        }
+
+        .shake {
+            animation: screenShake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+        }
+
+        .btn-custom:active::before {
+            transform: scale(1.2);
+            opacity: 0;
+            transition: all 0.3s ease-out;
+        }
+
+        .energy-wave {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 4;
+            opacity: 0;
+        }
+
+        @keyframes energyWave {
+            0% {
+                transform: scale(0);
+                opacity: 0.5;
+            }
+            100% {
+                transform: scale(2);
+                opacity: 0;
+            }
+        }
+
+        .btn-press-effect {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(133, 172, 185, 0.8) 0%, transparent 70%);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        @keyframes buttonPress {
+            0% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 0.8;
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(2);
+                opacity: 0;
+            }
+        }
+
+        .dramatic-reveal {
+            position: fixed;
+            inset: 0;
+            background: black;
+            z-index: 100;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+        }
+
+        .dramatic-reveal.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .dramatic-reveal .shine-lines {
+            position: absolute;
+            inset: 0;
+            background: repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 10px,
+                rgba(133, 172, 185, 0.1) 10px,
+                rgba(133, 172, 185, 0.1) 20px
+            );
+            opacity: 0;
+        }
+
+        .dramatic-reveal.active .shine-lines {
+            animation: shineEffect 2s ease-in-out infinite;
+        }
+
+        @keyframes shineEffect {
+            0%, 100% { opacity: 0; transform: translateX(-100%); }
+            50% { opacity: 0.5; transform: translateX(100%); }
+        }
+
+        .dramatic-text {
+            color: #85acb9;
+            font-size: 3em;
+            text-transform: uppercase;
+            opacity: 0;
+            transform: scale(0.5);
+            transition: all 0.5s ease;
+            text-shadow: 
+                0 0 10px #85acb9,
+                0 0 20px #85acb9,
+                0 0 30px #85acb9;
+            -webkit-text-stroke: 1px white;
+        }
+
+        .dramatic-reveal.active .dramatic-text {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .power-circle {
+            position: absolute;
+            border: 2px solid #85acb9;
+            border-radius: 50%;
+            opacity: 0;
+        }
+
+        @keyframes powerCircle {
+            0% {
+                transform: translate(-50%, -50%) scale(0);
+                opacity: 0.8;
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(4);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="background-container">
+        <div class="background-image"></div>
+        <div class="light-rays"></div>
+        <div class="radial-reveal"></div>
+        <div class="shockwave-ring"></div>
+        <div class="shockwave-ring"></div>
+    </div>
+    <div class="flash-overlay"></div>
+    <div class="scene-overlay"></div>
+    <div class="bg-particles"></div>
+    <div class="particles"></div>
+    <div class="notification">
+        <div class="rune-circle"></div>
+        <div class="rune-circle" style="animation-direction: reverse; width: 110%; height: 110%; top: -5%; left: -5%;"></div>
+             <h4>
+            <span class="exclamation">!</span>
+            <span>NOTIFICATION</span>
+        </h4>
+        <p>Veux tu etres ma valentine ?</p>
+        <p class="quest-text">[Penalité: <span style="text-shadow: 
+            0 0 7px #ff0000,
+            0 0 10px #ff0000,
+            0 0 21px #ff0000,
+            0 0 42px #ff0000,
+            0 0 82px #ff0000,
+            0 0 92px #ff0000,
+            0 0 102px #ff0000,
+            0 0 151px #ff0000;color: #ff0000; font-weight: bolder;">Mort</span>]</p>
+        <!-- <p class="rank">S-Rank Quest Completed</p> -->
+        <p>Voulez vous accepter cette quete ?</p>
+        <div class="buttons-container">
+            <button class="btn-custom">Oui</button>
+            <button class="btn-custom">Non</button>
+        </div>
+    </div>
+    <div class="dramatic-reveal">
+        <div class="shine-lines"></div>
+        <div class="dramatic-text">Le nom de votre petite amie</div>
+    </div>
+    <script>
+        // Create floating particles effect
+        function createParticles() {
+            const particlesContainer = document.querySelector('.particles');
+            
+            for (let i = 0; i < 20; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                
+                // Random position
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                
+                // Random size
+                const size = Math.random() * 5 + 2;
+                particle.style.width = size + 'px';
+                particle.style.height = size + 'px';
+                
+                // Random animation delay
+                particle.style.animationDelay = Math.random() * 2 + 's';
+                
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        // Add click effect on buttons
+        document.querySelectorAll('.btn-custom').forEach(button => {
+            button.addEventListener('click', function(e) {
+                const x = e.clientX - e.target.offsetLeft;
+                const y = e.clientY - e.target.offsetTop;
+                
+                const ripple = document.createElement('span');
+                ripple.style.left = x + 'px';
+                ripple.style.top = y + 'px';
+                
+                this.appendChild(ripple);
+                
+                setTimeout(() => ripple.remove(), 1000);
+            });
+        });
+
+        // Initialize particles
+        createParticles();
+
+        // Create rotating rune circles
+        function createRuneCircles() {
+            const circles = document.querySelectorAll('.rune-circle');
+            circles.forEach((circle, index) => {
+                for (let i = 0; i < 8; i++) {
+                    const rune = document.createElement('div');
+                    rune.className = 'rune';
+                    rune.style.position = 'absolute';
+                    rune.style.width = '10px';
+                    rune.style.height = '10px';
+                    rune.style.background = '#2196f3';
+                    rune.style.borderRadius = '50%';
+                    rune.style.top = '50%';
+                    rune.style.left = '50%';
+                    rune.style.transform = `rotate(${i * 45}deg) translateX(${index === 0 ? 150 : 140}px)`;
+                    rune.style.animation = `fadeInOut ${2 + Math.random()}s infinite`;
+                    circle.appendChild(rune);
+                }
+            });
+        }
+
+        createRuneCircles();
+
+        // Add hexagon decorations
+        function createHexagons() {
+            const notification = document.querySelector('.notification');
+            const positions = [
+                { top: '10px', left: '10px' },
+                { top: '10px', right: '10px' },
+                { bottom: '10px', left: '10px' },
+                { bottom: '10px', right: '10px' }
+            ];
+
+            positions.forEach(pos => {
+                const hex = document.createElement('div');
+                hex.className = 'hexagon';
+                Object.assign(hex.style, pos);
+                notification.appendChild(hex);
+            });
+        }
+
+        createHexagons();
+
+        // Add background particles
+        function createBackgroundParticles() {
+            const container = document.querySelector('.bg-particles');
+            const particleCount = 100; // Increased count
+            
+            function createParticle() {
+                const particle = document.createElement('div');
+                particle.className = 'bg-particle';
+                
+                // Random position and properties
+                particle.style.left = Math.random() * 100 + '%';
+                const size = Math.random() * 4 + 1;
+                particle.style.width = size + 'px';
+                particle.style.height = size + 'px';
+                particle.style.opacity = Math.random() * 0.5 + 0.2;
+                
+                // Random animation duration and delay
+                const duration = Math.random() * 3 + 2;
+                const delay = Math.random() * 2;
+                particle.style.animation = `floatUpDiagonal ${duration}s ${delay}s linear infinite`;
+                
+                container.appendChild(particle);
+            }
+
+            // Initial particles
+            for (let i = 0; i < particleCount; i++) {
+                createParticle();
+            }
+
+            // Continuously add new particles
+            setInterval(() => {
+                const oldParticles = container.querySelectorAll('.bg-particle');
+                if (oldParticles.length > particleCount) {
+                    oldParticles[0].remove();
+                }
+                createParticle();
+            }, 200);
+        }
+
+        createBackgroundParticles();
+
+        // Update button click effect
+        document.querySelectorAll('.btn-custom').forEach(button => {
+            button.addEventListener('click', function() {
+                this.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    this.style.transform = 'translateY(-2px)';
+                }, 100);
+                
+                // Create pulse effect
+                const pulse = document.createElement('div');
+                pulse.style.position = 'absolute';
+                pulse.style.top = '0';
+                pulse.style.left = '0';
+                pulse.style.width = '100%';
+                pulse.style.height = '100%';
+                pulse.style.border = '1px solid #85acb9';
+                pulse.style.animation = 'pulse 0.5s ease-out';
+                
+                this.appendChild(pulse);
+                
+                setTimeout(() => pulse.remove(), 500);
+            });
+        });
+
+        // Add pulse animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes pulse {
+                0% {
+                    transform: scale(1);
+                    opacity: 1;
+                }
+                100% {
+                    transform: scale(1.5);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Update button elements
+        document.querySelectorAll('.btn-custom').forEach(button => {
+            const glow = document.createElement('div');
+            glow.className = 'btn-glow';
+            button.appendChild(glow);
+        });
+
+        // Enhanced button click effect
+        document.querySelectorAll('.btn-custom').forEach(button => {
+            // Add glow element
+            const glow = document.createElement('div');
+            glow.className = 'btn-glow';
+            button.appendChild(glow);
+
+            // Add flash element
+            const flash = document.createElement('div');
+            flash.className = 'btn-flash';
+            button.appendChild(flash);
+
+            button.addEventListener('click', function(e) {
+                // Create ripple effect
+                const ripple = document.createElement('div');
+                ripple.className = 'btn-ripple';
+                
+                const rect = button.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                ripple.style.left = x + 'px';
+                ripple.style.top = y + 'px';
+                
+                button.appendChild(ripple);
+                
+                // Trigger flash effect
+                flash.classList.add('active');
+                
+                // Scale effect
+                button.style.transform = 'scale(0.95) translateZ(-10px)';
+                
+                // Cleanup
+                setTimeout(() => {
+                    ripple.remove();
+                    flash.classList.remove('active');
+                    button.style.transform = '';
+                }, 800);
+            });
+        });
+
+        // Enhanced button interactions
+        document.querySelectorAll('.btn-custom').forEach(button => {
+            // Add power surge element
+            const surge = document.createElement('div');
+            surge.className = 'power-surge';
+            button.appendChild(surge);
+
+            button.addEventListener('mouseenter', createEnergyParticles);
+            button.addEventListener('mouseleave', removeEnergyParticles);
+            
+            function createEnergyParticles() {
+                for (let i = 0; i < 10; i++) {
+                    const particle = document.createElement('div');
+                    particle.className = 'energy-particle';
+                    
+                    const angle = (Math.random() * Math.PI * 2);
+                    const distance = 30 + Math.random() * 20;
+                    
+                    const startX = Math.cos(angle) * distance;
+                    const startY = Math.sin(angle) * distance;
+                    const endX = Math.cos(angle) * (distance + 20);
+                    const endY = Math.sin(angle) * (distance + 20);
+                    
+                    particle.style.setProperty('--startX', `${startX}px`);
+                    particle.style.setProperty('--startY', `${startY}px`);
+                    particle.style.setProperty('--endX', `${endX}px`);
+                    particle.style.setProperty('--endY', `${endY}px`);
+                    
+                    particle.style.left = '50%';
+                    particle.style.top = '50%';
+                    particle.style.animation = `energyFloat ${0.5 + Math.random()}s ease-out`;
+                    
+                    button.appendChild(particle);
+                    
+                    particle.addEventListener('animationend', () => particle.remove());
+                }
+            }
+            
+            function removeEnergyParticles() {
+                button.querySelectorAll('.energy-particle').forEach(particle => {
+                    particle.remove();
+                });
+            }
+
+            // Add shockwave on click
+            button.addEventListener('click', (e) => {
+                const rect = button.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+
+                const shockwave = document.createElement('div');
+                shockwave.className = 'shockwave';
+                shockwave.style.left = x + 'px';
+                shockwave.style.top = y + 'px';
+                button.appendChild(shockwave);
+
+                setTimeout(() => shockwave.remove(), 500);
+            });
+        });
+
+        // Add initial flash effect
+        window.addEventListener('load', () => {
+            const flash = document.querySelector('.flash-overlay');
+            flash.addEventListener('animationend', () => {
+                flash.remove();
+            });
+
+            // Create energy burst particles
+            const createEnergyBurst = () => {
+                const container = document.querySelector('.background-container');
+                for (let i = 0; i < 20; i++) {
+                    const particle = document.createElement('div');
+                    particle.style.cssText = `
+                        position: absolute;
+                        top: 50%;
+                        left: 50%;
+                        width: 4px;
+                        height: 4px;
+                        background: #85acb9;
+                        border-radius: 50%;
+                        pointer-events: none;
+                        z-index: 2;
+                    `;
+
+                    const angle = (Math.random() * Math.PI * 2);
+                    const velocity = 10 + Math.random() * 20;
+                    const duration = 0.8 + Math.random() * 0.4;
+
+                    particle.animate([
+                        {
+                            transform: 'translate(-50%, -50%)',
+                            opacity: 1
+                        },
+                        {
+                            transform: `translate(
+                                calc(-50% + ${Math.cos(angle) * velocity}vw), 
+                                calc(-50% + ${Math.sin(angle) * velocity}vh)
+                            )`,
+                            opacity: 0
+                        }
+                    ], {
+                        duration: duration * 1000,
+                        easing: 'ease-out'
+                    });
+
+                    container.appendChild(particle);
+                    setTimeout(() => particle.remove(), duration * 1000);
+                }
+            };
+
+            setTimeout(createEnergyBurst, 200);
+
+            // Add pulsing glow effect to background
+            const background = document.querySelector('.background-image');
+            setTimeout(() => {
+                const glowPulse = [
+                    { filter: 'brightness(1.2) saturate(1.2)' },
+                    { filter: 'brightness(1) saturate(1)' }
+                ];
+                
+                background.animate(glowPulse, {
+                    duration: 2000,
+                    iterations: 1,
+                    easing: 'ease-out'
+                });
+            }, 1500);
+        });
+
+        // Enhanced button click effect
+        document.querySelectorAll('.btn-custom').forEach(button => {
+            button.addEventListener('click', function(e) {
+                // Create energy burst
+                const burstContainer = document.createElement('div');
+                burstContainer.className = 'energy-burst';
+                document.body.appendChild(burstContainer);
+
+                const rect = button.getBoundingClientRect();
+                const centerX = rect.left + rect.width / 2;
+                const centerY = rect.top + rect.height / 2;
+
+                // Create particles
+                for (let i = 0; i < 20; i++) {
+                    const particle = document.createElement('div');
+                    particle.className = 'energy-burst-particle';
+                    
+                    const angle = (Math.random() * Math.PI * 2);
+                    const velocity = 15 + Math.random() * 25;
+                    const size = 2 + Math.random() * 4;
+                    
+                    particle.style.left = centerX + 'px';
+                    particle.style.top = centerY + 'px';
+                    particle.style.width = size + 'px';
+                    particle.style.height = size + 'px';
+                    
+                    const animation = particle.animate([
+                        {
+                            transform: 'translate(-50%, -50%)',
+                            opacity: 1
+                        },
+                        {
+                            transform: `translate(
+                                calc(-50% + ${Math.cos(angle) * velocity}vw),
+                                calc(-50% + ${Math.sin(angle) * velocity}vh)
+                            )`,
+                            opacity: 0
+                        }
+                    ], {
+                        duration: 1000,
+                        easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)'
+                    });
+                    
+                    burstContainer.appendChild(particle);
+                    animation.onfinish = () => particle.remove();
+                }
+
+                // Screen shake effect
+                document.body.classList.add('shake');
+                setTimeout(() => {
+                    document.body.classList.remove('shake');
+                }, 500);
+
+                // Energy wave effect
+                const wave = document.createElement('div');
+                wave.className = 'energy-wave';
+                wave.style.cssText = `
+                    border: 2px solid rgba(133, 172, 185, 0.5);
+                    border-radius: 50%;
+                    position: fixed;
+                    top: ${centerY}px;
+                    left: ${centerX}px;
+                    transform: translate(-50%, -50%);
+                `;
+                document.body.appendChild(wave);
+
+                wave.animate([
+                    { transform: 'translate(-50%, -50%) scale(0)', opacity: 0.5 },
+                    { transform: 'translate(-50%, -50%) scale(2)', opacity: 0 }
+                ], {
+                    duration: 800,
+                    easing: 'ease-out'
+                }).onfinish = () => wave.remove();
+
+                // Button press visual effect
+                const pressEffect = document.createElement('div');
+                pressEffect.className = 'btn-press-effect';
+                button.appendChild(pressEffect);
+
+                pressEffect.animate([
+                    { transform: 'translate(-50%, -50%) scale(1)', opacity: 0.8 },
+                    { transform: 'translate(-50%, -50%) scale(2)', opacity: 0 }
+                ], {
+                    duration: 600,
+                    easing: 'ease-out'
+                }).onfinish = () => pressEffect.remove();
+
+                setTimeout(() => burstContainer.remove(), 1000);
+            });
+        });
+
+        // Add dramatic reveal effect for "Yes" button
+        document.querySelectorAll('.btn-custom')[0].addEventListener('click', function() {
+            const reveal = document.querySelector('.dramatic-reveal');
+            
+            // Create power circles
+            for (let i = 0; i < 3; i++) {
+                const circle = document.createElement('div');
+                circle.className = 'power-circle';
+                circle.style.left = '50%';
+                circle.style.top = '50%';
+                
+                const animation = circle.animate([
+                    { transform: 'translate(-50%, -50%) scale(0)', opacity: 0.8 },
+                    { transform: 'translate(-50%, -50%) scale(4)', opacity: 0 }
+                ], {
+                    duration: 1500,
+                    delay: i * 200,
+                    easing: 'cubic-bezier(0.4, 0, 0.2, 1)'
+                });
+                
+                reveal.appendChild(circle);
+                animation.onfinish = () => circle.remove();
+            }
+            
+            // Activate reveal effect
+            setTimeout(() => {
+                reveal.classList.add('active');
+                
+                // Create power surge effect
+                const burstInterval = setInterval(() => {
+                    const angle = Math.random() * Math.PI * 2;
+                    const distance = 100;
+                    const particle = document.createElement('div');
+                    particle.style.cssText = `
+                        position: absolute;
+                        width: 2px;
+                        height: 10px;
+                        background: #85acb9;
+                        left: 50%;
+                        top: 50%;
+                        transform-origin: center;
+                    `;
+                    
+                    particle.animate([
+                        {
+                            transform: `translate(-50%, -50%) rotate(${angle}rad) translateY(0)`,
+                            opacity: 1
+                        },
+                        {
+                            transform: `translate(-50%, -50%) rotate(${angle}rad) translateY(${distance}px)`,
+                            opacity: 0
+                        }
+                    ], {
+                        duration: 1000,
+                        easing: 'ease-out'
+                    }).onfinish = () => particle.remove();
+                    
+                    reveal.appendChild(particle);
+                }, 100);
+                
+                // Clean up after animation and navigate to home.html
+                setTimeout(() => {
+                    clearInterval(burstInterval);
+                    reveal.classList.remove('active');
+                    
+                    // Add fade out effect before navigation
+                    document.body.style.transition = 'opacity 0.5s ease-out';
+                    document.body.style.opacity = '0';
+                    
+                    setTimeout(() => {
+                        window.location.href = 'home.html';
+                    }, 500);
+                }, 3000);
+            }, 500);
+        });
+
+        // Add dismissal effect for "No" button
+        document.querySelectorAll('.btn-custom')[1].addEventListener('click', function() {
+            const notification = document.querySelector('.notification');
+            
+            // Create dismiss particles
+            for (let i = 0; i < 30; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'energy-burst-particle';
+                const angle = (Math.random() * Math.PI * 2);
+                const velocity = 20 + Math.random() * 30;
+                
+                particle.style.cssText = `
+                    position: absolute;
+                    left: 50%;
+                    top: 50%;
+                    width: ${2 + Math.random() * 3}px;
+                    height: ${2 + Math.random() * 3}px;
+                    background: #85acb9;
+                    border-radius: 50%;
+                    pointer-events: none;
+                    z-index: 100;
+                `;
+                
+                notification.appendChild(particle);
+                
+                particle.animate([
+                    {
+                        transform: 'translate(-50%, -50%)',
+                        opacity: 1
+                    },
+                    {
+                        transform: `translate(
+                            calc(-50% + ${Math.cos(angle) * velocity}vw),
+                            calc(-50% + ${Math.sin(angle) * velocity}vh)
+                        )`,
+                        opacity: 0
+                    }
+                ], {
+                    duration: 800,
+                    easing: 'cubic-bezier(0.4, 0, 0.2, 1)'
+                }).onfinish = () => particle.remove();
+            }
+            
+            // Screen shake effect
+            document.body.classList.add('shake');
+            setTimeout(() => {
+                document.body.classList.remove('shake');
+            }, 500);
+            
+            // Fade out notification with energy burst
+            const energyWave = document.createElement('div');
+            energyWave.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                width: 100vmax;
+                height: 100vmax;
+                border: 2px solid rgba(133, 172, 185, 0.5);
+                border-radius: 50%;
+                transform: translate(-50%, -50%) scale(0);
+                opacity: 0.8;
+                pointer-events: none;
+                z-index: 99;
+            `;
+            document.body.appendChild(energyWave);
+            
+            energyWave.animate([
+                { transform: 'translate(-50%, -50%) scale(0)', opacity: 0.8 },
+                { transform: 'translate(-50%, -50%) scale(2)', opacity: 0 }
+            ], {
+                duration: 1000,
+                easing: 'ease-out'
+            }).onfinish = () => energyWave.remove();
+            
+            // Fade out notification
+            notification.style.transition = 'all 0.5s ease-out';
+            notification.style.opacity = '0';
+            notification.style.transform = 'translate(-50%, -50%) scale(0.8)';
+            
+            // Add screen flash
+            const flash = document.createElement('div');
+            flash.className = 'flash-overlay';
+            document.body.appendChild(flash);
+            
+            // Fade out everything and close window
+            setTimeout(() => {
+                document.body.style.transition = 'opacity 1s ease-out';
+                document.body.style.opacity = '0';
+                setTimeout(() => {
+                    window.close();
+                }, 1000);
+            }, 800);
+        });
+    </script>
+</body>
+</html>
