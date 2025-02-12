@@ -988,8 +988,8 @@
             <span class="exclamation">!</span>
             <span>NOTIFICATION</span>
         </h4>
-        <p>Veux tu etres ma valentine ?</p>
-        <p class="quest-text">[Penalité: <span style="text-shadow: 
+        <p>Will you be my valentine ?</p>
+        <p class="quest-text">[Penalty: <span style="text-shadow: 
             0 0 7px #ff0000,
             0 0 10px #ff0000,
             0 0 21px #ff0000,
@@ -997,17 +997,17 @@
             0 0 82px #ff0000,
             0 0 92px #ff0000,
             0 0 102px #ff0000,
-            0 0 151px #ff0000;color: #ff0000; font-weight: bolder;">Mort</span>]</p>
+            0 0 151px #ff0000;color: #ff0000; font-weight: bolder;">Death</span>]</p>
         <!-- <p class="rank">S-Rank Quest Completed</p> -->
-        <p>Voulez vous accepter cette quete ?</p>
+        <p>Do you want to accept this quest ?</p>
         <div class="buttons-container">
-            <button class="btn-custom">Oui</button>
-            <button class="btn-custom">Non</button>
+            <button class="btn-custom">Yes</button>
+            <button class="btn-custom">No</button>
         </div>
     </div>
     <div class="dramatic-reveal">
         <div class="shine-lines"></div>
-        <div class="dramatic-text">Le nom de votre petite amie</div>
+        <div class="dramatic-text editable">Your Girlfriend name</div>
     </div>
     <script>
         // Create floating particles effect
@@ -1612,6 +1612,46 @@
                     window.close();
                 }, 1000);
             }, 800);
+        });
+
+        // Load customized text from localStorage if available
+        window.addEventListener('DOMContentLoaded', function() {
+            const girlfriendName = localStorage.getItem('girlfriendName');
+            const targetPage = localStorage.getItem('targetPage');
+            
+            if (girlfriendName) {
+                document.querySelector('.dramatic-text.editable').textContent = girlfriendName;
+                // Clear this item
+                localStorage.removeItem('girlfriendName');
+            }
+
+            // If this isn't the target page, redirect to it
+            if (targetPage && targetPage !== 'acceuil.html') {
+                window.location.href = targetPage;
+            } else {
+                localStorage.removeItem('targetPage');
+            }
+        });
+
+        // Load customizations when the page loads
+        window.addEventListener('DOMContentLoaded', function() {
+            // Check URL hash first
+            if (window.location.hash) {
+                try {
+                    const encodedData = window.location.hash.replace('#data=', '');
+                    const customizations = JSON.parse(atob(encodedData));
+                    if (customizations.girlfriendName) {
+                        document.querySelector('.dramatic-text').textContent = customizations.girlfriendName;
+                    }
+                } catch (e) {
+                    console.error('Error parsing URL data:', e);
+                }
+            }
+            // Then check localStorage
+            else if (localStorage.getItem('girlfriendName')) {
+                document.querySelector('.dramatic-text').textContent = localStorage.getItem('girlfriendName');
+                localStorage.removeItem('girlfriendName'); // Clear after using
+            }
         });
     </script>
 </body>

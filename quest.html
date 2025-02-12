@@ -36,9 +36,9 @@
         <div class="rune-circle" style="animation-direction: reverse; width: 110%; height: 110%; top: -5%; left: -5%;"></div>
         <div class="sl-title">
             <span class="sl-exclamation">!</span>
-            <span>INFOS DE QUETE</span>
+            <span>QUEST INFO</span>
         </div>
-        <p>[Quete journaliere: <span style="  text-shadow: 
+        <p>[Dail Quest: <span style="  text-shadow: 
         0 0 7px #fff,
         0 0 10px #fff,
         0 0 21px #fff,
@@ -46,13 +46,13 @@
         0 0 82px #85acb9,
         0 0 92px #85acb9,
         0 0 102px #85acb9,
-        0 0 151px #85acb9;font-weight: bolder;">Test d'amour est arrivé</span>] 
+        0 0 151px #85acb9;font-weight: bolder;">Test of Love has arrived</span>] 
         </p>
         <div class="quest-divider"></div>
-        <p class="quest-section-title">OBJECTIFS</p>
+        <p class="quest-section-title">GOALS</p>
         <div class="quest-tasks">
-            <div class="quest-task">
-                <span class="task-description">Allez dans un Restau</span>
+            <div class="quest-task editable">
+                <span class="task-description">Go to a Restaurant</span>
                 <div class="task-completion">
                     <span class="completion-rate">[0/1]</span>
                     <label class="checkbox-container">
@@ -74,9 +74,51 @@
             
         </div>
         <div class="quest-divider"></div>
-        <p class="quest-warning">ATTENTION: Un échec entrainera votre séparation.</p>
+        <p class="quest-warning editable">WARNING: Failure will result in your separation.</p>
     </div>
 
+    <script>
+        // Load customized text from localStorage if available
+        window.addEventListener('DOMContentLoaded', function() {
+            // Check URL hash first
+            if (window.location.hash) {
+                try {
+                    const encodedData = window.location.hash.replace('#data=', '');
+                    const customizations = JSON.parse(atob(encodedData));
+                    if (customizations.questTask) {
+                        document.querySelector('.quest-task.editable .task-description').textContent = customizations.questTask;
+                    }
+                    if (customizations.questWarning) {
+                        document.querySelector('.quest-warning.editable').textContent = customizations.questWarning;
+                    }
+                } catch (e) {
+                    console.error('Error parsing URL data:', e);
+                }
+            }
+            // Then check localStorage
+            else {
+                const questTask = localStorage.getItem('questTask');
+                const questWarning = localStorage.getItem('questWarning');
+                
+                if (questTask) {
+                    document.querySelector('.quest-task.editable .task-description').textContent = questTask;
+                    localStorage.removeItem('questTask');
+                }
+                if (questWarning) {
+                    document.querySelector('.quest-warning.editable').textContent = questWarning;
+                    localStorage.removeItem('questWarning');
+                }
+            }
+
+            const targetPage = localStorage.getItem('targetPage');
+            // If this isn't the target page, redirect to it
+            if (targetPage && targetPage !== 'quest.html') {
+                window.location.href = targetPage;
+            } else {
+                localStorage.removeItem('targetPage');
+            }
+        });
+    </script>
     <script src="js/solo-leveling.js"></script>
 </body>
 </html>

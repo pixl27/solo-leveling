@@ -38,7 +38,7 @@
             <span class="sl-exclamation">!</span>
             <span>NOTIFICATION</span>
         </div>
-        <p>Félicitations, tu es maintenant à <span style="  text-shadow: 
+        <p class="editable">Congratulations, your are now <span class="editable" style="  text-shadow: 
         0 0 7px #fff,
         0 0 10px #fff,
         0 0 21px #fff,
@@ -46,9 +46,9 @@
         0 0 82px #85acb9,
         0 0 92px #85acb9,
         0 0 102px #85acb9,
-        0 0 151px #85acb9;font-weight: bolder;">MOI</span>      
+        0 0 151px #85acb9;font-weight: bolder;">MINE</span>      
             </p>
-            <p class="quest-text">[Récompense: <span style="text-shadow: 
+            <p class="quest-text">[Rewards: <span class="editable" style="text-shadow: 
                 0 0 7px #00ff62,
                 0 0 10px #00ff62,
                 0 0 21px #00ff62,
@@ -58,7 +58,7 @@
                 0 0 102px #00ff62,
                 0 0 151px #00ff62;color: #00ff62; font-weight: bolder;">Date</span>]</p>
             <!-- <p class="rank">S-Rank Quest Completed</p> -->
-            <p>Acceptez votre récompense</p>
+            <p>Accept your reward</p>
             <div class="buttons-container">
                 <button class="btn-custom">OK</button>
 
@@ -70,7 +70,47 @@
         <div class="dramatic-text">Reward Acquired</div>
     </div>
     <script>
-          document.querySelectorAll('.btn-custom')[0].addEventListener('click', function() {
+        window.addEventListener('DOMContentLoaded', function() {
+            // Check URL hash first
+            if (window.location.hash) {
+                try {
+                    const encodedData = window.location.hash.replace('#data=', '');
+                    const customizations = JSON.parse(atob(encodedData));
+                    if (customizations.mainMessage) {
+                        document.querySelector('p.editable').childNodes[0].textContent = customizations.mainMessage + ' ';
+                    }
+                    if (customizations.highlightedText) {
+                        document.querySelector('p.editable span.editable').textContent = customizations.highlightedText;
+                    }
+                    if (customizations.rewardDate) {
+                        document.querySelector('.quest-text span.editable').textContent = customizations.rewardDate;
+                    }
+                } catch (e) {
+                    console.error('Error parsing URL data:', e);
+                }
+            }
+            // Then check localStorage
+            else {
+                const mainMessage = localStorage.getItem('mainMessage');
+                const highlightedText = localStorage.getItem('highlightedText');
+                const rewardDate = localStorage.getItem('rewardDate');
+                
+                if (mainMessage) {
+                    document.querySelector('p.editable').childNodes[0].textContent = mainMessage + ' ';
+                    localStorage.removeItem('mainMessage');
+                }
+                if (highlightedText) {
+                    document.querySelector('p.editable span.editable').textContent = highlightedText;
+                    localStorage.removeItem('highlightedText');
+                }
+                if (rewardDate) {
+                    document.querySelector('.quest-text span.editable').textContent = rewardDate;
+                    localStorage.removeItem('rewardDate');
+                }
+            }
+        });
+
+        document.querySelectorAll('.btn-custom')[0].addEventListener('click', function() {
             const reveal = document.querySelector('.dramatic-reveal');
             
             // Create power circles

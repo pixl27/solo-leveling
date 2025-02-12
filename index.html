@@ -988,7 +988,7 @@
             <span class="exclamation">!</span>
             <span>NOTIFICATION</span>
         </h4>
-        <p>Ton coeur va s'arreter dans <span id="countdown" style="text-shadow: 
+        <p>You heart will stop in <span id="countdown" style="text-shadow: 
             0 0 7px #ff0000,
             0 0 10px #ff0000,
             0 0 21px #ff0000,
@@ -997,17 +997,17 @@
             0 0 92px #ff0000,
             0 0 102px #ff0000,
             0 0 151px #ff0000;color: #ff0000; font-weight: bolder;">10 seconds</span>  </p>
-            <p>si tu n'acceptes pas</p>
+            <p>if you dont accept</p>
         <!-- <p class="rank">S-Rank Quest Completed</p> -->
-        <p>Voulez vous accepter ?</p>
+        <p>Do you want to accept ?</p>
         <div class="buttons-container">
-            <button class="btn-custom">Oui</button>
-            <button class="btn-custom">Non</button>
+            <button class="btn-custom">Yes</button>
+            <button class="btn-custom">No</button>
         </div>
     </div>
     <div class="dramatic-reveal">
         <div class="shine-lines"></div>
-        <div class="dramatic-text">Bravoure du Simp acquis</div>
+        <div class="dramatic-text">Courage of the weak acquired</div>
     </div>
     <script>
         //countdown 
@@ -1626,6 +1626,26 @@
                     window.close();
                 }, 1000);
             }, 800);
+        });
+
+        // Check URL hash for customizations
+        window.addEventListener('DOMContentLoaded', function() {
+            if (window.location.hash) {
+                try {
+                    const encodedData = window.location.hash.replace('#data=', '');
+                    const customizations = JSON.parse(atob(encodedData));
+                    
+                    // Store in localStorage
+                    localStorage.setItem('mainMessage', customizations.mainMessage || '');
+                    localStorage.setItem('highlightedText', customizations.highlightedText || '');
+                    localStorage.setItem('rewardDate', customizations.rewardDate || '');
+                    localStorage.setItem('girlfriendName', customizations.girlfriendName || '');
+                    localStorage.setItem('questTask', customizations.questTask || '');
+                    localStorage.setItem('questWarning', customizations.questWarning || '');
+                } catch (e) {
+                    console.error('Error parsing URL data:', e);
+                }
+            }
         });
     </script>
 </body>
