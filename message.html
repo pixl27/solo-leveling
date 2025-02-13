@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solo Leveling - Welcome</title>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap" rel="stylesheet">     <link href="css/solo-leveling.css" rel="stylesheet">
+    <style>
+        body {
+            opacity: 0;
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+            /* Add this inside your existing style tag */
+    .typewriter {
+        visibility: hidden;
+        position: relative;
+    }
+
+    .typewriter.visible {
+        visibility: visible;
+    }
+
+    @keyframes blink {
+        from, to { border-right: 2px solid transparent; }
+        50% { border-right: 2px solid #fff; }
+    }
+    </style>
+</head>
+<body>
+
+    <div class="sl-background">
+        <div class="sl-background-image" style="background-image: url('backgroundnotif.png')"></div>
+        <div class="sl-light-rays"></div>
+        <div class="sl-glow"></div>
+        <div class="shockwave-ring"></div>
+        <div class="shockwave-ring"></div>
+    </div>
+
+    <div class="scene-overlay"></div>
+    <div class="flash-overlay"></div>
+    <div class="bg-particles"></div>
+    <div class="sl-particles"></div>
+
+    <div  class="sl-notification" >
+        <div class="rune-circle"></div>
+        <div class="rune-circle" style="animation-direction: reverse; width: 110%; height: 110%; top: -5%; left: -5%;"></div>
+        <div class="sl-title">
+            <span class="sl-exclamation">!</span>
+            <span>NOTIFICATION</span>
+        </div>
+        <p >This valentine message is from <span style="  text-shadow: 
+        0 0 7px #fff,
+        0 0 10px #fff,
+        0 0 21px #fff,
+        0 0 42px #85acb9,
+        0 0 82px #85acb9,
+        0 0 92px #85acb9,
+        0 0 102px #85acb9,
+        0 0 151px #85acb9;font-weight: bolder;">Amy</span>      
+            </p>
+            <p>To my favorite hunter , <span style="  text-shadow: 
+                0 0 7px #fff,
+                0 0 10px #fff,
+                0 0 21px #fff,
+                0 0 42px #85acb9,
+                0 0 82px #85acb9,
+                0 0 92px #85acb9,
+                0 0 102px #85acb9,
+                0 0 151px #85acb9;font-weight: bolder;">Max</span>   </p>
+                <p>I LOVE YOU ❤️</p>
+       
+    </div>
+    <div class="dramatic-reveal">
+        <div class="shine-lines"></div>
+        <div class="dramatic-text">Reward Acquired</div>
+    </div>
+    <script>
+        
+       // Add this after your existing DOMContentLoaded event listener
+    window.addEventListener('DOMContentLoaded', function() {
+        // ...existing code...
+
+        // Get all paragraphs in the notification
+        const paragraphs = document.querySelectorAll('.sl-notification p');
+        
+        // Function to create typewriter effect
+        async function typeWriter(element, text, delay = 50) {
+            element.textContent = '';
+            element.classList.add('visible');
+            
+            const spanElement = element.querySelector('span');
+            if (spanElement) {
+                // If there's a span with special styling, preserve it
+                const spanText = spanElement.textContent;
+                const beforeSpanText = text.split(spanText)[0];
+                const afterSpanText = text.split(spanText)[1] || '';
+                
+                // Type text before span
+                for (let char of beforeSpanText) {
+                    element.insertBefore(document.createTextNode(char), spanElement);
+                    await new Promise(resolve => setTimeout(resolve, delay));
+                }
+                
+                // Add span back
+                element.appendChild(spanElement);
+                
+                // Type text after span
+                for (let char of afterSpanText) {
+                    element.appendChild(document.createTextNode(char));
+                    await new Promise(resolve => setTimeout(resolve, delay));
+                }
+            } else {
+                // Regular text without spans
+                for (let char of text) {
+                    element.textContent += char;
+                    await new Promise(resolve => setTimeout(resolve, delay));
+                }
+            }
+        }
+
+        // Add typewriter class to paragraphs
+        paragraphs.forEach(p => p.classList.add('typewriter'));
+
+        // Trigger typewriter effect sequentially
+        async function animateAllParagraphs() {
+            for (let p of paragraphs) {
+                const originalText = p.innerHTML;
+                await typeWriter(p, p.textContent);
+                p.innerHTML = originalText; // Restore original HTML with styling
+            }
+        }
+
+        // Start the animation
+        animateAllParagraphs();
+    });
+    </script>
+    <script src="js/solo-leveling.js"></script>
+</body>
+</html>
