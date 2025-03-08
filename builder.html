@@ -357,7 +357,7 @@
                 <div class="input-group">
                     <input type="text" class="form-control" id="shareableLink" readonly>
                     <div class="input-group-append">
-                        <button class="btn btn-outline-info" onclick="copyLink()" style="border-color: #85acb9; color: #85acb9;">Copy</button>
+                        <button class="btn btn-outline-info" onclick="copyLink(event)" style="border-color: #85acb9; color: #85acb9;">Copy</button>
                     </div>
                 </div>
                 <div class="mt-3">
@@ -499,7 +499,10 @@
             window.open(page + '.html', '_blank');
         }
 
-        function copyLink() {
+        function copyLink(event) {
+            // Prevent the default form submission behavior
+            event.preventDefault();
+            
             const linkInput = document.getElementById('shareableLink');
             linkInput.select();
             document.execCommand('copy');
