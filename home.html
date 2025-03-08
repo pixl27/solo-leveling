@@ -31,14 +31,14 @@
     <div class="bg-particles"></div>
     <div class="sl-particles"></div>
 
-    <div  class="sl-notification">
+    <div class="sl-notification">
         <div class="rune-circle"></div>
         <div class="rune-circle" style="animation-direction: reverse; width: 110%; height: 110%; top: -5%; left: -5%;"></div>
         <div class="sl-title">
             <span class="sl-exclamation">!</span>
             <span>NOTIFICATION</span>
         </div>
-        <!-- <p class="editable">Congratulations, your are now <span class="editable" style="  text-shadow: 
+        <p class="editable">Congratulations, your are now <span class="editable-highlight" style="text-shadow: 
         0 0 7px #fff,
         0 0 10px #fff,
         0 0 21px #fff,
@@ -46,32 +46,31 @@
         0 0 82px #85acb9,
         0 0 92px #85acb9,
         0 0 102px #85acb9,
-        0 0 151px #85acb9;font-weight: bolder;">MINE</span>       -->
-            </p>
-            <p class="quest-text">[REWARD: <span class="editable" style="text-shadow: 
-                0 0 7px #00ff62,
-                0 0 10px #00ff62,
-                0 0 21px #00ff62,
-                0 0 42px #00ff62,
-                0 0 82px #00ff62,
-                0 0 92px #00ff62,
-                0 0 102px #00ff62,
-                0 0 151px #00ff62;color: #00ff62; font-weight: bolder;">A DATE WITH AMY</span>]</p>
-                  <p class="quest-text">[BONUS: <span class="editable" style="text-shadow: 
-                    0 0 7px #00ff62,
-                    0 0 10px #00ff62,
-                    0 0 21px #00ff62,
-                    0 0 42px #00ff62,
-                    0 0 82px #00ff62,
-                    0 0 92px #00ff62,
-                    0 0 102px #00ff62,
-                    0 0 151px #00ff62;color: #00ff62; font-weight: bolder;">UNLIMITED KISSES</span>]</p>
+        0 0 151px #85acb9;font-weight: bolder;">MINE</span>       
+        </p>
+        <p class="quest-text">[REWARD: <span class="reward-date" style="text-shadow: 
+            0 0 7px #00ff62,
+            0 0 10px #00ff62,
+            0 0 21px #00ff62,
+            0 0 42px #00ff62,
+            0 0 82px #00ff62,
+            0 0 92px #00ff62,
+            0 0 102px #00ff62,
+            0 0 151px #00ff62;color: #00ff62; font-weight: bolder;">A DATE WITH AMY</span>]</p>
+        <p class="quest-text">[BONUS: <span class="editable" style="text-shadow: 
+            0 0 7px #00ff62,
+            0 0 10px #00ff62,
+            0 0 21px #00ff62,
+            0 0 42px #00ff62,
+            0 0 82px #00ff62,
+            0 0 92px #00ff62,
+            0 0 102px #00ff62,
+            0 0 151px #00ff62;color: #00ff62; font-weight: bolder;">UNLIMITED KISSES</span>]</p>
             <!-- <p class="rank">S-Rank Quest Completed</p> -->
-            <p>Accept your reward</p>
-            <div class="buttons-container">
-                <button class="btn-custom">OK</button>
-
-            </div>
+        <p>Accept your reward</p>
+        <div class="buttons-container">
+            <button class="btn-custom">OK</button>
+        </div>
        
     </div>
     <div class="dramatic-reveal">
@@ -85,14 +84,34 @@
                 try {
                     const encodedData = window.location.hash.replace('#data=', '');
                     const customizations = JSON.parse(atob(encodedData));
-                    if (customizations.mainMessage) {
-                        document.querySelector('p.editable').childNodes[0].textContent = customizations.mainMessage + ' ';
+                    
+                    // Handle both full property names and shortened versions
+                    const mainMessage = customizations.mainMessage || customizations.m || '';
+                    const highlightedText = customizations.highlightedText || customizations.h || '';
+                    const rewardDate = customizations.rewardDate || customizations.d || '';
+                    
+                    if (mainMessage) {
+                        const editableP = document.querySelector('p.editable');
+                        if (editableP) {
+                            // Get text node (first child) and set it
+                            if (editableP.firstChild && editableP.firstChild.nodeType === 3) {
+                                editableP.firstChild.textContent = mainMessage + ' ';
+                            }
+                        }
                     }
-                    if (customizations.highlightedText) {
-                        document.querySelector('p.editable span.editable').textContent = customizations.highlightedText;
+                    
+                    if (highlightedText) {
+                        const highlight = document.querySelector('p.editable .editable-highlight');
+                        if (highlight) {
+                            highlight.textContent = highlightedText;
+                        }
                     }
-                    if (customizations.rewardDate) {
-                        document.querySelector('.quest-text span.editable').textContent = customizations.rewardDate;
+                    
+                    if (rewardDate) {
+                        const date = document.querySelector('.quest-text .reward-date');
+                        if (date) {
+                            date.textContent = rewardDate;
+                        }
                     }
                 } catch (e) {
                     console.error('Error parsing URL data:', e);
@@ -105,18 +124,39 @@
                 const rewardDate = localStorage.getItem('rewardDate');
                 
                 if (mainMessage) {
-                    document.querySelector('p.editable').childNodes[0].textContent = mainMessage + ' ';
+                    const editableP = document.querySelector('p.editable');
+                    if (editableP && editableP.firstChild && editableP.firstChild.nodeType === 3) {
+                        editableP.firstChild.textContent = mainMessage + ' ';
+                    }
                     localStorage.removeItem('mainMessage');
                 }
+                
                 if (highlightedText) {
-                    document.querySelector('p.editable span.editable').textContent = highlightedText;
+                    const highlight = document.querySelector('p.editable .editable-highlight');
+                    if (highlight) {
+                        highlight.textContent = highlightedText;
+                    }
                     localStorage.removeItem('highlightedText');
                 }
+                
                 if (rewardDate) {
-                    document.querySelector('.quest-text span.editable').textContent = rewardDate;
+                    const date = document.querySelector('.quest-text .reward-date');
+                    if (date) {
+                        date.textContent = rewardDate;
+                    }
                     localStorage.removeItem('rewardDate');
                 }
             }
+            
+            // For debugging
+            console.log("Main Message:", localStorage.getItem('mainMessage'));
+            console.log("Highlighted Text:", localStorage.getItem('highlightedText'));
+            console.log("Reward Date:", localStorage.getItem('rewardDate'));
+            console.log("Elements:", {
+                editableP: document.querySelector('p.editable'),
+                highlight: document.querySelector('p.editable .editable-highlight'),
+                date: document.querySelector('.quest-text .reward-date')
+            });
         });
 
         document.querySelectorAll('.btn-custom')[0].addEventListener('click', function() {
@@ -178,7 +218,7 @@
                     reveal.appendChild(particle);
                 }, 100);
                 
-                // Clean up after animation and navigate to home.html
+                // Clean up after animation and navigate directly to quest.html
                 setTimeout(() => {
                     clearInterval(burstInterval);
                     reveal.classList.remove('active');
@@ -188,6 +228,7 @@
                     document.body.style.opacity = '0';
                     
                     setTimeout(() => {
+                        // Navigate directly to quest.html instead of going through index.html
                         window.location.href = 'quest.html';
                     }, 500);
                 }, 3000);

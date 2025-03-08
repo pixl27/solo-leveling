@@ -29,6 +29,19 @@
         from, to { border-right: 2px solid transparent; }
         50% { border-right: 2px solid #fff; }
     }
+
+    .highlight {
+        text-shadow: 
+        0 0 7px #fff,
+        0 0 10px #fff,
+        0 0 21px #fff,
+        0 0 42px #85acb9,
+        0 0 82px #85acb9,
+        0 0 92px #85acb9,
+        0 0 102px #85acb9,
+        0 0 151px #85acb9;
+        font-weight: bolder;
+    }
     </style>
 </head>
 <body>
@@ -53,91 +66,128 @@
             <span class="sl-exclamation">!</span>
             <span>NOTIFICATION</span>
         </div>
-        <p >This valentine message is from <span style="  text-shadow: 
-        0 0 7px #fff,
-        0 0 10px #fff,
-        0 0 21px #fff,
-        0 0 42px #85acb9,
-        0 0 82px #85acb9,
-        0 0 92px #85acb9,
-        0 0 102px #85acb9,
-        0 0 151px #85acb9;font-weight: bolder;">Amy</span>      
-            </p>
-            <p>To my favorite hunter , <span style="  text-shadow: 
-                0 0 7px #fff,
-                0 0 10px #fff,
-                0 0 21px #fff,
-                0 0 42px #85acb9,
-                0 0 82px #85acb9,
-                0 0 92px #85acb9,
-                0 0 102px #85acb9,
-                0 0 151px #85acb9;font-weight: bolder;">Max</span>   </p>
-                <p>I LOVE YOU ❤️</p>
-       
+        <p class="editable message-line-1">This valentine message is from <span id="message-sender" class="highlight">Amy</span></p>
+        <p class="editable message-line-2">To my favorite hunter , <span id="message-recipient" class="highlight">Max</span></p>
+        <p class="editable message-line-3">I LOVE YOU ❤️</p>
     </div>
     <div class="dramatic-reveal">
         <div class="shine-lines"></div>
         <div class="dramatic-text">Reward Acquired</div>
     </div>
     <script>
-        
-       // Add this after your existing DOMContentLoaded event listener
-    window.addEventListener('DOMContentLoaded', function() {
-        // ...existing code...
-
-        // Get all paragraphs in the notification
-        const paragraphs = document.querySelectorAll('.sl-notification p');
-        
-        // Function to create typewriter effect
-        async function typeWriter(element, text, delay = 50) {
-            element.textContent = '';
-            element.classList.add('visible');
+        // Load customizations from localStorage
+        window.addEventListener('DOMContentLoaded', function() {
+            // Get message customization values from localStorage or URL hash
+            let messageSender, messageRecipient, messageLine1, messageLine2, messageLine3;
             
-            const spanElement = element.querySelector('span');
-            if (spanElement) {
-                // If there's a span with special styling, preserve it
-                const spanText = spanElement.textContent;
-                const beforeSpanText = text.split(spanText)[0];
-                const afterSpanText = text.split(spanText)[1] || '';
-                
-                // Type text before span
-                for (let char of beforeSpanText) {
-                    element.insertBefore(document.createTextNode(char), spanElement);
-                    await new Promise(resolve => setTimeout(resolve, delay));
-                }
-                
-                // Add span back
-                element.appendChild(spanElement);
-                
-                // Type text after span
-                for (let char of afterSpanText) {
-                    element.appendChild(document.createTextNode(char));
-                    await new Promise(resolve => setTimeout(resolve, delay));
-                }
-            } else {
-                // Regular text without spans
-                for (let char of text) {
-                    element.textContent += char;
-                    await new Promise(resolve => setTimeout(resolve, delay));
+            // First check URL hash
+            if (window.location.hash) {
+                try {
+                    const encodedData = window.location.hash.replace('#data=', '');
+                    const customizations = JSON.parse(atob(encodedData));
+                    
+                    messageSender = customizations.s || customizations.messageSender || '';
+                    messageRecipient = customizations.r || customizations.messageRecipient || '';
+                    messageLine1 = customizations.l1 || customizations.messageLine1 || '';
+                    messageLine2 = customizations.l2 || customizations.messageLine2 || '';
+                    messageLine3 = customizations.l3 || customizations.messageLine3 || '';
+                } catch (e) {
+                    console.error('Error parsing URL data:', e);
                 }
             }
-        }
-
-        // Add typewriter class to paragraphs
-        paragraphs.forEach(p => p.classList.add('typewriter'));
-
-        // Trigger typewriter effect sequentially
-        async function animateAllParagraphs() {
-            for (let p of paragraphs) {
-                const originalText = p.innerHTML;
-                await typeWriter(p, p.textContent);
-                p.innerHTML = originalText; // Restore original HTML with styling
+            
+            // Then check localStorage (overrides URL if both exist)
+            messageSender = localStorage.getItem('messageSender') || messageSender || 'Amy';
+            messageRecipient = localStorage.getItem('messageRecipient') || messageRecipient || 'Max';
+            messageLine1 = localStorage.getItem('messageLine1') || messageLine1;
+            messageLine2 = localStorage.getItem('messageLine2') || messageLine2;
+            messageLine3 = localStorage.getItem('messageLine3') || messageLine3;
+            
+            // Apply customizations to the page
+            document.getElementById('message-sender').textContent = messageSender;
+            document.getElementById('message-recipient').textContent = messageRecipient;
+            
+            // Update full message lines if they were customized
+            if (messageLine1) {
+                document.querySelector('.message-line-1').innerHTML = messageLine1;
             }
-        }
+            if (messageLine2) {
+                document.querySelector('.message-line-2').innerHTML = messageLine2;
+            }
+            if (messageLine3) {
+                document.querySelector('.message-line-3').innerHTML = messageLine3;
+            }
+            
+            // Get all paragraphs in the notification
+            const paragraphs = document.querySelectorAll('.sl-notification p');
+            
+            // Function to create typewriter effect
+            async function typeWriter(element, text, delay = 50) {
+                element.textContent = '';
+                element.classList.add('visible');
+                
+                // Store the original HTML to recover embedded spans
+                const originalHTML = element.innerHTML;
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(originalHTML, 'text/html');
+                const spans = doc.querySelectorAll('span');
+                const spanTexts = Array.from(spans).map(span => span.textContent);
+                const spanClasses = Array.from(spans).map(span => span.className);
+                
+                // Start with empty text
+                element.innerHTML = '';
+                
+                // Get text parts (text between spans)
+                const textParts = originalHTML.split(/<span.*?<\/span>/g);
+                let currentPart = 0;
+                let currentChar = 0;
+                
+                // Type the entire HTML structure with proper pausing
+                for (let i = 0; i < textParts.length; i++) {
+                    // Type regular text
+                    for (let char of textParts[i]) {
+                        element.innerHTML += char;
+                        await new Promise(resolve => setTimeout(resolve, delay));
+                    }
+                    
+                    // Add span if there's one after this text part
+                    if (i < spanTexts.length) {
+                        const span = document.createElement('span');
+                        span.className = spanClasses[i];
+                        span.textContent = '';
+                        element.appendChild(span);
+                        
+                        // Type span text
+                        for (let char of spanTexts[i]) {
+                            span.textContent += char;
+                            await new Promise(resolve => setTimeout(resolve, delay));
+                        }
+                    }
+                }
+            }
 
-        // Start the animation
-        animateAllParagraphs();
-    });
+            // Add typewriter class to paragraphs
+            paragraphs.forEach(p => p.classList.add('typewriter'));
+
+            // Trigger typewriter effect sequentially
+            async function animateAllParagraphs() {
+                for (let p of paragraphs) {
+                    const originalHTML = p.innerHTML;
+                    await typeWriter(p, p.textContent);
+                    p.innerHTML = originalHTML; // Restore original HTML with styling
+                }
+            }
+
+            // Start the animation
+            setTimeout(() => animateAllParagraphs(), 500);
+            
+            // Clear localStorage after use
+            localStorage.removeItem('messageSender');
+            localStorage.removeItem('messageRecipient');
+            localStorage.removeItem('messageLine1');
+            localStorage.removeItem('messageLine2');
+            localStorage.removeItem('messageLine3');
+        });
     </script>
     <script src="js/solo-leveling.js"></script>
 </body>

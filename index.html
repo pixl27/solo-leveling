@@ -1518,7 +1518,7 @@
                     reveal.appendChild(particle);
                 }, 100);
                 
-                // Clean up after animation and navigate to home.html
+                // Clean up after animation and navigate to acceuil.html
                 setTimeout(() => {
                     clearInterval(burstInterval);
                     reveal.classList.remove('active');
@@ -1635,13 +1635,61 @@
                     const encodedData = window.location.hash.replace('#data=', '');
                     const customizations = JSON.parse(atob(encodedData));
                     
-                    // Store in localStorage
-                    localStorage.setItem('mainMessage', customizations.mainMessage || '');
-                    localStorage.setItem('highlightedText', customizations.highlightedText || '');
-                    localStorage.setItem('rewardDate', customizations.rewardDate || '');
-                    localStorage.setItem('girlfriendName', customizations.girlfriendName || '');
-                    localStorage.setItem('questTask', customizations.questTask || '');
-                    localStorage.setItem('questWarning', customizations.questWarning || '');
+                    // Handle the shortened URL format
+                    const pageName = customizations.page || 'home';
+                    
+                    // Store decoded values based on page type without automatic redirect
+                    switch(pageName) {
+                        case 'home':
+                            localStorage.setItem('mainMessage', customizations.m || 'Congratulations, your are now');
+                            localStorage.setItem('highlightedText', customizations.h || 'MINE');
+                            localStorage.setItem('rewardDate', customizations.d || 'Date');
+                            break;
+                        case 'acceuil':
+                            localStorage.setItem('girlfriendName', customizations.g || 'Your Girlfriend name');
+                            localStorage.setItem('valentineMessage', customizations.vm || 'Will you be my valentine?');
+                            localStorage.setItem('penaltyText', customizations.pt || 'Death');
+                            break;
+                        case 'quest':
+                            localStorage.setItem('questTask', customizations.q || 'Go to a Restaurant');
+                            localStorage.setItem('questWarning', customizations.w || 'WARNING: Failure will result in your separation.');
+                            break;
+                        case 'message':
+                            localStorage.setItem('messageSender', customizations.s || 'Amy');
+                            localStorage.setItem('messageRecipient', customizations.r || 'Max');
+                            localStorage.setItem('messageContent', customizations.c || 'I LOVE YOU ❤️');
+                            break;
+                    }
+                    
+                    // Store the target page name in localStorage without redirecting
+                    // We'll let the user click the button to proceed to this page
+                    localStorage.setItem('targetPage', pageName + '.html');
+                    
+                    // Update the notification text to indicate where they'll go after clicking "Yes"
+                    const notificationText = document.querySelector('.notification p:nth-child(3)');
+                    if (notificationText) {
+                        let destinationText = "";
+                        switch(pageName) {
+                            case 'home':
+                                destinationText = "to home page";
+                                break;
+                            case 'acceuil':
+                                destinationText = "to begin your adventure";
+                                break;
+                            case 'quest':
+                                destinationText = "to accept your quest";
+                                break;
+                            case 'message':
+                                destinationText = "to read a special message";
+                                break;
+                            default:
+                                destinationText = "";
+                        }
+                        
+                        if (destinationText) {
+                            notificationText.textContent = `Do you want to proceed ${destinationText}?`;
+                        }
+                    }
                 } catch (e) {
                     console.error('Error parsing URL data:', e);
                 }

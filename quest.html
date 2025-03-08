@@ -118,13 +118,8 @@
                 }
             }
 
-            const targetPage = localStorage.getItem('targetPage');
-            // If this isn't the target page, redirect to it
-            if (targetPage && targetPage !== 'quest.html') {
-                window.location.href = targetPage;
-            } else {
-                localStorage.removeItem('targetPage');
-            }
+            // Don't automatically redirect - let the user click the button first
+            console.log("Current target page:", localStorage.getItem('targetPage'));
         });
         document.querySelectorAll('.btn-custom')[0].addEventListener('click', function() {
             const reveal = document.querySelector('.dramatic-reveal');
@@ -185,7 +180,7 @@
                     reveal.appendChild(particle);
                 }, 100);
                 
-                // Clean up after animation and navigate to home.html
+                // Clean up after animation and navigate to the next page
                 setTimeout(() => {
                     clearInterval(burstInterval);
                     reveal.classList.remove('active');
@@ -195,6 +190,13 @@
                     document.body.style.opacity = '0';
                     
                     setTimeout(() => {
+                        // Get the target page from localStorage or default to message.html
+                        const targetPage = localStorage.getItem('targetPage') || 'message.html';
+                        
+                        // Clear the target page from localStorage
+                        localStorage.removeItem('targetPage');
+                        
+                        // Navigate directly to the message page
                         window.location.href = 'message.html';
                     }, 500);
                 }, 3000);

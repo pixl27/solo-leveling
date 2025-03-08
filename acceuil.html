@@ -988,8 +988,8 @@
             <span class="exclamation">!</span>
             <span>NOTIFICATION</span>
         </h4>
-        <p>Will you be my valentine ?</p>
-        <p class="quest-text">[Penalty: <span style="text-shadow: 
+        <p class="editable valentine-message">Will you be my valentine ?</p>
+        <p class="quest-text">[Penalty: <span class="editable penalty-text" style="text-shadow: 
             0 0 7px #ff0000,
             0 0 10px #ff0000,
             0 0 21px #ff0000,
@@ -1504,7 +1504,7 @@
                     reveal.appendChild(particle);
                 }, 100);
                 
-                // Clean up after animation and navigate to home.html
+                // Clean up after animation and navigate to home.html directly
                 setTimeout(() => {
                     clearInterval(burstInterval);
                     reveal.classList.remove('active');
@@ -1514,6 +1514,7 @@
                     document.body.style.opacity = '0';
                     
                     setTimeout(() => {
+                        // Navigate directly to home.html instead of through index.html
                         window.location.href = 'home.html';
                     }, 500);
                 }, 3000);
@@ -1616,42 +1617,99 @@
 
         // Load customized text from localStorage if available
         window.addEventListener('DOMContentLoaded', function() {
-            const girlfriendName = localStorage.getItem('girlfriendName');
+            // Check for any conflicting redirections
             const targetPage = localStorage.getItem('targetPage');
             
-            if (girlfriendName) {
-                document.querySelector('.dramatic-text.editable').textContent = girlfriendName;
-                // Clear this item
-                localStorage.removeItem('girlfriendName');
-            }
-
-            // If this isn't the target page, redirect to it
-            if (targetPage && targetPage !== 'acceuil.html') {
-                window.location.href = targetPage;
-            } else {
-                localStorage.removeItem('targetPage');
-            }
-        });
-
-        // Load customizations when the page loads
-        window.addEventListener('DOMContentLoaded', function() {
-            // Check URL hash first
+            // Clear any existing target page setting to avoid redirect loops
+            localStorage.removeItem('targetPage');
+            
+            // For debugging
+            console.log("Checking for customizations in acceuil.html");
+            
+            // Check URL hash first for customizations
             if (window.location.hash) {
                 try {
                     const encodedData = window.location.hash.replace('#data=', '');
                     const customizations = JSON.parse(atob(encodedData));
-                    if (customizations.girlfriendName) {
-                        document.querySelector('.dramatic-text').textContent = customizations.girlfriendName;
+                    console.log("Found URL hash customizations:", customizations);
+                    
+                    // Update the welcome text if girlfriend name is provided
+                    if (customizations.girlfriendName || customizations.g) {
+                        const name = customizations.girlfriendName || customizations.g;
+                        document.querySelector('.dramatic-text.editable').textContent = 'Welcome, ' + name;
+                    }
+                    
+                    // Update the valentine message if provided
+                    if (customizations.valentineMessage || customizations.vm) {
+                        const message = customizations.valentineMessage || customizations.vm;
+                        const valentineElement = document.querySelector('.valentine-message');
+                        console.log("Valentine message element:", valentineElement);
+                        if (valentineElement) {
+                            valentineElement.textContent = message;
+                        }
+                    }
+                    
+                    // Update the penalty text if provided
+                    if (customizations.penaltyText || customizations.pt) {
+                        const penalty = customizations.penaltyText || customizations.pt;
+                        const penaltyElement = document.querySelector('.penalty-text');
+                        console.log("Penalty text element:", penaltyElement);
+                        if (penaltyElement) {
+                            penaltyElement.textContent = penalty;
+                        }
                     }
                 } catch (e) {
                     console.error('Error parsing URL data:', e);
                 }
+                
+                // Clear the hash to avoid processing it again
+                window.location.hash = '';
             }
             // Then check localStorage
-            else if (localStorage.getItem('girlfriendName')) {
-                document.querySelector('.dramatic-text').textContent = localStorage.getItem('girlfriendName');
-                localStorage.removeItem('girlfriendName'); // Clear after using
+            else {
+                const girlfriendName = localStorage.getItem('girlfriendName');
+                const valentineMessage = localStorage.getItem('valentineMessage');
+                const penaltyText = localStorage.getItem('penaltyText');
+                
+                console.log("LocalStorage values:", {
+                    girlfriendName,
+                    valentineMessage,
+                    penaltyText
+                });
+                
+                if (girlfriendName) {
+                    document.querySelector('.dramatic-text.editable').textContent = 'Welcome, ' + girlfriendName;
+                    localStorage.removeItem('girlfriendName'); // Clear after using
+                }
+                
+                if (valentineMessage) {
+                    const valentineElement = document.querySelector('.valentine-message');
+                    console.log("Valentine message element from localStorage:", valentineElement);
+                    if (valentineElement) {
+                        valentineElement.textContent = valentineMessage;
+                    }
+                    localStorage.removeItem('valentineMessage'); // Clear after using
+                }
+                
+                if (penaltyText) {
+                    const penaltyElement = document.querySelector('.penalty-text');
+                    console.log("Penalty text element from localStorage:", penaltyElement);
+                    if (penaltyElement) {
+                        penaltyElement.textContent = penaltyText;
+                    }
+                    localStorage.removeItem('penaltyText'); // Clear after using
+                }
             }
+            
+            // Log all editable elements for debugging
+            console.log("All editable elements:", {
+                welcomeText: document.querySelector('.dramatic-text.editable'),
+                valentineMessage: document.querySelector('.valentine-message'),
+                penaltyText: document.querySelector('.penalty-text')
+            });
+            
+            // Do not automatically redirect - wait for user to click a button
+            console.log("Acceuil.html loaded, waiting for user interaction");
         });
     </script>
 </body>
