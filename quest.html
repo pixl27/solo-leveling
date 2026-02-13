@@ -31,31 +31,21 @@
     <div class="bg-particles"></div>
     <div class="sl-particles"></div>
 
-    <div  class="sl-notification" style="padding: 12px;">
+    <div  class="sl-notification">
         <div class="rune-circle"></div>
         <div class="rune-circle" style="animation-direction: reverse; width: 110%; height: 110%; top: -5%; left: -5%;"></div>
         <div class="sl-title">
             <span class="sl-exclamation">!</span>
-            <span>QUEST INFO</span>
+            <span id="questTitle">QUEST INFO</span>
         </div>
-        <!-- <p>[Dail Quest:  
-        </p> -->
-        <p style="  text-shadow: 
-        0 0 7px #fff,
-        0 0 10px #fff,
-        0 0 21px #fff,
-        0 0 42px #85acb9,
-        0 0 82px #85acb9,
-        0 0 92px #85acb9,
-        0 0 102px #85acb9,
-        0 0 151px #85acb9;font-weight: bolder;">[Incoming Quest]</p>
+        <p>[<span id="questHeaderLabel">Dail Quest</span>: <span id="questName" class="sl-highlight">Test of Love has arrived</span>]</p>
         <div class="quest-divider"></div>
-        <p class="quest-section-title">GOALS</p>
+        <p class="quest-section-title" id="questGoalsTitle">GOALS</p>
         <div class="quest-tasks">
             <div class="quest-task editable">
-                <span class="task-description">Go on a date with Amy</span>
+                <span class="task-description" id="questTask1Desc">Go to a Restaurant</span>
                 <div class="task-completion">
-                    <span class="completion-rate">[0/1]</span>
+                    <span class="completion-rate" id="questTask1Count">[0/1]</span>
                     <label class="checkbox-container">
                         <input type="checkbox" class="task-checkbox">
                         <span class="checkmark"></span>
@@ -63,9 +53,9 @@
                 </div>
             </div>
             <div class="quest-task">
-                <span class="task-description">Strengthen connection</span>
+                <span class="task-description" id="questTask2Desc">Netflix and Chill</span>
                 <div class="task-completion">
-                    <span class="completion-rate">[0/1]</span>
+                    <span class="completion-rate" id="questTask2Count">[0/69]</span>
                     <label class="checkbox-container">
                         <input type="checkbox" class="task-checkbox">
                         <span class="checkmark"></span>
@@ -75,132 +65,96 @@
             
         </div>
         <div class="quest-divider"></div>
-        <div class="buttons-container">
-            <button class="btn-custom">OK</button>
+        <p class="quest-warning editable" id="questWarning">WARNING: Failure will result in your separation.</p>
+    </div>
 
-        </div>
-        <p class="quest-warning editable">WARNING: Failure will result in separation and death</p>
-    </div>
-    <div class="dramatic-reveal">
-        <div class="shine-lines"></div>
-        <div class="dramatic-text">Quest Accepted</div>
-    </div>
     <script>
-        // Load customized text from localStorage if available
+        function tryPlayNotificationSound() {
+            try {
+                const audio = new Audio('notification.mp3');
+                audio.preload = 'auto';
+                audio.volume = 0.9;
+                window.__slNotificationAudio = audio;
+
+                audio.play().catch(() => {
+                    // Autoplay can be blocked; click-to-play fallback is only enabled on index.html.
+                });
+            } catch (e) {
+                // Ignore sound errors
+            }
+        }
+
+        function decodeData(encoded) {
+            try {
+                return JSON.parse(decodeURIComponent(escape(atob(encoded))));
+            } catch (e) {
+                return JSON.parse(atob(encoded));
+            }
+        }
+
+        function applyTheme(customizations) {
+            if (!customizations) return;
+            if (customizations.slAccent) document.documentElement.style.setProperty('--sl-accent', customizations.slAccent);
+            if (customizations.slSuccess) document.documentElement.style.setProperty('--sl-success', customizations.slSuccess);
+            if (customizations.slDanger) document.documentElement.style.setProperty('--sl-danger', customizations.slDanger);
+        }
+
+        function applyQuestCustomizations(customizations) {
+            if (!customizations) return;
+            applyTheme(customizations);
+
+            if (customizations.questTitle) document.getElementById('questTitle').textContent = customizations.questTitle;
+            if (customizations.questHeader) document.getElementById('questHeaderLabel').textContent = customizations.questHeader;
+            if (customizations.questName) document.getElementById('questName').textContent = customizations.questName;
+            if (customizations.questGoalsTitle) document.getElementById('questGoalsTitle').textContent = customizations.questGoalsTitle;
+            if (customizations.questTask) document.getElementById('questTask1Desc').textContent = customizations.questTask;
+            if (customizations.questTaskCount) document.getElementById('questTask1Count').textContent = customizations.questTaskCount;
+            if (customizations.questTask2) document.getElementById('questTask2Desc').textContent = customizations.questTask2;
+            if (customizations.questTask2Count) document.getElementById('questTask2Count').textContent = customizations.questTask2Count;
+            if (customizations.questWarning) document.getElementById('questWarning').textContent = customizations.questWarning;
+        }
+
         window.addEventListener('DOMContentLoaded', function() {
+            // Sound on notification appear
+            requestAnimationFrame(() => tryPlayNotificationSound());
+
             // Check URL hash first
-            if (window.location.hash) {
+            if (window.location.hash && window.location.hash.includes('data=')) {
                 try {
                     const encodedData = window.location.hash.replace('#data=', '');
-                    const customizations = JSON.parse(atob(encodedData));
-                    if (customizations.questTask) {
-                        document.querySelector('.quest-task.editable .task-description').textContent = customizations.questTask;
-                    }
-                    if (customizations.questWarning) {
-                        document.querySelector('.quest-warning.editable').textContent = customizations.questWarning;
-                    }
+                    const customizations = decodeData(encodedData);
+                    applyQuestCustomizations(customizations);
                 } catch (e) {
                     console.error('Error parsing URL data:', e);
                 }
             }
             // Then check localStorage
             else {
-                const questTask = localStorage.getItem('questTask');
-                const questWarning = localStorage.getItem('questWarning');
-                
-                if (questTask) {
-                    document.querySelector('.quest-task.editable .task-description').textContent = questTask;
-                    localStorage.removeItem('questTask');
-                }
-                if (questWarning) {
-                    document.querySelector('.quest-warning.editable').textContent = questWarning;
-                    localStorage.removeItem('questWarning');
-                }
+                applyTheme({
+                    slAccent: localStorage.getItem('slAccent'),
+                    slSuccess: localStorage.getItem('slSuccess'),
+                    slDanger: localStorage.getItem('slDanger')
+                });
+
+                applyQuestCustomizations({
+                    questTitle: localStorage.getItem('questTitle'),
+                    questHeader: localStorage.getItem('questHeader'),
+                    questName: localStorage.getItem('questName'),
+                    questGoalsTitle: localStorage.getItem('questGoalsTitle'),
+                    questTask: localStorage.getItem('questTask'),
+                    questTaskCount: localStorage.getItem('questTaskCount'),
+                    questTask2: localStorage.getItem('questTask2'),
+                    questTask2Count: localStorage.getItem('questTask2Count'),
+                    questWarning: localStorage.getItem('questWarning')
+                });
             }
 
-            // Don't automatically redirect - let the user click the button first
-            console.log("Current target page:", localStorage.getItem('targetPage'));
-        });
-        document.querySelectorAll('.btn-custom')[0].addEventListener('click', function() {
-            const reveal = document.querySelector('.dramatic-reveal');
-            
-            // Create power circles
-            for (let i = 0; i < 3; i++) {
-                const circle = document.createElement('div');
-                circle.className = 'power-circle';
-                circle.style.left = '50%';
-                circle.style.top = '50%';
-                
-                const animation = circle.animate([
-                    { transform: 'translate(-50%, -50%) scale(0)', opacity: 0.8 },
-                    { transform: 'translate(-50%, -50%) scale(4)', opacity: 0 }
-                ], {
-                    duration: 1500,
-                    delay: i * 200,
-                    easing: 'cubic-bezier(0.4, 0, 0.2, 1)'
-                });
-                
-                reveal.appendChild(circle);
-                animation.onfinish = () => circle.remove();
+            const targetPage = localStorage.getItem('targetPage');
+            if (targetPage && targetPage !== 'quest.html') {
+                window.location.href = targetPage;
+            } else {
+                localStorage.removeItem('targetPage');
             }
-            
-            // Activate reveal effect
-            setTimeout(() => {
-                reveal.classList.add('active');
-                
-                // Create power surge effect
-                const burstInterval = setInterval(() => {
-                    const angle = Math.random() * Math.PI * 2;
-                    const distance = 100;
-                    const particle = document.createElement('div');
-                    particle.style.cssText = `
-                        position: absolute;
-                        width: 2px;
-                        height: 10px;
-                        background: #85acb9;
-                        left: 50%;
-                        top: 50%;
-                        transform-origin: center;
-                    `;
-                    
-                    particle.animate([
-                        {
-                            transform: `translate(-50%, -50%) rotate(${angle}rad) translateY(0)`,
-                            opacity: 1
-                        },
-                        {
-                            transform: `translate(-50%, -50%) rotate(${angle}rad) translateY(${distance}px)`,
-                            opacity: 0
-                        }
-                    ], {
-                        duration: 1000,
-                        easing: 'ease-out'
-                    }).onfinish = () => particle.remove();
-                    
-                    reveal.appendChild(particle);
-                }, 100);
-                
-                // Clean up after animation and navigate to the next page
-                setTimeout(() => {
-                    clearInterval(burstInterval);
-                    reveal.classList.remove('active');
-                    
-                    // Add fade out effect before navigation
-                    document.body.style.transition = 'opacity 0.5s ease-out';
-                    document.body.style.opacity = '0';
-                    
-                    setTimeout(() => {
-                        // Get the target page from localStorage or default to message.html
-                        const targetPage = localStorage.getItem('targetPage') || 'message.html';
-                        
-                        // Clear the target page from localStorage
-                        localStorage.removeItem('targetPage');
-                        
-                        // Navigate directly to the message page
-                        window.location.href = 'message.html';
-                    }, 500);
-                }, 3000);
-            }, 500);
         });
     </script>
     <script src="js/solo-leveling.js"></script>

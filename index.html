@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Solo Leveling Notification</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/solo-leveling.css" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap" rel="stylesheet"> 
     <style>
         .background-container {
@@ -293,7 +294,7 @@
         .btn-custom {
             background: transparent;
             border: 1px solid #fff;
-            color: #85acb9;
+            color: var(--sl-accent, #85acb9);
             padding: 15px 40px;
             cursor: pointer;
             font-weight: 600;
@@ -302,7 +303,7 @@
             position: relative;
             overflow: hidden;
             transition: all 0.3s ease;
-            text-shadow: 0 0 5px #85acb9, 0 0 10px #85acb9;
+            text-shadow: 0 0 5px var(--sl-accent, #85acb9), 0 0 10px var(--sl-accent, #85acb9);
             -webkit-text-stroke: 0.3px #fff;
             transform-style: preserve-3d;
             perspective: 1000px;
@@ -366,10 +367,10 @@
         }
 
         .btn-custom:hover {
-            color: #85acb9;
-            text-shadow: 0 0 5px #85acb9, 
-                         0 0 10px #85acb9, 
-                         0 0 20px #85acb9;
+            color: var(--sl-accent, #85acb9);
+            text-shadow: 0 0 5px var(--sl-accent, #85acb9),
+                         0 0 10px var(--sl-accent, #85acb9),
+                         0 0 20px var(--sl-accent, #85acb9);
             box-shadow: 
                 0 0 20px rgba(133, 172, 185, 0.4),
                 inset 0 0 10px rgba(133, 172, 185, 0.2);
@@ -640,7 +641,7 @@
             position: absolute;
             width: 2px;
             height: 2px;
-            background: #85acb9;
+            background: var(--sl-accent, #85acb9);
             border-radius: 50%;
             pointer-events: none;
             opacity: 0;
@@ -684,7 +685,7 @@
         /* Button click shockwave */
         .shockwave {
             position: absolute;
-            border: 2px solid #85acb9;
+            border: 2px solid var(--sl-accent, #85acb9);
             border-radius: 50%;
             animation: shockwaveEffect 0.5s ease-out;
             pointer-events: none;
@@ -986,44 +987,88 @@
         <div class="rune-circle" style="animation-direction: reverse; width: 110%; height: 110%; top: -5%; left: -5%;"></div>
              <h4>
             <span class="exclamation">!</span>
-            <span>NOTIFICATION</span>
+            <span id="indexTitle">NOTIFICATION</span>
         </h4>
-        <p>If you don’t accept, your heart will stop in <span id="countdown" style="text-shadow: 
-            0 0 7px #ff0000,
-            0 0 10px #ff0000,
-            0 0 21px #ff0000,
-            0 0 42px #ff0000,
-            0 0 82px #ff0000,
-            0 0 92px #ff0000,
-            0 0 102px #ff0000,
-            0 0 151px #ff0000;color: #ff0000; font-weight: bolder;">10 seconds</span>  </p>
-            <!-- <p>if you dont accept</p> -->
+        <p>
+            <span id="indexLine1Prefix">You heart will stop in</span>
+            <span id="countdown" class="sl-danger">10 seconds</span>
+        </p>
+            <p id="indexLine2">if you dont accept</p>
         <!-- <p class="rank">S-Rank Quest Completed</p> -->
-        <p>Do you want to accept ?</p>
+        <p id="indexPrompt">Do you want to accept ?</p>
         <div class="buttons-container">
-            <button class="btn-custom">Yes</button>
-            <button class="btn-custom">No</button>
+            <button class="btn-custom" id="indexYesBtn">Yes</button>
+            <button class="btn-custom" id="indexNoBtn">No</button>
         </div>
     </div>
     <div class="dramatic-reveal">
         <div class="shine-lines"></div>
-        <div class="dramatic-text">Courage of the weak acquired</div>
+        <div class="dramatic-text" id="indexDramaticText">Courage of the weak acquired</div>
     </div>
     <script>
-        //countdown 
-        let countdownTime = 10; // desired countdown starting value
-  const countdownEl = document.getElementById('countdown');
-  
-  const timer = setInterval(() => {
-      countdownTime--;
-      if (countdownTime <= 0) {
-          clearInterval(timer);
-          countdownEl.textContent = "0 seconds";
-          // Optionally, you can trigger an event here once the countdown ends.
-      } else {
-          countdownEl.textContent = countdownTime + " seconds";
-      }
-  }, 1000);
+        function tryPlayNotificationSound() {
+            try {
+                const audio = new Audio('notification.mp3');
+                audio.preload = 'auto';
+                audio.volume = 0.9;
+                window.__slNotificationAudio = audio;
+
+                const attempt = () => {
+                    audio.play().catch(() => {
+                        // Autoplay can be blocked; user interaction fallback is attached below.
+                    });
+                };
+
+                attempt();
+                document.addEventListener('pointerdown', attempt, { once: true });
+            } catch (e) {
+                // Ignore sound errors
+            }
+        }
+
+        function encodeData(data) {
+            const json = JSON.stringify(data);
+            return btoa(unescape(encodeURIComponent(json)));
+        }
+
+        function decodeData(encoded) {
+            try {
+                return JSON.parse(decodeURIComponent(escape(atob(encoded))));
+            } catch (e) {
+                return JSON.parse(atob(encoded));
+            }
+        }
+
+        function applyTheme(customizations) {
+            if (!customizations) return;
+            if (customizations.slAccent) {
+                document.documentElement.style.setProperty('--sl-accent', customizations.slAccent);
+            }
+            if (customizations.slSuccess) {
+                document.documentElement.style.setProperty('--sl-success', customizations.slSuccess);
+            }
+            if (customizations.slDanger) {
+                document.documentElement.style.setProperty('--sl-danger', customizations.slDanger);
+            }
+        }
+
+        function startCountdown(seconds) {
+            const countdownEl = document.getElementById('countdown');
+            let countdownTime = Number(seconds);
+            if (!Number.isFinite(countdownTime) || countdownTime < 1) countdownTime = 10;
+
+            countdownEl.textContent = countdownTime + ' seconds';
+
+            const timer = setInterval(() => {
+                countdownTime--;
+                if (countdownTime <= 0) {
+                    clearInterval(timer);
+                    countdownEl.textContent = '0 seconds';
+                } else {
+                    countdownEl.textContent = countdownTime + ' seconds';
+                }
+            }, 1000);
+        }
         // Create floating particles effect
         function createParticles() {
             const particlesContainer = document.querySelector('.particles');
@@ -1459,7 +1504,7 @@
         });
 
         // Add dramatic reveal effect for "Yes" button
-        document.querySelectorAll('.btn-custom')[0].addEventListener('click', function() {
+        document.getElementById('indexYesBtn').addEventListener('click', function() {
             const reveal = document.querySelector('.dramatic-reveal');
             
             // Create power circles
@@ -1518,7 +1563,7 @@
                     reveal.appendChild(particle);
                 }, 100);
                 
-                // Clean up after animation and navigate to acceuil.html
+                // Clean up after animation and navigate to home.html
                 setTimeout(() => {
                     clearInterval(burstInterval);
                     reveal.classList.remove('active');
@@ -1535,7 +1580,7 @@
         });
 
         // Add dismissal effect for "No" button
-        document.querySelectorAll('.btn-custom')[1].addEventListener('click', function() {
+        document.getElementById('indexNoBtn').addEventListener('click', function() {
             const notification = document.querySelector('.notification');
             
             // Create dismiss particles
@@ -1628,72 +1673,65 @@
             }, 800);
         });
 
-        // Check URL hash for customizations
+        function applyIndexCustomizations(customizations) {
+            if (!customizations) return;
+
+            applyTheme(customizations);
+
+            if (customizations.indexTitle) document.getElementById('indexTitle').textContent = customizations.indexTitle;
+            if (customizations.indexLine1Prefix) document.getElementById('indexLine1Prefix').textContent = customizations.indexLine1Prefix;
+            if (customizations.indexLine2) document.getElementById('indexLine2').textContent = customizations.indexLine2;
+            if (customizations.indexPrompt) document.getElementById('indexPrompt').textContent = customizations.indexPrompt;
+            if (customizations.indexYesText) document.getElementById('indexYesBtn').textContent = customizations.indexYesText;
+            if (customizations.indexNoText) document.getElementById('indexNoBtn').textContent = customizations.indexNoText;
+            if (customizations.indexDramaticText) document.getElementById('indexDramaticText').textContent = customizations.indexDramaticText;
+        }
+
+        function storeCustomizations(customizations) {
+            if (!customizations) return;
+            const keysToStore = [
+                'slAccent', 'slSuccess', 'slDanger',
+                'indexTitle', 'indexLine1Prefix', 'indexCountdownSeconds', 'indexLine2', 'indexPrompt', 'indexYesText', 'indexNoText', 'indexDramaticText',
+                'acceuilTitle', 'acceuilQuestion', 'acceuilPenaltyLabel', 'acceuilPenaltyValue', 'acceuilPrompt', 'acceuilYesText', 'acceuilNoText', 'girlfriendName',
+                'homeTitle', 'mainMessage', 'highlightedText', 'rewardLabel', 'rewardDate', 'homeAcceptText', 'homeOkText', 'homeDramaticText',
+                'questTitle', 'questHeader', 'questName', 'questGoalsTitle', 'questTask', 'questTaskCount', 'questTask2', 'questTask2Count', 'questWarning'
+            ];
+
+            keysToStore.forEach((key) => {
+                if (customizations[key] === undefined || customizations[key] === null) return;
+                localStorage.setItem(key, String(customizations[key]));
+            });
+        }
+
         window.addEventListener('DOMContentLoaded', function() {
-            if (window.location.hash) {
+            // Sound on notification appear
+            requestAnimationFrame(() => tryPlayNotificationSound());
+
+            let customizations = null;
+
+            if (window.location.hash && window.location.hash.includes('data=')) {
                 try {
                     const encodedData = window.location.hash.replace('#data=', '');
-                    const customizations = JSON.parse(atob(encodedData));
-                    
-                    // Handle the shortened URL format
-                    const pageName = customizations.page || 'home';
-                    
-                    // Store decoded values based on page type without automatic redirect
-                    switch(pageName) {
-                        case 'home':
-                            localStorage.setItem('mainMessage', customizations.m || 'Congratulations, your are now');
-                            localStorage.setItem('highlightedText', customizations.h || 'MINE');
-                            localStorage.setItem('rewardDate', customizations.d || 'Date');
-                            break;
-                        case 'acceuil':
-                            localStorage.setItem('girlfriendName', customizations.g || 'Your Girlfriend name');
-                            localStorage.setItem('valentineMessage', customizations.vm || 'Will you be my valentine?');
-                            localStorage.setItem('penaltyText', customizations.pt || 'Death');
-                            break;
-                        case 'quest':
-                            localStorage.setItem('questTask', customizations.q || 'Go to a Restaurant');
-                            localStorage.setItem('questWarning', customizations.w || 'WARNING: Failure will result in your separation.');
-                            break;
-                        case 'message':
-                            localStorage.setItem('messageSender', customizations.s || 'Amy');
-                            localStorage.setItem('messageRecipient', customizations.r || 'Max');
-                            localStorage.setItem('messageContent', customizations.c || 'I LOVE YOU ❤️');
-                            break;
-                    }
-                    
-                    // Store the target page name in localStorage without redirecting
-                    // We'll let the user click the button to proceed to this page
-                    localStorage.setItem('targetPage', pageName + '.html');
-                    
-                    // Update the notification text to indicate where they'll go after clicking "Yes"
-                    const notificationText = document.querySelector('.notification p:nth-child(3)');
-                    if (notificationText) {
-                        let destinationText = "";
-                        switch(pageName) {
-                            case 'home':
-                                destinationText = "to home page";
-                                break;
-                            case 'acceuil':
-                                destinationText = "to begin your adventure";
-                                break;
-                            case 'quest':
-                                destinationText = "to accept your quest";
-                                break;
-                            case 'message':
-                                destinationText = "to read a special message";
-                                break;
-                            default:
-                                destinationText = "";
-                        }
-                        
-                        if (destinationText) {
-                            notificationText.textContent = `Do you want to proceed ${destinationText}?`;
-                        }
-                    }
+                    customizations = decodeData(encodedData);
                 } catch (e) {
                     console.error('Error parsing URL data:', e);
                 }
             }
+
+            if (customizations) {
+                applyIndexCustomizations(customizations);
+                storeCustomizations(customizations);
+            } else {
+                // Apply theme from storage if it exists
+                applyTheme({
+                    slAccent: localStorage.getItem('slAccent'),
+                    slSuccess: localStorage.getItem('slSuccess'),
+                    slDanger: localStorage.getItem('slDanger')
+                });
+            }
+
+            const countdownSeconds = (customizations && customizations.indexCountdownSeconds) ? customizations.indexCountdownSeconds : localStorage.getItem('indexCountdownSeconds');
+            startCountdown(countdownSeconds || 10);
         });
     </script>
 </body>

@@ -31,135 +31,109 @@
     <div class="bg-particles"></div>
     <div class="sl-particles"></div>
 
-    <div class="sl-notification">
+    <div  class="sl-notification">
         <div class="rune-circle"></div>
         <div class="rune-circle" style="animation-direction: reverse; width: 110%; height: 110%; top: -5%; left: -5%;"></div>
         <div class="sl-title">
             <span class="sl-exclamation">!</span>
-            <span>NOTIFICATION</span>
+            <span id="homeTitle">NOTIFICATION</span>
         </div>
-        <p class="editable">Congratulations, your are now <span class="editable-highlight" style="text-shadow: 
-        0 0 7px #fff,
-        0 0 10px #fff,
-        0 0 21px #fff,
-        0 0 42px #85acb9,
-        0 0 82px #85acb9,
-        0 0 92px #85acb9,
-        0 0 102px #85acb9,
-        0 0 151px #85acb9;font-weight: bolder;">MINE</span>       
-        </p>
-        <p class="quest-text">[REWARD: <span class="reward-date" style="text-shadow: 
-            0 0 7px #00ff62,
-            0 0 10px #00ff62,
-            0 0 21px #00ff62,
-            0 0 42px #00ff62,
-            0 0 82px #00ff62,
-            0 0 92px #00ff62,
-            0 0 102px #00ff62,
-            0 0 151px #00ff62;color: #00ff62; font-weight: bolder;">A DATE WITH AMY</span>]</p>
-        <!-- <p class="quest-text">[BONUS: <span class="editable" style="text-shadow: 
-            0 0 7px #00ff62,
-            0 0 10px #00ff62,
-            0 0 21px #00ff62,
-            0 0 42px #00ff62,
-            0 0 82px #00ff62,
-            0 0 92px #00ff62,
-            0 0 102px #00ff62,
-            0 0 151px #00ff62;color: #00ff62; font-weight: bolder;">UNLIMITED KISSES</span>]</p> -->
+        <p class="editable" id="homeMainMessage">Congratulations, your are now <span class="editable sl-highlight" id="homeHighlight">MINE</span></p>
+            <p class="quest-text">[<span id="homeRewardLabel">Rewards</span>: <span class="editable sl-success" id="homeRewardDate">Date</span>]</p>
             <!-- <p class="rank">S-Rank Quest Completed</p> -->
-        <p>Accept your reward</p>
-        <div class="buttons-container">
-            <button class="btn-custom">OK</button>
-        </div>
+            <p id="homeAcceptText">Accept your reward</p>
+            <div class="buttons-container">
+                <button class="btn-custom" id="homeOkBtn">OK</button>
+
+            </div>
        
     </div>
     <div class="dramatic-reveal">
         <div class="shine-lines"></div>
-        <div class="dramatic-text">Reward Acquired</div>
+        <div class="dramatic-text" id="homeDramaticText">Reward Acquired</div>
     </div>
     <script>
+        function tryPlayNotificationSound() {
+            try {
+                const audio = new Audio('notification.mp3');
+                audio.preload = 'auto';
+                audio.volume = 0.9;
+                window.__slNotificationAudio = audio;
+
+                audio.play().catch(() => {
+                    // Autoplay can be blocked; click-to-play fallback is only enabled on index.html.
+                });
+            } catch (e) {
+                // Ignore sound errors
+            }
+        }
+
+        function decodeData(encoded) {
+            try {
+                return JSON.parse(decodeURIComponent(escape(atob(encoded))));
+            } catch (e) {
+                return JSON.parse(atob(encoded));
+            }
+        }
+
+        function applyTheme(customizations) {
+            if (!customizations) return;
+            if (customizations.slAccent) document.documentElement.style.setProperty('--sl-accent', customizations.slAccent);
+            if (customizations.slSuccess) document.documentElement.style.setProperty('--sl-success', customizations.slSuccess);
+            if (customizations.slDanger) document.documentElement.style.setProperty('--sl-danger', customizations.slDanger);
+        }
+
         window.addEventListener('DOMContentLoaded', function() {
+            // Sound on notification appear
+            requestAnimationFrame(() => tryPlayNotificationSound());
+
             // Check URL hash first
             if (window.location.hash) {
                 try {
                     const encodedData = window.location.hash.replace('#data=', '');
-                    const customizations = JSON.parse(atob(encodedData));
-                    
-                    // Handle both full property names and shortened versions
-                    const mainMessage = customizations.mainMessage || customizations.m || '';
-                    const highlightedText = customizations.highlightedText || customizations.h || '';
-                    const rewardDate = customizations.rewardDate || customizations.d || '';
-                    
-                    if (mainMessage) {
-                        const editableP = document.querySelector('p.editable');
-                        if (editableP) {
-                            // Get text node (first child) and set it
-                            if (editableP.firstChild && editableP.firstChild.nodeType === 3) {
-                                editableP.firstChild.textContent = mainMessage + ' ';
-                            }
-                        }
-                    }
-                    
-                    if (highlightedText) {
-                        const highlight = document.querySelector('p.editable .editable-highlight');
-                        if (highlight) {
-                            highlight.textContent = highlightedText;
-                        }
-                    }
-                    
-                    if (rewardDate) {
-                        const date = document.querySelector('.quest-text .reward-date');
-                        if (date) {
-                            date.textContent = rewardDate;
-                        }
-                    }
+                    const customizations = decodeData(encodedData);
+                    applyTheme(customizations);
+                    if (customizations.homeTitle) document.getElementById('homeTitle').textContent = customizations.homeTitle;
+                    if (customizations.mainMessage) document.getElementById('homeMainMessage').childNodes[0].textContent = customizations.mainMessage + ' ';
+                    if (customizations.highlightedText) document.getElementById('homeHighlight').textContent = customizations.highlightedText;
+                    if (customizations.rewardLabel) document.getElementById('homeRewardLabel').textContent = customizations.rewardLabel;
+                    if (customizations.rewardDate) document.getElementById('homeRewardDate').textContent = customizations.rewardDate;
+                    if (customizations.homeAcceptText) document.getElementById('homeAcceptText').textContent = customizations.homeAcceptText;
+                    if (customizations.homeOkText) document.getElementById('homeOkBtn').textContent = customizations.homeOkText;
+                    if (customizations.homeDramaticText) document.getElementById('homeDramaticText').textContent = customizations.homeDramaticText;
                 } catch (e) {
                     console.error('Error parsing URL data:', e);
                 }
             }
             // Then check localStorage
             else {
+                applyTheme({
+                    slAccent: localStorage.getItem('slAccent'),
+                    slSuccess: localStorage.getItem('slSuccess'),
+                    slDanger: localStorage.getItem('slDanger')
+                });
+
+                const homeTitle = localStorage.getItem('homeTitle');
                 const mainMessage = localStorage.getItem('mainMessage');
                 const highlightedText = localStorage.getItem('highlightedText');
+                const rewardLabel = localStorage.getItem('rewardLabel');
                 const rewardDate = localStorage.getItem('rewardDate');
-                
-                if (mainMessage) {
-                    const editableP = document.querySelector('p.editable');
-                    if (editableP && editableP.firstChild && editableP.firstChild.nodeType === 3) {
-                        editableP.firstChild.textContent = mainMessage + ' ';
-                    }
-                    localStorage.removeItem('mainMessage');
-                }
-                
-                if (highlightedText) {
-                    const highlight = document.querySelector('p.editable .editable-highlight');
-                    if (highlight) {
-                        highlight.textContent = highlightedText;
-                    }
-                    localStorage.removeItem('highlightedText');
-                }
-                
-                if (rewardDate) {
-                    const date = document.querySelector('.quest-text .reward-date');
-                    if (date) {
-                        date.textContent = rewardDate;
-                    }
-                    localStorage.removeItem('rewardDate');
-                }
+                const homeAcceptText = localStorage.getItem('homeAcceptText');
+                const homeOkText = localStorage.getItem('homeOkText');
+                const homeDramaticText = localStorage.getItem('homeDramaticText');
+
+                if (homeTitle) document.getElementById('homeTitle').textContent = homeTitle;
+                if (mainMessage) document.getElementById('homeMainMessage').childNodes[0].textContent = mainMessage + ' ';
+                if (highlightedText) document.getElementById('homeHighlight').textContent = highlightedText;
+                if (rewardLabel) document.getElementById('homeRewardLabel').textContent = rewardLabel;
+                if (rewardDate) document.getElementById('homeRewardDate').textContent = rewardDate;
+                if (homeAcceptText) document.getElementById('homeAcceptText').textContent = homeAcceptText;
+                if (homeOkText) document.getElementById('homeOkBtn').textContent = homeOkText;
+                if (homeDramaticText) document.getElementById('homeDramaticText').textContent = homeDramaticText;
             }
-            
-            // For debugging
-            console.log("Main Message:", localStorage.getItem('mainMessage'));
-            console.log("Highlighted Text:", localStorage.getItem('highlightedText'));
-            console.log("Reward Date:", localStorage.getItem('rewardDate'));
-            console.log("Elements:", {
-                editableP: document.querySelector('p.editable'),
-                highlight: document.querySelector('p.editable .editable-highlight'),
-                date: document.querySelector('.quest-text .reward-date')
-            });
         });
 
-        document.querySelectorAll('.btn-custom')[0].addEventListener('click', function() {
+        document.getElementById('homeOkBtn').addEventListener('click', function() {
             const reveal = document.querySelector('.dramatic-reveal');
             
             // Create power circles
@@ -218,7 +192,7 @@
                     reveal.appendChild(particle);
                 }, 100);
                 
-                // Clean up after animation and navigate directly to quest.html
+                // Clean up after animation and navigate to home.html
                 setTimeout(() => {
                     clearInterval(burstInterval);
                     reveal.classList.remove('active');
@@ -228,7 +202,6 @@
                     document.body.style.opacity = '0';
                     
                     setTimeout(() => {
-                        // Navigate directly to quest.html instead of going through index.html
                         window.location.href = 'quest.html';
                     }, 500);
                 }, 3000);

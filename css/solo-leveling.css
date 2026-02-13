@@ -1,4 +1,47 @@
 /* Solo Leveling Animation and Effects Library */
+/* Theme variables (customizable via JS by setting CSS vars on :root) */
+:root {
+    --sl-accent: #85acb9;
+    --sl-success: #00ff62;
+    --sl-danger: #ff4757;
+}
+
+.sl-highlight {
+    color: #fff;
+    font-weight: bolder;
+    text-shadow:
+        0 0 7px #fff,
+        0 0 10px #fff,
+        0 0 21px #fff,
+        0 0 42px var(--sl-accent),
+        0 0 82px var(--sl-accent),
+        0 0 92px var(--sl-accent),
+        0 0 102px var(--sl-accent),
+        0 0 151px var(--sl-accent);
+}
+
+.sl-success {
+    color: var(--sl-success);
+    font-weight: bolder;
+    text-shadow:
+        0 0 7px var(--sl-success),
+        0 0 10px var(--sl-success),
+        0 0 21px var(--sl-success),
+        0 0 42px var(--sl-success),
+        0 0 82px var(--sl-success);
+}
+
+.sl-danger {
+    color: var(--sl-danger);
+    font-weight: bolder;
+    text-shadow:
+        0 0 7px var(--sl-danger),
+        0 0 10px var(--sl-danger),
+        0 0 21px var(--sl-danger),
+        0 0 42px var(--sl-danger),
+        0 0 82px var(--sl-danger);
+}
+
 /* Base styles */
 body {
     background: none;
@@ -16,7 +59,7 @@ body {
 .btn-custom {
     background: transparent;
     border: 1px solid #fff;
-    color: #85acb9;
+    color: var(--sl-accent);
     padding: 15px 40px;
     cursor: pointer;
     font-weight: 600;
@@ -25,7 +68,7 @@ body {
     position: relative;
     overflow: hidden;
     transition: all 0.3s ease;
-    text-shadow: 0 0 5px #85acb9, 0 0 10px #85acb9;
+    text-shadow: 0 0 5px var(--sl-accent), 0 0 10px var(--sl-accent);
     -webkit-text-stroke: 0.3px #fff;
     transform-style: preserve-3d;
     perspective: 1000px;
@@ -67,7 +110,7 @@ body {
     position: absolute;
     inset: -2px;
     background: transparent;
-    border: 1px solid #85acb9;
+    border: 1px solid var(--sl-accent);
     opacity: 0;
     transition: opacity 0.3s, transform 0.3s;
     pointer-events: none;
@@ -116,10 +159,10 @@ body {
 }
 
 .btn-custom:hover {
-    color: #85acb9;
-    text-shadow: 0 0 5px #85acb9, 
-                 0 0 10px #85acb9, 
-                 0 0 20px #85acb9;
+    color: var(--sl-accent);
+    text-shadow: 0 0 5px var(--sl-accent),
+                 0 0 10px var(--sl-accent),
+                 0 0 20px var(--sl-accent);
     box-shadow: 
         0 0 20px rgba(133, 172, 185, 0.4),
         inset 0 0 10px rgba(133, 172, 185, 0.2);
@@ -198,7 +241,7 @@ body {
     position: absolute;
     width: 2px;
     height: 2px;
-    background: #85acb9;
+    background: var(--sl-accent);
     border-radius: 50%;
     pointer-events: none;
     opacity: 0;
@@ -352,7 +395,7 @@ body {
 
 .sl-particle {
     position: absolute;
-    background: #85acb9;
+    background: var(--sl-accent);
     border-radius: 50%;
     pointer-events: none;
 }
@@ -361,11 +404,11 @@ body {
         0 0 7px #fff,
         0 0 10px #fff,
         0 0 21px #fff,
-        0 0 42px #85acb9,
-        0 0 82px #85acb9,
-        0 0 92px #85acb9,
-        0 0 102px #85acb9,
-        0 0 151px #85acb9;
+        0 0 42px var(--sl-accent),
+        0 0 82px var(--sl-accent),
+        0 0 92px var(--sl-accent),
+        0 0 102px var(--sl-accent),
+        0 0 151px var(--sl-accent);
         font-weight: bolder;
 }
 
@@ -405,9 +448,9 @@ body {
     letter-spacing: 3px;
     margin-bottom: 25px;
     text-shadow: 
-        0 0 5px #85acb9,
-        0 0 10px #85acb9,
-        0 0 20px #85acb9,
+        0 0 5px var(--sl-accent),
+        0 0 10px var(--sl-accent),
+        0 0 20px var(--sl-accent),
         0 0 40px #63aac2;
     position: relative;
     font-size: 1em;
@@ -474,9 +517,9 @@ body {
     color: #fff;
     font-size: 2em;
     letter-spacing: 3px;
-    text-shadow: 0 0 5px #85acb9, 
-                 0 0 10px #85acb9, 
-                 0 0 20px #85acb9,
+    text-shadow: 0 0 5px var(--sl-accent),
+                 0 0 10px var(--sl-accent),
+                 0 0 20px var(--sl-accent),
                  0 0 40px #63aac2;
     -webkit-text-stroke: 1px #fff;
     opacity: 0;
@@ -507,9 +550,9 @@ body {
     justify-content: center;
     font-size: 1.2em;
     color: #fff;
-    text-shadow: 0 0 5px #85acb9, 
-                 0 0 10px #85acb9, 
-                 0 0 20px #85acb9, 
+    text-shadow: 0 0 5px var(--sl-accent),
+                 0 0 10px var(--sl-accent),
+                 0 0 20px var(--sl-accent),
                  0 0 40px #63aac2;
     -webkit-text-stroke: 1px #fff;
     margin-right: 5px;
@@ -532,7 +575,7 @@ body {
     font-size: 1.5em;
     margin: 20px 0;
     letter-spacing: 1px;
-    text-shadow: 0 0 10px #85acb9;
+    text-shadow: 0 0 10px var(--sl-accent);
     color: #fff;
 }
 
@@ -1070,15 +1113,15 @@ body {
 }
 
 .quest-section-title {
-    color: #85acb9;
+    color: var(--sl-accent);
     font-size: 1.4em;
     font-weight: 600;
     margin: 20px 0;
     letter-spacing: 3px;
     text-shadow: 
-        0 0 5px #85acb9,
-        0 0 10px #85acb9,
-        0 0 20px #85acb9;
+        0 0 5px var(--sl-accent),
+        0 0 10px var(--sl-accent),
+        0 0 20px var(--sl-accent);
     -webkit-text-stroke: 0.5px #fff;
 }
 
@@ -1108,7 +1151,7 @@ body {
 }
 
 .completion-rate {
-    color: #85acb9;
+    color: var(--sl-accent);
     font-weight: 600;
     text-shadow: 0 0 10px rgba(133, 172, 185, 0.5);
 }
@@ -1157,7 +1200,7 @@ body {
     left: 0;
     width: 24px;
     height: 24px;
-    border: 2px solid #85acb9;
+    border: 2px solid var(--sl-accent);
     background: transparent;
     transition: all 0.3s ease;
 }
@@ -1170,7 +1213,7 @@ body {
     top: 4px;
     width: 5px;
     height: 10px;
-    border: solid #85acb9;
+    border: solid var(--sl-accent);
     border-width: 0 2px 2px 0;
     transform: rotate(45deg);
 }
@@ -1272,13 +1315,13 @@ body {
 }
 
 .quest-warning {
-    color: #ff4757;
+    color: var(--sl-danger);
     font-size: 1.1em;
     margin: 20px 0;
     text-align: center;
     text-shadow: 
-        0 0 5px #ff4757,
-        0 0 10px #ff4757;
+        0 0 5px var(--sl-danger),
+        0 0 10px var(--sl-danger);
     animation: warningPulse 2s ease-in-out infinite;
 }
 

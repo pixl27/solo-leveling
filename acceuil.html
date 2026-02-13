@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Solo Leveling Notification</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/solo-leveling.css" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap" rel="stylesheet"> 
     <style>
         .background-container {
@@ -986,30 +987,66 @@
         <div class="rune-circle" style="animation-direction: reverse; width: 110%; height: 110%; top: -5%; left: -5%;"></div>
              <h4>
             <span class="exclamation">!</span>
-            <span>NOTIFICATION</span>
+            <span id="acceuilTitle">NOTIFICATION</span>
         </h4>
-        <p class="editable valentine-message">Will you be my valentine ?</p>
-        <p class="quest-text">[Penalty: <span class="editable penalty-text" style="text-shadow: 
-            0 0 7px #ff0000,
-            0 0 10px #ff0000,
-            0 0 21px #ff0000,
-            0 0 42px #ff0000,
-            0 0 82px #ff0000,
-            0 0 92px #ff0000,
-            0 0 102px #ff0000,
-            0 0 151px #ff0000;color: #ff0000; font-weight: bolder;">Death</span>]</p>
+        <p id="acceuilQuestion">Will you be my valentine ?</p>
+        <p class="quest-text">[<span id="acceuilPenaltyLabel">Penalty</span>: <span id="acceuilPenaltyValue" class="sl-danger">Death</span>]</p>
         <!-- <p class="rank">S-Rank Quest Completed</p> -->
-        <p>Do you want to accept this quest ?</p>
+        <p id="acceuilPrompt">Do you want to accept this quest ?</p>
         <div class="buttons-container">
-            <button class="btn-custom">Yes</button>
-            <button class="btn-custom">No</button>
+            <button class="btn-custom" id="acceuilYesBtn">Yes</button>
+            <button class="btn-custom" id="acceuilNoBtn">No</button>
         </div>
     </div>
     <div class="dramatic-reveal">
         <div class="shine-lines"></div>
-        <div class="dramatic-text editable">Welcome, Max</div>
+        <div class="dramatic-text editable" id="girlfriendNameText">Your Girlfriend name</div>
     </div>
     <script>
+        function tryPlayNotificationSound() {
+            try {
+                const audio = new Audio('notification.mp3');
+                audio.preload = 'auto';
+                audio.volume = 0.9;
+                window.__slNotificationAudio = audio;
+
+                audio.play().catch(() => {
+                    // Autoplay can be blocked; click-to-play fallback is only enabled on index.html.
+                });
+            } catch (e) {
+                // Ignore sound errors
+            }
+        }
+
+        function decodeData(encoded) {
+            try {
+                return JSON.parse(decodeURIComponent(escape(atob(encoded))));
+            } catch (e) {
+                return JSON.parse(atob(encoded));
+            }
+        }
+
+        function applyTheme(customizations) {
+            if (!customizations) return;
+            if (customizations.slAccent) document.documentElement.style.setProperty('--sl-accent', customizations.slAccent);
+            if (customizations.slSuccess) document.documentElement.style.setProperty('--sl-success', customizations.slSuccess);
+            if (customizations.slDanger) document.documentElement.style.setProperty('--sl-danger', customizations.slDanger);
+        }
+
+        function applyAcceuilCustomizations(customizations) {
+            if (!customizations) return;
+            applyTheme(customizations);
+
+            if (customizations.acceuilTitle) document.getElementById('acceuilTitle').textContent = customizations.acceuilTitle;
+            if (customizations.acceuilQuestion) document.getElementById('acceuilQuestion').textContent = customizations.acceuilQuestion;
+            if (customizations.acceuilPenaltyLabel) document.getElementById('acceuilPenaltyLabel').textContent = customizations.acceuilPenaltyLabel;
+            if (customizations.acceuilPenaltyValue) document.getElementById('acceuilPenaltyValue').textContent = customizations.acceuilPenaltyValue;
+            if (customizations.acceuilPrompt) document.getElementById('acceuilPrompt').textContent = customizations.acceuilPrompt;
+            if (customizations.acceuilYesText) document.getElementById('acceuilYesBtn').textContent = customizations.acceuilYesText;
+            if (customizations.acceuilNoText) document.getElementById('acceuilNoBtn').textContent = customizations.acceuilNoText;
+            if (customizations.girlfriendName) document.getElementById('girlfriendNameText').textContent = customizations.girlfriendName;
+        }
+
         // Create floating particles effect
         function createParticles() {
             const particlesContainer = document.querySelector('.particles');
@@ -1445,7 +1482,7 @@
         });
 
         // Add dramatic reveal effect for "Yes" button
-        document.querySelectorAll('.btn-custom')[0].addEventListener('click', function() {
+        document.getElementById('acceuilYesBtn').addEventListener('click', function() {
             const reveal = document.querySelector('.dramatic-reveal');
             
             // Create power circles
@@ -1504,7 +1541,7 @@
                     reveal.appendChild(particle);
                 }, 100);
                 
-                // Clean up after animation and navigate to home.html directly
+                // Clean up after animation and navigate to home.html
                 setTimeout(() => {
                     clearInterval(burstInterval);
                     reveal.classList.remove('active');
@@ -1514,7 +1551,6 @@
                     document.body.style.opacity = '0';
                     
                     setTimeout(() => {
-                        // Navigate directly to home.html instead of through index.html
                         window.location.href = 'home.html';
                     }, 500);
                 }, 3000);
@@ -1522,7 +1558,7 @@
         });
 
         // Add dismissal effect for "No" button
-        document.querySelectorAll('.btn-custom')[1].addEventListener('click', function() {
+        document.getElementById('acceuilNoBtn').addEventListener('click', function() {
             const notification = document.querySelector('.notification');
             
             // Create dismiss particles
@@ -1615,101 +1651,45 @@
             }, 800);
         });
 
-        // Load customized text from localStorage if available
         window.addEventListener('DOMContentLoaded', function() {
-            // Check for any conflicting redirections
-            const targetPage = localStorage.getItem('targetPage');
-            
-            // Clear any existing target page setting to avoid redirect loops
-            localStorage.removeItem('targetPage');
-            
-            // For debugging
-            console.log("Checking for customizations in acceuil.html");
-            
-            // Check URL hash first for customizations
-            if (window.location.hash) {
+            // Sound on notification appear
+            requestAnimationFrame(() => tryPlayNotificationSound());
+
+            // Apply from hash if present (direct preview)
+            if (window.location.hash && window.location.hash.includes('data=')) {
                 try {
                     const encodedData = window.location.hash.replace('#data=', '');
-                    const customizations = JSON.parse(atob(encodedData));
-                    console.log("Found URL hash customizations:", customizations);
-                    
-                    // Update the welcome text if girlfriend name is provided
-                    if (customizations.girlfriendName || customizations.g) {
-                        const name = customizations.girlfriendName || customizations.g;
-                        document.querySelector('.dramatic-text.editable').textContent = 'Welcome, ' + name;
-                    }
-                    
-                    // Update the valentine message if provided
-                    if (customizations.valentineMessage || customizations.vm) {
-                        const message = customizations.valentineMessage || customizations.vm;
-                        const valentineElement = document.querySelector('.valentine-message');
-                        console.log("Valentine message element:", valentineElement);
-                        if (valentineElement) {
-                            valentineElement.textContent = message;
-                        }
-                    }
-                    
-                    // Update the penalty text if provided
-                    if (customizations.penaltyText || customizations.pt) {
-                        const penalty = customizations.penaltyText || customizations.pt;
-                        const penaltyElement = document.querySelector('.penalty-text');
-                        console.log("Penalty text element:", penaltyElement);
-                        if (penaltyElement) {
-                            penaltyElement.textContent = penalty;
-                        }
-                    }
+                    const customizations = decodeData(encodedData);
+                    applyAcceuilCustomizations(customizations);
                 } catch (e) {
                     console.error('Error parsing URL data:', e);
                 }
-                
-                // Clear the hash to avoid processing it again
-                window.location.hash = '';
-            }
-            // Then check localStorage
-            else {
-                const girlfriendName = localStorage.getItem('girlfriendName');
-                const valentineMessage = localStorage.getItem('valentineMessage');
-                const penaltyText = localStorage.getItem('penaltyText');
-                
-                console.log("LocalStorage values:", {
-                    girlfriendName,
-                    valentineMessage,
-                    penaltyText
+            } else {
+                // Apply from localStorage (shared link flow)
+                applyTheme({
+                    slAccent: localStorage.getItem('slAccent'),
+                    slSuccess: localStorage.getItem('slSuccess'),
+                    slDanger: localStorage.getItem('slDanger')
                 });
-                
-                if (girlfriendName) {
-                    document.querySelector('.dramatic-text.editable').textContent = 'Welcome, ' + girlfriendName;
-                    localStorage.removeItem('girlfriendName'); // Clear after using
-                }
-                
-                if (valentineMessage) {
-                    const valentineElement = document.querySelector('.valentine-message');
-                    console.log("Valentine message element from localStorage:", valentineElement);
-                    if (valentineElement) {
-                        valentineElement.textContent = valentineMessage;
-                    }
-                    localStorage.removeItem('valentineMessage'); // Clear after using
-                }
-                
-                if (penaltyText) {
-                    const penaltyElement = document.querySelector('.penalty-text');
-                    console.log("Penalty text element from localStorage:", penaltyElement);
-                    if (penaltyElement) {
-                        penaltyElement.textContent = penaltyText;
-                    }
-                    localStorage.removeItem('penaltyText'); // Clear after using
-                }
+
+                applyAcceuilCustomizations({
+                    acceuilTitle: localStorage.getItem('acceuilTitle'),
+                    acceuilQuestion: localStorage.getItem('acceuilQuestion'),
+                    acceuilPenaltyLabel: localStorage.getItem('acceuilPenaltyLabel'),
+                    acceuilPenaltyValue: localStorage.getItem('acceuilPenaltyValue'),
+                    acceuilPrompt: localStorage.getItem('acceuilPrompt'),
+                    acceuilYesText: localStorage.getItem('acceuilYesText'),
+                    acceuilNoText: localStorage.getItem('acceuilNoText'),
+                    girlfriendName: localStorage.getItem('girlfriendName')
+                });
             }
-            
-            // Log all editable elements for debugging
-            console.log("All editable elements:", {
-                welcomeText: document.querySelector('.dramatic-text.editable'),
-                valentineMessage: document.querySelector('.valentine-message'),
-                penaltyText: document.querySelector('.penalty-text')
-            });
-            
-            // Do not automatically redirect - wait for user to click a button
-            console.log("Acceuil.html loaded, waiting for user interaction");
+
+            const targetPage = localStorage.getItem('targetPage');
+            if (targetPage && targetPage !== 'acceuil.html') {
+                window.location.href = targetPage;
+            } else {
+                localStorage.removeItem('targetPage');
+            }
         });
     </script>
 </body>
