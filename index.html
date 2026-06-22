@@ -1094,19 +1094,117 @@
             }
         }
 
-        // Add click effect on buttons
+        // Consolidated button setup — single pass
         document.querySelectorAll('.btn-custom').forEach(button => {
+            const glow = document.createElement('div');
+            glow.className = 'btn-glow';
+            button.appendChild(glow);
+
+            const flash = document.createElement('div');
+            flash.className = 'btn-flash';
+            button.appendChild(flash);
+
+            const surge = document.createElement('div');
+            surge.className = 'power-surge';
+            button.appendChild(surge);
+
+            button.addEventListener('mouseenter', () => {
+                for (let i = 0; i < 10; i++) {
+                    const particle = document.createElement('div');
+                    particle.className = 'energy-particle';
+                    const angle = Math.random() * Math.PI * 2;
+                    const distance = 30 + Math.random() * 20;
+                    particle.style.setProperty('--startX', `${Math.cos(angle) * distance}px`);
+                    particle.style.setProperty('--startY', `${Math.sin(angle) * distance}px`);
+                    particle.style.setProperty('--endX', `${Math.cos(angle) * (distance + 20)}px`);
+                    particle.style.setProperty('--endY', `${Math.sin(angle) * (distance + 20)}px`);
+                    particle.style.left = '50%';
+                    particle.style.top = '50%';
+                    particle.style.animation = `energyFloat ${0.5 + Math.random()}s ease-out`;
+                    button.appendChild(particle);
+                    particle.addEventListener('animationend', () => particle.remove(), { once: true });
+                }
+            });
+
+            button.addEventListener('mouseleave', () => {
+                button.querySelectorAll('.energy-particle').forEach(p => p.remove());
+            });
+
             button.addEventListener('click', function(e) {
-                const x = e.clientX - e.target.offsetLeft;
-                const y = e.clientY - e.target.offsetTop;
-                
-                const ripple = document.createElement('span');
+                const rect = button.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                const centerX = rect.left + rect.width / 2;
+                const centerY = rect.top + rect.height / 2;
+
+                const ripple = document.createElement('div');
+                ripple.className = 'btn-ripple';
                 ripple.style.left = x + 'px';
                 ripple.style.top = y + 'px';
-                
-                this.appendChild(ripple);
-                
-                setTimeout(() => ripple.remove(), 1000);
+                button.appendChild(ripple);
+
+                const pulse = document.createElement('div');
+                pulse.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;border:1px solid #85acb9;animation:pulse 0.5s ease-out;pointer-events:none;';
+                button.appendChild(pulse);
+
+                const shockwave = document.createElement('div');
+                shockwave.className = 'shockwave';
+                shockwave.style.left = x + 'px';
+                shockwave.style.top = y + 'px';
+                button.appendChild(shockwave);
+
+                flash.classList.add('active');
+                button.style.transform = 'scale(0.95) translateZ(-10px)';
+
+                const burstContainer = document.createElement('div');
+                burstContainer.className = 'energy-burst';
+                document.body.appendChild(burstContainer);
+
+                for (let i = 0; i < 20; i++) {
+                    const particle = document.createElement('div');
+                    particle.className = 'energy-burst-particle';
+                    const angle = Math.random() * Math.PI * 2;
+                    const velocity = 15 + Math.random() * 25;
+                    const size = 2 + Math.random() * 4;
+                    particle.style.left = centerX + 'px';
+                    particle.style.top = centerY + 'px';
+                    particle.style.width = size + 'px';
+                    particle.style.height = size + 'px';
+                    burstContainer.appendChild(particle);
+                    particle.animate([
+                        { transform: 'translate(-50%, -50%)', opacity: 1 },
+                        { transform: `translate(calc(-50% + ${Math.cos(angle) * velocity}vw), calc(-50% + ${Math.sin(angle) * velocity}vh))`, opacity: 0 }
+                    ], { duration: 1000, easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)' }).onfinish = () => particle.remove();
+                }
+
+                const wave = document.createElement('div');
+                wave.className = 'energy-wave';
+                wave.style.cssText = `border:2px solid rgba(133,172,185,0.5);border-radius:50%;position:fixed;top:${centerY}px;left:${centerX}px;transform:translate(-50%,-50%);`;
+                document.body.appendChild(wave);
+                wave.animate([
+                    { transform: 'translate(-50%, -50%) scale(0)', opacity: 0.5 },
+                    { transform: 'translate(-50%, -50%) scale(2)', opacity: 0 }
+                ], { duration: 800, easing: 'ease-out' }).onfinish = () => wave.remove();
+
+                const pressEffect = document.createElement('div');
+                pressEffect.className = 'btn-press-effect';
+                button.appendChild(pressEffect);
+                pressEffect.animate([
+                    { transform: 'translate(-50%, -50%) scale(1)', opacity: 0.8 },
+                    { transform: 'translate(-50%, -50%) scale(2)', opacity: 0 }
+                ], { duration: 600, easing: 'ease-out' }).onfinish = () => pressEffect.remove();
+
+                document.body.classList.add('shake');
+
+                setTimeout(() => {
+                    ripple.remove();
+                    pulse.remove();
+                    shockwave.remove();
+                    flash.classList.remove('active');
+                    button.style.transform = '';
+                    document.body.classList.remove('shake');
+                    burstContainer.remove();
+                }, 1000);
             });
         });
 
@@ -1176,30 +1274,6 @@
 
         createBackgroundParticles();
 
-        // Update button click effect
-        document.querySelectorAll('.btn-custom').forEach(button => {
-            button.addEventListener('click', function() {
-                this.style.transform = 'scale(0.95)';
-                setTimeout(() => {
-                    this.style.transform = 'translateY(-2px)';
-                }, 100);
-                
-                // Create pulse effect
-                const pulse = document.createElement('div');
-                pulse.style.position = 'absolute';
-                pulse.style.top = '0';
-                pulse.style.left = '0';
-                pulse.style.width = '100%';
-                pulse.style.height = '100%';
-                pulse.style.border = '1px solid #85acb9';
-                pulse.style.animation = 'pulse 0.5s ease-out';
-                
-                this.appendChild(pulse);
-                
-                setTimeout(() => pulse.remove(), 500);
-            });
-        });
-
         // Add pulse animation
         const style = document.createElement('style');
         style.textContent = `
@@ -1215,114 +1289,6 @@
             }
         `;
         document.head.appendChild(style);
-
-        // Update button elements
-        document.querySelectorAll('.btn-custom').forEach(button => {
-            const glow = document.createElement('div');
-            glow.className = 'btn-glow';
-            button.appendChild(glow);
-        });
-
-        // Enhanced button click effect
-        document.querySelectorAll('.btn-custom').forEach(button => {
-            // Add glow element
-            const glow = document.createElement('div');
-            glow.className = 'btn-glow';
-            button.appendChild(glow);
-
-            // Add flash element
-            const flash = document.createElement('div');
-            flash.className = 'btn-flash';
-            button.appendChild(flash);
-
-            button.addEventListener('click', function(e) {
-                // Create ripple effect
-                const ripple = document.createElement('div');
-                ripple.className = 'btn-ripple';
-                
-                const rect = button.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
-                
-                ripple.style.left = x + 'px';
-                ripple.style.top = y + 'px';
-                
-                button.appendChild(ripple);
-                
-                // Trigger flash effect
-                flash.classList.add('active');
-                
-                // Scale effect
-                button.style.transform = 'scale(0.95) translateZ(-10px)';
-                
-                // Cleanup
-                setTimeout(() => {
-                    ripple.remove();
-                    flash.classList.remove('active');
-                    button.style.transform = '';
-                }, 800);
-            });
-        });
-
-        // Enhanced button interactions
-        document.querySelectorAll('.btn-custom').forEach(button => {
-            // Add power surge element
-            const surge = document.createElement('div');
-            surge.className = 'power-surge';
-            button.appendChild(surge);
-
-            button.addEventListener('mouseenter', createEnergyParticles);
-            button.addEventListener('mouseleave', removeEnergyParticles);
-            
-            function createEnergyParticles() {
-                for (let i = 0; i < 10; i++) {
-                    const particle = document.createElement('div');
-                    particle.className = 'energy-particle';
-                    
-                    const angle = (Math.random() * Math.PI * 2);
-                    const distance = 30 + Math.random() * 20;
-                    
-                    const startX = Math.cos(angle) * distance;
-                    const startY = Math.sin(angle) * distance;
-                    const endX = Math.cos(angle) * (distance + 20);
-                    const endY = Math.sin(angle) * (distance + 20);
-                    
-                    particle.style.setProperty('--startX', `${startX}px`);
-                    particle.style.setProperty('--startY', `${startY}px`);
-                    particle.style.setProperty('--endX', `${endX}px`);
-                    particle.style.setProperty('--endY', `${endY}px`);
-                    
-                    particle.style.left = '50%';
-                    particle.style.top = '50%';
-                    particle.style.animation = `energyFloat ${0.5 + Math.random()}s ease-out`;
-                    
-                    button.appendChild(particle);
-                    
-                    particle.addEventListener('animationend', () => particle.remove());
-                }
-            }
-            
-            function removeEnergyParticles() {
-                button.querySelectorAll('.energy-particle').forEach(particle => {
-                    particle.remove();
-                });
-            }
-
-            // Add shockwave on click
-            button.addEventListener('click', (e) => {
-                const rect = button.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
-
-                const shockwave = document.createElement('div');
-                shockwave.className = 'shockwave';
-                shockwave.style.left = x + 'px';
-                shockwave.style.top = y + 'px';
-                button.appendChild(shockwave);
-
-                setTimeout(() => shockwave.remove(), 500);
-            });
-        });
 
         // Add initial flash effect
         window.addEventListener('load', () => {
@@ -1390,97 +1356,6 @@
                     easing: 'ease-out'
                 });
             }, 1500);
-        });
-
-        // Enhanced button click effect
-        document.querySelectorAll('.btn-custom').forEach(button => {
-            button.addEventListener('click', function(e) {
-                // Create energy burst
-                const burstContainer = document.createElement('div');
-                burstContainer.className = 'energy-burst';
-                document.body.appendChild(burstContainer);
-
-                const rect = button.getBoundingClientRect();
-                const centerX = rect.left + rect.width / 2;
-                const centerY = rect.top + rect.height / 2;
-
-                // Create particles
-                for (let i = 0; i < 20; i++) {
-                    const particle = document.createElement('div');
-                    particle.className = 'energy-burst-particle';
-                    
-                    const angle = (Math.random() * Math.PI * 2);
-                    const velocity = 15 + Math.random() * 25;
-                    const size = 2 + Math.random() * 4;
-                    
-                    particle.style.left = centerX + 'px';
-                    particle.style.top = centerY + 'px';
-                    particle.style.width = size + 'px';
-                    particle.style.height = size + 'px';
-                    
-                    const animation = particle.animate([
-                        {
-                            transform: 'translate(-50%, -50%)',
-                            opacity: 1
-                        },
-                        {
-                            transform: `translate(
-                                calc(-50% + ${Math.cos(angle) * velocity}vw),
-                                calc(-50% + ${Math.sin(angle) * velocity}vh)
-                            )`,
-                            opacity: 0
-                        }
-                    ], {
-                        duration: 1000,
-                        easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)'
-                    });
-                    
-                    burstContainer.appendChild(particle);
-                    animation.onfinish = () => particle.remove();
-                }
-
-                // Screen shake effect
-                document.body.classList.add('shake');
-                setTimeout(() => {
-                    document.body.classList.remove('shake');
-                }, 500);
-
-                // Energy wave effect
-                const wave = document.createElement('div');
-                wave.className = 'energy-wave';
-                wave.style.cssText = `
-                    border: 2px solid rgba(133, 172, 185, 0.5);
-                    border-radius: 50%;
-                    position: fixed;
-                    top: ${centerY}px;
-                    left: ${centerX}px;
-                    transform: translate(-50%, -50%);
-                `;
-                document.body.appendChild(wave);
-
-                wave.animate([
-                    { transform: 'translate(-50%, -50%) scale(0)', opacity: 0.5 },
-                    { transform: 'translate(-50%, -50%) scale(2)', opacity: 0 }
-                ], {
-                    duration: 800,
-                    easing: 'ease-out'
-                }).onfinish = () => wave.remove();
-
-                // Button press visual effect
-                const pressEffect = document.createElement('div');
-                pressEffect.className = 'btn-press-effect';
-                button.appendChild(pressEffect);
-
-                pressEffect.animate([
-                    { transform: 'translate(-50%, -50%) scale(1)', opacity: 0.8 },
-                    { transform: 'translate(-50%, -50%) scale(2)', opacity: 0 }
-                ], {
-                    duration: 600,
-                    easing: 'ease-out'
-                }).onfinish = () => pressEffect.remove();
-
-                setTimeout(() => burstContainer.remove(), 1000);
-            });
         });
 
         // Add dramatic reveal effect for "Yes" button
