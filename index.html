@@ -471,6 +471,17 @@
             50% { opacity: 0.6; }
         }
 
+        .rune {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #2196f3;
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            animation: fadeInOut 2.5s infinite;
+        }
+
         .notification p {
             font-size: 1.5em;
             margin: 20px 0;
@@ -982,8 +993,26 @@
     <div class="bg-particles"></div>
     <div class="particles"></div>
     <div class="notification">
-        <div class="rune-circle"></div>
-        <div class="rune-circle" style="animation-direction: reverse; width: 110%; height: 110%; top: -5%; left: -5%;"></div>
+        <div class="rune-circle">
+            <div class="rune" style="transform:rotate(0deg) translateX(150px);animation-duration:2.1s"></div>
+            <div class="rune" style="transform:rotate(45deg) translateX(150px);animation-duration:2.7s"></div>
+            <div class="rune" style="transform:rotate(90deg) translateX(150px);animation-duration:2.3s"></div>
+            <div class="rune" style="transform:rotate(135deg) translateX(150px);animation-duration:2.9s"></div>
+            <div class="rune" style="transform:rotate(180deg) translateX(150px);animation-duration:2.5s"></div>
+            <div class="rune" style="transform:rotate(225deg) translateX(150px);animation-duration:2.2s"></div>
+            <div class="rune" style="transform:rotate(270deg) translateX(150px);animation-duration:2.8s"></div>
+            <div class="rune" style="transform:rotate(315deg) translateX(150px);animation-duration:2.4s"></div>
+        </div>
+        <div class="rune-circle" style="animation-direction: reverse; width: 110%; height: 110%; top: -5%; left: -5%;">
+            <div class="rune" style="transform:rotate(0deg) translateX(140px);animation-duration:2.6s"></div>
+            <div class="rune" style="transform:rotate(45deg) translateX(140px);animation-duration:2.2s"></div>
+            <div class="rune" style="transform:rotate(90deg) translateX(140px);animation-duration:2.8s"></div>
+            <div class="rune" style="transform:rotate(135deg) translateX(140px);animation-duration:2.4s"></div>
+            <div class="rune" style="transform:rotate(180deg) translateX(140px);animation-duration:2.1s"></div>
+            <div class="rune" style="transform:rotate(225deg) translateX(140px);animation-duration:2.7s"></div>
+            <div class="rune" style="transform:rotate(270deg) translateX(140px);animation-duration:2.3s"></div>
+            <div class="rune" style="transform:rotate(315deg) translateX(140px);animation-duration:2.9s"></div>
+        </div>
              <h4>
             <span class="exclamation">!</span>
             <span id="indexTitle">NOTIFICATION</span>
@@ -1208,29 +1237,6 @@
 
         // Initialize particles
         createParticles();
-
-        // Create rotating rune circles
-        function createRuneCircles() {
-            const circles = document.querySelectorAll('.rune-circle');
-            circles.forEach((circle, index) => {
-                for (let i = 0; i < 8; i++) {
-                    const rune = document.createElement('div');
-                    rune.className = 'rune';
-                    rune.style.position = 'absolute';
-                    rune.style.width = '10px';
-                    rune.style.height = '10px';
-                    rune.style.background = '#2196f3';
-                    rune.style.borderRadius = '50%';
-                    rune.style.top = '50%';
-                    rune.style.left = '50%';
-                    rune.style.transform = `rotate(${i * 45}deg) translateX(${index === 0 ? 150 : 140}px)`;
-                    rune.style.animation = `fadeInOut ${2 + Math.random()}s infinite`;
-                    circle.appendChild(rune);
-                }
-            });
-        }
-
-        createRuneCircles();
 
         // Add hexagon decorations
         function createHexagons() {
