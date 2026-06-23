@@ -1,0 +1,1246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SHADOW GYM - Workout Quests</title>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="css/solo-leveling.css" rel="stylesheet">
+    <link href="css/gym.css" rel="stylesheet">
+    <script src="js/config.js"></script>
+    <script src="js/store.js"></script>
+    <script src="js/i18n.js"></script>
+    <script src="js/quests.js"></script>
+    <script src="js/weekly.js"></script>
+    <script src="js/cloud.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/auth-ui.js"></script>
+    <style>
+        body {
+            opacity: 0;
+            animation: fadeIn 0.5s ease-out forwards;
+            overflow-x: hidden;
+            overflow-y: auto;
+            height: auto;
+            min-height: 100vh;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .workout-container {
+            width: 100%;
+            max-width: 1200px;
+            padding: 20px;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .page-title {
+            color: #fff;
+            font-size: 2.5em;
+            letter-spacing: 5px;
+            text-shadow: 0 0 20px #85acb9;
+            margin-bottom: 10px;
+        }
+
+        .page-subtitle {
+            color: rgba(133, 172, 185, 0.8);
+            font-size: 1em;
+            letter-spacing: 3px;
+        }
+
+        .quest-filters {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            background: transparent;
+            border: 1px solid rgba(133, 172, 185, 0.5);
+            color: rgba(255, 255, 255, 0.7);
+            padding: 10px 25px;
+            font-size: 0.85em;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Lato', sans-serif;
+        }
+
+        .filter-btn:hover {
+            border-color: #85acb9;
+            color: #85acb9;
+        }
+
+        .filter-btn.active {
+            border-color: #85acb9;
+            color: #85acb9;
+            background: rgba(133, 172, 185, 0.1);
+            box-shadow: 0 0 15px rgba(133, 172, 185, 0.3);
+        }
+
+        .quest-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
+            gap: 25px;
+        }
+
+        .workout-quest {
+            background: transparent;
+            border: 2px solid #fff;
+            padding: 25px;
+            position: relative;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .workout-quest:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0 35px rgba(133, 172, 185, 0.5);
+        }
+
+        .workout-quest::before {
+            content: '';
+            position: absolute;
+            top: -3px;
+            left: -3px;
+            right: -3px;
+            bottom: -3px;
+            border: 1px solid rgba(133, 172, 185, 0.3);
+            pointer-events: none;
+        }
+
+        .workout-quest.active {
+            border-color: #85acb9;
+            box-shadow: 0 0 40px rgba(133, 172, 185, 0.5);
+        }
+
+        .workout-quest.completed {
+            border-color: #00ff62;
+            opacity: 0.8;
+        }
+
+        .quest-badge {
+            position: absolute;
+            top: -10px;
+            right: 20px;
+            padding: 5px 15px;
+            font-size: 0.7em;
+            letter-spacing: 2px;
+            border: 1px solid;
+        }
+
+        .badge-daily {
+            background: rgba(3, 169, 244, 0.2);
+            border-color: #03a9f4;
+            color: #03a9f4;
+        }
+
+        .badge-weekly {
+            background: rgba(156, 39, 176, 0.2);
+            border-color: #9c27b0;
+            color: #9c27b0;
+        }
+
+        .badge-special {
+            background: rgba(255, 215, 0, 0.2);
+            border-color: #ffd700;
+            color: #ffd700;
+            animation: specialPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes specialPulse {
+            0%, 100% { box-shadow: 0 0 5px rgba(255, 215, 0, 0.5); }
+            50% { box-shadow: 0 0 20px rgba(255, 215, 0, 0.8); }
+        }
+
+        .quest-icon {
+            font-size: 2.5em;
+            color: #85acb9;
+            text-shadow: 0 0 20px #85acb9;
+            margin-bottom: 15px;
+        }
+
+        .quest-title {
+            color: #fff;
+            font-size: 1.3em;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px #85acb9;
+        }
+
+        .quest-desc {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9em;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+
+        .quest-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(133, 172, 185, 0.2);
+        }
+
+        .detail-item {
+            text-align: center;
+        }
+
+        .detail-label {
+            color: rgba(133, 172, 185, 0.6);
+            font-size: 0.7em;
+            letter-spacing: 2px;
+            margin-bottom: 5px;
+        }
+
+        .detail-value {
+            color: #fff;
+            font-size: 1.1em;
+            font-weight: bold;
+        }
+
+        .detail-value.xp {
+            color: #85acb9;
+            text-shadow: 0 0 5px #85acb9;
+        }
+
+        .detail-value.stat-boost {
+            color: #00ff62;
+            text-shadow: 0 0 5px #00ff62;
+        }
+
+        .quest-exercises {
+            margin-bottom: 20px;
+        }
+
+        .exercise-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(133, 172, 185, 0.2);
+        }
+
+        .exercise-item:last-child {
+            border-bottom: none;
+        }
+
+        .exercise-name {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9em;
+        }
+
+        .exercise-reps {
+            color: #85acb9;
+            font-size: 0.85em;
+            text-shadow: 0 0 5px #85acb9;
+        }
+
+        .quest-timer {
+            text-align: center;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.4);
+            margin-bottom: 20px;
+        }
+
+        .timer-display {
+            font-size: 2.5em;
+            color: #fff;
+            text-shadow: 0 0 15px #85acb9;
+            letter-spacing: 3px;
+            font-weight: 300;
+        }
+
+        .timer-label {
+            color: rgba(133, 172, 185, 0.7);
+            font-size: 0.75em;
+            letter-spacing: 2px;
+            margin-top: 5px;
+        }
+
+        .quest-progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(133, 172, 185, 0.3);
+            margin-bottom: 15px;
+            overflow: hidden;
+        }
+
+        .quest-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #85acb9, #00ff62);
+            box-shadow: 0 0 10px #85acb9;
+            transition: width 0.3s ease;
+        }
+
+        .quest-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .quest-btn {
+            flex: 1;
+            background: transparent;
+            border: 1px solid #85acb9;
+            color: #85acb9;
+            padding: 12px 20px;
+            font-size: 0.9em;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Lato', sans-serif;
+        }
+
+        .quest-btn:hover {
+            background: rgba(133, 172, 185, 0.2);
+            box-shadow: 0 0 20px rgba(133, 172, 185, 0.4);
+        }
+
+        .quest-btn.primary {
+            background: rgba(133, 172, 185, 0.1);
+        }
+
+        .quest-btn.complete {
+            border-color: #00ff62;
+            color: #00ff62;
+        }
+
+        .quest-btn.complete:hover {
+            background: rgba(0, 255, 98, 0.2);
+            box-shadow: 0 0 20px rgba(0, 255, 98, 0.4);
+        }
+
+        .difficulty-indicator {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 15px;
+        }
+
+        .difficulty-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(133, 172, 185, 0.3);
+        }
+
+        .difficulty-dot.active {
+            background: #85acb9;
+            box-shadow: 0 0 10px #85acb9;
+        }
+
+        .difficulty-dot.active.hard {
+            background: #ff9800;
+            box-shadow: 0 0 10px #ff9800;
+        }
+
+        .difficulty-dot.active.extreme {
+            background: #f44336;
+            box-shadow: 0 0 10px #f44336;
+        }
+
+        /* Active Workout Modal */
+        .workout-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 200;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .workout-modal.show {
+            display: flex;
+        }
+
+        .workout-modal-content {
+            background: transparent;
+            border: 2px solid #fff;
+            padding: 40px;
+            width: 90%;
+            max-width: 600px;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 0 50px rgba(133, 172, 185, 0.5);
+        }
+
+        .workout-modal-content::before {
+            content: '';
+            position: absolute;
+            top: -3px;
+            left: -3px;
+            right: -3px;
+            bottom: -3px;
+            border: 1px solid rgba(133, 172, 185, 0.3);
+            pointer-events: none;
+        }
+
+        .current-exercise {
+            font-size: 1.8em;
+            color: #fff;
+            letter-spacing: 3px;
+            margin-bottom: 20px;
+            text-shadow: 0 0 15px #85acb9;
+        }
+
+        .exercise-counter {
+            font-size: 5em;
+            color: #85acb9;
+            text-shadow: 0 0 30px #85acb9;
+            margin: 30px 0;
+            font-weight: 300;
+        }
+
+        .exercise-target {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 1.2em;
+            letter-spacing: 2px;
+        }
+
+        .modal-controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .quest-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .quest-filters {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="sl-background">
+        <div class="sl-background-image" style="background: linear-gradient(135deg, #0a1628 0%, #0d1f3c 50%, #0a1628 100%);"></div>
+        <div class="sl-light-rays"></div>
+        <div class="sl-glow"></div>
+    </div>
+
+    <div class="scene-overlay"></div>
+    <div class="bg-particles"></div>
+    <div class="sl-particles"></div>
+
+    <!-- Navigation -->
+    <nav class="gym-nav">
+        <div class="nav-brand">SHADOW GYM</div>
+        <div class="nav-links">
+            <a href="gym-dashboard.html" class="nav-link">ACCUEIL</a>
+            <a href="gym-workouts.html" class="nav-link active">QUÊTES</a>
+            <a href="gym-exercises.html" class="nav-link">TALENTS</a>
+            <a href="gym-progress.html" class="nav-link">PROGRÈS</a>
+            <a href="gym-leaderboard.html" class="nav-link">CLASSEMENT</a>
+            <a href="gym-challenges.html" class="nav-link">ARÈNE</a>
+            <a href="gym-guilds.html" class="nav-link">GUILDES</a>
+            <a href="gym-profile.html" class="nav-link">PROFIL</a>
+        </div>
+        <div class="nav-profile">
+            <div class="nav-xp-bar">
+                <div class="nav-xp-fill" id="navXpFill" style="width: 45%"></div>
+            </div>
+            <span class="nav-level">LV.<span id="navLevel">1</span></span>
+        </div>
+    </nav>
+
+    <div class="gym-container">
+        <div class="gym-main">
+            <div class="workout-container">
+                <div class="page-header">
+                    <h1 class="page-title">QUEST BOARD</h1>
+                    <p class="page-subtitle">SELECT YOUR TRAINING MISSION</p>
+                </div>
+
+                <div class="quest-filters">
+                    <button class="filter-btn active" data-filter="all">ALL QUESTS</button>
+                    <button class="filter-btn" data-filter="daily">DAILY</button>
+                    <button class="filter-btn" data-filter="weekly">WEEKLY</button>
+                    <button class="filter-btn" data-filter="special">SPECIAL</button>
+                </div>
+
+                <div class="quest-grid" id="questGrid">
+                    <!-- AI-Generated Daily Quests Section -->
+                    <div id="aiQuestsContainer">
+                        <!-- AI quests will be loaded dynamically -->
+                    </div>
+                    
+                    <!-- Weekly Quest from AI -->
+                    <div id="aiWeeklyQuestContainer">
+                        <!-- Weekly quest will be loaded dynamically -->
+                    </div>
+
+                    <!-- Default Quests (shown if no AI quests) -->
+                    <div id="defaultQuestsContainer">
+                    <!-- Daily Quest: Push Day -->
+                    <div class="workout-quest" data-type="daily">
+                        <span class="quest-badge badge-daily">DAILY</span>
+                        <div class="quest-icon"><i class="fas fa-fist-raised"></i></div>
+                        <h3 class="quest-title">PUSH DAY PROTOCOL</h3>
+                        <p class="quest-desc">Complete chest, shoulders, and triceps training to increase your pushing power.</p>
+                        
+                        <div class="difficulty-indicator">
+                            <div class="difficulty-dot active"></div>
+                            <div class="difficulty-dot active"></div>
+                            <div class="difficulty-dot"></div>
+                            <div class="difficulty-dot"></div>
+                            <div class="difficulty-dot"></div>
+                        </div>
+
+                        <div class="quest-details">
+                            <div class="detail-item">
+                                <div class="detail-label">REWARD XP</div>
+                                <div class="detail-value xp">+50 XP</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">STAT BOOST</div>
+                                <div class="detail-value stat-boost">+2 STR</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">DURATION</div>
+                                <div class="detail-value">45 MIN</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">DIFFICULTY</div>
+                                <div class="detail-value" style="color: #4caf50;">EASY</div>
+                            </div>
+                        </div>
+
+                        <div class="quest-exercises">
+                            <div class="exercise-item">
+                                <span class="exercise-name">Push-ups</span>
+                                <span class="exercise-reps">4 × 20</span>
+                            </div>
+                            <div class="exercise-item">
+                                <span class="exercise-name">Diamond Push-ups</span>
+                                <span class="exercise-reps">3 × 15</span>
+                            </div>
+                            <div class="exercise-item">
+                                <span class="exercise-name">Pike Push-ups</span>
+                                <span class="exercise-reps">3 × 12</span>
+                            </div>
+                            <div class="exercise-item">
+                                <span class="exercise-name">Dips</span>
+                                <span class="exercise-reps">3 × 10</span>
+                            </div>
+                        </div>
+
+                        <div class="quest-actions">
+                            <button class="quest-btn primary" onclick="startQuest(this)">START QUEST</button>
+                        </div>
+                    </div>
+
+                    <!-- Daily Quest: Pull Day -->
+                    <div class="workout-quest" data-type="daily">
+                        <span class="quest-badge badge-daily">DAILY</span>
+                        <div class="quest-icon"><i class="fas fa-dumbbell"></i></div>
+                        <h3 class="quest-title">PULL DAY PROTOCOL</h3>
+                        <p class="quest-desc">Train your back and biceps to develop pulling strength like a true hunter.</p>
+                        
+                        <div class="difficulty-indicator">
+                            <div class="difficulty-dot active"></div>
+                            <div class="difficulty-dot active"></div>
+                            <div class="difficulty-dot active"></div>
+                            <div class="difficulty-dot"></div>
+                            <div class="difficulty-dot"></div>
+                        </div>
+
+                        <div class="quest-details">
+                            <div class="detail-item">
+                                <div class="detail-label">REWARD XP</div>
+                                <div class="detail-value xp">+60 XP</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">STAT BOOST</div>
+                                <div class="detail-value stat-boost">+2 STR</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">DURATION</div>
+                                <div class="detail-value">50 MIN</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">DIFFICULTY</div>
+                                <div class="detail-value" style="color: #ff9800;">MEDIUM</div>
+                            </div>
+                        </div>
+
+                        <div class="quest-exercises">
+                            <div class="exercise-item">
+                                <span class="exercise-name">Pull-ups</span>
+                                <span class="exercise-reps">4 × 10</span>
+                            </div>
+                            <div class="exercise-item">
+                                <span class="exercise-name">Chin-ups</span>
+                                <span class="exercise-reps">3 × 10</span>
+                            </div>
+                            <div class="exercise-item">
+                                <span class="exercise-name">Inverted Rows</span>
+                                <span class="exercise-reps">3 × 15</span>
+                            </div>
+                            <div class="exercise-item">
+                                <span class="exercise-name">Bicep Curls</span>
+                                <span class="exercise-reps">3 × 12</span>
+                            </div>
+                        </div>
+
+                        <div class="quest-actions">
+                            <button class="quest-btn primary" onclick="startQuest(this)">START QUEST</button>
+                        </div>
+                    </div>
+
+                    <!-- Daily Quest: Leg Day -->
+                    <div class="workout-quest" data-type="daily">
+                        <span class="quest-badge badge-daily">DAILY</span>
+                        <div class="quest-icon"><i class="fas fa-running"></i></div>
+                        <h3 class="quest-title">LEG DAY DESTROYER</h3>
+                        <p class="quest-desc">Build powerful legs that can carry you through any dungeon.</p>
+                        
+                        <div class="difficulty-indicator">
+                            <div class="difficulty-dot active hard"></div>
+                            <div class="difficulty-dot active hard"></div>
+                            <div class="difficulty-dot active hard"></div>
+                            <div class="difficulty-dot active hard"></div>
+                            <div class="difficulty-dot"></div>
+                        </div>
+
+                        <div class="quest-details">
+                            <div class="detail-item">
+                                <div class="detail-label">REWARD XP</div>
+                                <div class="detail-value xp">+80 XP</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">STAT BOOST</div>
+                                <div class="detail-value stat-boost">+3 AGI</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">DURATION</div>
+                                <div class="detail-value">60 MIN</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">DIFFICULTY</div>
+                                <div class="detail-value" style="color: #f44336;">HARD</div>
+                            </div>
+                        </div>
+
+                        <div class="quest-exercises">
+                            <div class="exercise-item">
+                                <span class="exercise-name">Squats</span>
+                                <span class="exercise-reps">5 × 20</span>
+                            </div>
+                            <div class="exercise-item">
+                                <span class="exercise-name">Lunges</span>
+                                <span class="exercise-reps">4 × 15 each</span>
+                            </div>
+                            <div class="exercise-item">
+                                <span class="exercise-name">Jump Squats</span>
+                                <span class="exercise-reps">3 × 15</span>
+                            </div>
+                            <div class="exercise-item">
+                                <span class="exercise-name">Calf Raises</span>
+                                <span class="exercise-reps">4 × 25</span>
+                            </div>
+                        </div>
+
+                        <div class="quest-actions">
+                            <button class="quest-btn primary" onclick="startQuest(this)">START QUEST</button>
+                        </div>
+                    </div>
+
+                    <!-- Weekly Quest -->
+                    <div class="workout-quest" data-type="weekly">
+                        <span class="quest-badge badge-weekly">WEEKLY</span>
+                        <div class="quest-icon"><i class="fas fa-fire-alt"></i></div>
+                        <h3 class="quest-title">SHADOW MONARCH'S TRIAL</h3>
+                        <p class="quest-desc">Complete all daily quests for 7 consecutive days. Only the strongest survive.</p>
+                        
+                        <div class="difficulty-indicator">
+                            <div class="difficulty-dot active extreme"></div>
+                            <div class="difficulty-dot active extreme"></div>
+                            <div class="difficulty-dot active extreme"></div>
+                            <div class="difficulty-dot active extreme"></div>
+                            <div class="difficulty-dot active extreme"></div>
+                        </div>
+
+                        <div class="quest-details">
+                            <div class="detail-item">
+                                <div class="detail-label">REWARD XP</div>
+                                <div class="detail-value xp">+500 XP</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">STAT BOOST</div>
+                                <div class="detail-value stat-boost">+5 ALL</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">PROGRESS</div>
+                                <div class="detail-value" id="weeklyProgress">0/7 DAYS</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">DIFFICULTY</div>
+                                <div class="detail-value" style="color: #9c27b0;">EXTREME</div>
+                            </div>
+                        </div>
+
+                        <div class="quest-progress-bar">
+                            <div class="quest-progress-fill" style="width: 0%"></div>
+                        </div>
+
+                        <div class="quest-actions">
+                            <button class="quest-btn">VIEW PROGRESS</button>
+                        </div>
+                    </div>
+
+                    <!-- Special Quest -->
+                    <div class="workout-quest" data-type="special">
+                        <span class="quest-badge badge-special">SPECIAL</span>
+                        <div class="quest-icon"><i class="fas fa-skull"></i></div>
+                        <h3 class="quest-title">100 REPS CHALLENGE</h3>
+                        <p class="quest-desc">Complete 100 reps of each: Push-ups, Squats, Sit-ups. A trial worthy of S-Rank hunters.</p>
+                        
+                        <div class="difficulty-indicator">
+                            <div class="difficulty-dot active extreme"></div>
+                            <div class="difficulty-dot active extreme"></div>
+                            <div class="difficulty-dot active extreme"></div>
+                            <div class="difficulty-dot active extreme"></div>
+                            <div class="difficulty-dot active extreme"></div>
+                        </div>
+
+                        <div class="quest-details">
+                            <div class="detail-item">
+                                <div class="detail-label">REWARD XP</div>
+                                <div class="detail-value xp">+200 XP</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">STAT BOOST</div>
+                                <div class="detail-value stat-boost">+5 END</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">DURATION</div>
+                                <div class="detail-value">~90 MIN</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">DIFFICULTY</div>
+                                <div class="detail-value" style="color: #9c27b0;">EXTREME</div>
+                            </div>
+                        </div>
+
+                        <div class="quest-exercises">
+                            <div class="exercise-item">
+                                <span class="exercise-name">Push-ups</span>
+                                <span class="exercise-reps">100 total</span>
+                            </div>
+                            <div class="exercise-item">
+                                <span class="exercise-name">Squats</span>
+                                <span class="exercise-reps">100 total</span>
+                            </div>
+                            <div class="exercise-item">
+                                <span class="exercise-name">Sit-ups</span>
+                                <span class="exercise-reps">100 total</span>
+                            </div>
+                        </div>
+
+                        <div class="quest-actions">
+                            <button class="quest-btn primary" onclick="startQuest(this)">ACCEPT CHALLENGE</button>
+                        </div>
+                    </div>
+
+                    <!-- Core Quest -->
+                    <div class="workout-quest" data-type="daily">
+                        <span class="quest-badge badge-daily">DAILY</span>
+                        <div class="quest-icon"><i class="fas fa-shield-alt"></i></div>
+                        <h3 class="quest-title">CORE FORTIFICATION</h3>
+                        <p class="quest-desc">Strengthen your core to withstand any attack. Essential for hunter survival.</p>
+                        
+                        <div class="difficulty-indicator">
+                            <div class="difficulty-dot active"></div>
+                            <div class="difficulty-dot active"></div>
+                            <div class="difficulty-dot"></div>
+                            <div class="difficulty-dot"></div>
+                            <div class="difficulty-dot"></div>
+                        </div>
+
+                        <div class="quest-details">
+                            <div class="detail-item">
+                                <div class="detail-label">REWARD XP</div>
+                                <div class="detail-value xp">+40 XP</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">STAT BOOST</div>
+                                <div class="detail-value stat-boost">+2 END</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">DURATION</div>
+                                <div class="detail-value">30 MIN</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">DIFFICULTY</div>
+                                <div class="detail-value" style="color: #4caf50;">EASY</div>
+                            </div>
+                        </div>
+
+                        <div class="quest-exercises">
+                            <div class="exercise-item">
+                                <span class="exercise-name">Planks</span>
+                                <span class="exercise-reps">3 × 60s</span>
+                            </div>
+                            <div class="exercise-item">
+                                <span class="exercise-name">Crunches</span>
+                                <span class="exercise-reps">4 × 25</span>
+                            </div>
+                            <div class="exercise-item">
+                                <span class="exercise-name">Leg Raises</span>
+                                <span class="exercise-reps">3 × 15</span>
+                            </div>
+                            <div class="exercise-item">
+                                <span class="exercise-name">Mountain Climbers</span>
+                                <span class="exercise-reps">3 × 30</span>
+                            </div>
+                        </div>
+
+                        <div class="quest-actions">
+                            <button class="quest-btn primary" onclick="startQuest(this)">START QUEST</button>
+                        </div>
+                    </div>
+                    </div><!-- End defaultQuestsContainer -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Workout Modal -->
+    <div class="workout-modal" id="workoutModal">
+        <div class="workout-modal-content">
+            <div class="sl-title" style="margin-bottom: 20px;">
+                <span class="sl-exclamation">!</span>
+                <span>QUEST ACTIVE</span>
+            </div>
+            <div class="current-exercise" id="currentExercise">PUSH-UPS</div>
+            <div class="exercise-counter" id="exerciseCounter">0</div>
+            <div class="exercise-target">TARGET: <span id="exerciseTarget">80</span></div>
+            
+            <div class="quest-progress-bar" style="margin: 20px 0;">
+                <div class="quest-progress-fill" id="modalProgress" style="width: 0%"></div>
+            </div>
+
+            <div class="modal-controls">
+                <button class="btn-custom" onclick="incrementCounter()">
+                    <span class="btn-glow"></span>
+                    +1 REP
+                </button>
+                <button class="btn-custom" onclick="completeExercise()">
+                    <span class="btn-glow"></span>
+                    COMPLETE SET
+                </button>
+            </div>
+
+            <button class="quest-btn" style="margin-top: 20px;" onclick="closeModal()">EXIT QUEST</button>
+        </div>
+    </div>
+
+    <script>
+        // Initialize particles
+        function createBackgroundParticles() {
+            const container = document.querySelector('.bg-particles');
+            if (!container) return;
+            
+            const particleCount = 80;
+            
+            function createParticle() {
+                const particle = document.createElement('div');
+                particle.className = 'bg-particle';
+                particle.style.left = Math.random() * 100 + '%';
+                const size = Math.random() * 4 + 1;
+                particle.style.width = size + 'px';
+                particle.style.height = size + 'px';
+                particle.style.opacity = Math.random() * 0.5 + 0.2;
+                const duration = Math.random() * 3 + 2;
+                const delay = Math.random() * 2;
+                particle.style.animation = `floatUpDiagonal ${duration}s ${delay}s linear infinite`;
+                container.appendChild(particle);
+            }
+
+            for (let i = 0; i < particleCount; i++) {
+                createParticle();
+            }
+        }
+
+        createBackgroundParticles();
+
+        // Load hunter data for nav
+        function loadNavData() {
+            const level = localStorage.getItem('hunterLevel') || '1';
+            const xp = parseInt(localStorage.getItem('hunterXP') || '0');
+            const xpForNextLevel = parseInt(level) * 100;
+            const xpPercent = (xp / xpForNextLevel) * 100;
+            
+            document.getElementById('navLevel').textContent = level;
+            document.getElementById('navXpFill').style.width = xpPercent + '%';
+        }
+
+        loadNavData();
+
+        // Load AI-generated quests from localStorage
+        function loadAIQuests() {
+            const dailyQuestsJSON = localStorage.getItem('dailyQuests');
+            const weeklyQuestJSON = localStorage.getItem('weeklyQuest');
+            const completedQuestsJSON = localStorage.getItem('completedDailyQuests');
+            const completedQuests = completedQuestsJSON ? JSON.parse(completedQuestsJSON) : [];
+            
+            const aiContainer = document.getElementById('aiQuestsContainer');
+            const weeklyContainer = document.getElementById('aiWeeklyQuestContainer');
+            const defaultContainer = document.getElementById('defaultQuestsContainer');
+            
+            if (dailyQuestsJSON) {
+                const dailyQuests = JSON.parse(dailyQuestsJSON);
+                
+                // Hide default quests if we have AI quests
+                defaultContainer.style.display = 'none';
+                
+                dailyQuests.forEach((quest, index) => {
+                    const isCompleted = completedQuests.includes(index);
+                    const questCard = createQuestCard(quest, index, 'daily', isCompleted);
+                    aiContainer.appendChild(questCard);
+                });
+            } else {
+                // Show default quests
+                defaultContainer.style.display = 'contents';
+            }
+            
+            // Load weekly quest
+            if (weeklyQuestJSON) {
+                const weeklyQuest = JSON.parse(weeklyQuestJSON);
+                const questCard = createQuestCard(weeklyQuest, 'weekly', 'weekly', false);
+                weeklyContainer.appendChild(questCard);
+            }
+        }
+        
+        function createQuestCard(quest, index, type, isCompleted) {
+            const card = document.createElement('div');
+            card.className = 'workout-quest' + (isCompleted ? ' completed' : '');
+            card.dataset.type = type;
+            card.dataset.questIndex = index;
+            
+            const badgeClass = type === 'weekly' ? 'badge-weekly' : 'badge-daily';
+            const badgeText = type === 'weekly' ? 'WEEKLY' : 'DAILY';
+            
+            // Get icon based on quest type
+            let icon = 'fa-dumbbell';
+            if (quest.type === 'cardio') icon = 'fa-running';
+            else if (quest.type === 'strength') icon = 'fa-fist-raised';
+            else if (quest.type === 'core') icon = 'fa-shield-alt';
+            
+            // Build exercise details
+            let exerciseHTML = '';
+            if (quest.sets && quest.reps) {
+                exerciseHTML = `
+                    <div class="quest-exercises">
+                        <div class="exercise-item">
+                            <span class="exercise-name">${quest.name}</span>
+                            <span class="exercise-reps">${quest.sets} × ${quest.reps}</span>
+                        </div>
+                    </div>
+                `;
+            } else if (quest.duration) {
+                exerciseHTML = `
+                    <div class="quest-exercises">
+                        <div class="exercise-item">
+                            <span class="exercise-name">${quest.name}</span>
+                            <span class="exercise-reps">${quest.duration}</span>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // Difficulty based on XP
+            let difficulty = 1;
+            let diffColor = '#4caf50';
+            let diffText = 'EASY';
+            if (quest.xp >= 100) {
+                difficulty = 5; diffColor = '#9c27b0'; diffText = 'EXTREME';
+            } else if (quest.xp >= 70) {
+                difficulty = 4; diffColor = '#f44336'; diffText = 'HARD';
+            } else if (quest.xp >= 50) {
+                difficulty = 3; diffColor = '#ff9800'; diffText = 'MEDIUM';
+            } else if (quest.xp >= 30) {
+                difficulty = 2; diffColor = '#4caf50'; diffText = 'EASY';
+            }
+            
+            let diffDots = '';
+            for (let i = 0; i < 5; i++) {
+                const activeClass = i < difficulty ? ' active' : '';
+                const hardClass = difficulty >= 4 ? ' hard' : (difficulty === 5 ? ' extreme' : '');
+                diffDots += `<div class="difficulty-dot${activeClass}${hardClass}"></div>`;
+            }
+            
+            card.innerHTML = `
+                <span class="quest-badge ${badgeClass}">${badgeText}</span>
+                <div class="quest-icon"><i class="fas ${icon}"></i></div>
+                <h3 class="quest-title">${quest.name}</h3>
+                ${quest.slName ? `<p style="color:#85acb9;font-size:.8em;letter-spacing:1px;margin:-4px 0 8px;opacity:.75;">⟪ ${quest.slName} ⟫</p>` : ''}
+                <p class="quest-desc">${quest.howto || quest.description || ''}</p>
+
+                <div class="difficulty-indicator">
+                    ${diffDots}
+                </div>
+
+                <div class="quest-details">
+                    <div class="detail-item">
+                        <div class="detail-label">REWARD XP</div>
+                        <div class="detail-value xp">+${quest.xp} XP</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">STAT BOOST</div>
+                        <div class="detail-value stat-boost">+1 ${quest.stat || (quest.type === 'cardio' ? 'AGI' : 'STR')}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">SETS/REPS</div>
+                        <div class="detail-value">${quest.sets ? quest.sets + '×' + quest.reps : (quest.duration || '-')}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">DIFFICULTY</div>
+                        <div class="detail-value" style="color: ${diffColor};">${diffText}</div>
+                    </div>
+                </div>
+
+                ${exerciseHTML}
+
+                <div class="quest-actions">
+                    ${isCompleted 
+                        ? '<button class="quest-btn complete" disabled><i class="fas fa-check"></i> COMPLETED</button>'
+                        : '<button class="quest-btn primary" onclick="startAIQuest(this, ' + index + ')">START QUEST</button>'
+                    }
+                </div>
+            `;
+            
+            return card;
+        }
+        
+        function startAIQuest(button, questIndex) {
+            const dailyQuestsJSON = localStorage.getItem('dailyQuests');
+            if (!dailyQuestsJSON) return;
+            
+            const dailyQuests = JSON.parse(dailyQuestsJSON);
+            const quest = dailyQuests[questIndex];
+            
+            exercises = [{
+                name: quest.name,
+                reps: quest.sets ? `${quest.sets} × ${quest.reps}` : quest.duration
+            }];
+            
+            currentExerciseIndex = 0;
+            currentQuestIndex = questIndex;
+            loadExercise();
+            document.getElementById('workoutModal').classList.add('show');
+        }
+        
+        let currentQuestIndex = null;
+        
+        function completeAIQuest() {
+            closeModal();
+            
+            if (currentQuestIndex !== null) {
+                // Mark quest as completed in localStorage
+                const completedQuestsJSON = localStorage.getItem('completedDailyQuests');
+                const completedQuests = completedQuestsJSON ? JSON.parse(completedQuestsJSON) : [];
+                
+                if (!completedQuests.includes(currentQuestIndex)) {
+                    completedQuests.push(currentQuestIndex);
+                    localStorage.setItem('completedDailyQuests', JSON.stringify(completedQuests));
+                }
+                
+                // Get XP from quest
+                const dailyQuestsJSON = localStorage.getItem('dailyQuests');
+                const dailyQuests = JSON.parse(dailyQuestsJSON);
+                const quest = dailyQuests[currentQuestIndex];
+                const xpGain = quest.xp;
+                
+                // Add XP
+                let xp = parseInt(localStorage.getItem('hunterXP') || '0');
+                xp += xpGain;
+                
+                // Check for level up
+                const level = parseInt(localStorage.getItem('hunterLevel') || '1');
+                if (xp >= level * 100) {
+                    localStorage.setItem('hunterXP', xp - (level * 100));
+                    localStorage.setItem('hunterLevel', level + 1);
+                    alert(`LEVEL UP! You are now Level ${level + 1}!`);
+                } else {
+                    localStorage.setItem('hunterXP', xp);
+                }
+
+                // Update UI
+                const questCard = document.querySelector(`[data-quest-index="${currentQuestIndex}"]`);
+                if (questCard) {
+                    questCard.classList.add('completed');
+                    questCard.querySelector('.quest-actions').innerHTML = '<button class="quest-btn complete" disabled><i class="fas fa-check"></i> COMPLETED</button>';
+                }
+                
+                alert(`QUEST COMPLETE! +${xpGain} XP gained`);
+                loadNavData();
+                currentQuestIndex = null;
+            }
+        }
+
+        loadAIQuests();
+
+        // Filter functionality
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                
+                const filter = this.dataset.filter;
+                document.querySelectorAll('.workout-quest').forEach(quest => {
+                    if (filter === 'all' || quest.dataset.type === filter) {
+                        quest.style.display = 'block';
+                        quest.style.animation = 'fadeIn 0.3s ease-out';
+                    } else {
+                        quest.style.display = 'none';
+                    }
+                });
+            });
+        });
+
+        // Quest modal
+        let currentCounter = 0;
+        let currentTarget = 80;
+        let currentExerciseIndex = 0;
+        let exercises = [];
+
+        function startQuest(button) {
+            const quest = button.closest('.workout-quest');
+            const exerciseItems = quest.querySelectorAll('.exercise-item');
+            
+            exercises = [];
+            exerciseItems.forEach(item => {
+                exercises.push({
+                    name: item.querySelector('.exercise-name').textContent,
+                    reps: item.querySelector('.exercise-reps').textContent
+                });
+            });
+
+            currentExerciseIndex = 0;
+            loadExercise();
+            document.getElementById('workoutModal').classList.add('show');
+        }
+
+        function loadExercise() {
+            if (currentExerciseIndex >= exercises.length) {
+                completeQuest();
+                return;
+            }
+
+            const exercise = exercises[currentExerciseIndex];
+            document.getElementById('currentExercise').textContent = exercise.name.toUpperCase();
+            
+            // Parse target reps
+            const repsText = exercise.reps;
+            const match = repsText.match(/(\d+)\s*×\s*(\d+)/);
+            if (match) {
+                currentTarget = parseInt(match[1]) * parseInt(match[2]);
+            } else {
+                currentTarget = parseInt(repsText) || 20;
+            }
+            
+            document.getElementById('exerciseTarget').textContent = currentTarget;
+            currentCounter = 0;
+            updateCounter();
+        }
+
+        function incrementCounter() {
+            if (currentCounter < currentTarget) {
+                currentCounter++;
+                updateCounter();
+                
+                // Create particle effect
+                const counter = document.getElementById('exerciseCounter');
+                const particle = document.createElement('div');
+                particle.style.cssText = `
+                    position: absolute;
+                    color: #85acb9;
+                    font-size: 1.5em;
+                    animation: floatUp 0.5s ease-out forwards;
+                    pointer-events: none;
+                `;
+                particle.textContent = '+1';
+                counter.parentElement.appendChild(particle);
+                setTimeout(() => particle.remove(), 500);
+            }
+        }
+
+        function updateCounter() {
+            document.getElementById('exerciseCounter').textContent = currentCounter;
+            const progress = (currentCounter / currentTarget) * 100;
+            document.getElementById('modalProgress').style.width = progress + '%';
+        }
+
+        function completeExercise() {
+            currentCounter = currentTarget;
+            updateCounter();
+            
+            setTimeout(() => {
+                currentExerciseIndex++;
+                loadExercise();
+            }, 500);
+        }
+
+        function completeQuest() {
+            // If it's an AI quest, use the AI quest completion
+            if (currentQuestIndex !== null) {
+                completeAIQuest();
+                return;
+            }
+            
+            closeModal();
+            
+            // Add XP
+            let xp = parseInt(localStorage.getItem('hunterXP') || '0');
+            xp += 50; // Base XP reward
+            localStorage.setItem('hunterXP', xp);
+            
+            // Check for level up
+            const level = parseInt(localStorage.getItem('hunterLevel') || '1');
+            if (xp >= level * 100) {
+                localStorage.setItem('hunterXP', xp - (level * 100));
+                localStorage.setItem('hunterLevel', level + 1);
+            }
+
+            // Show completion notification
+            alert('QUEST COMPLETE! +50 XP gained');
+            loadNavData();
+        }
+
+        function closeModal() {
+            document.getElementById('workoutModal').classList.remove('show');
+        }
+
+        // Add float up animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes floatUp {
+                0% { transform: translateY(0); opacity: 1; }
+                100% { transform: translateY(-50px); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+    <script src="js/solo-leveling.js"></script>
+</body>
+</html>

@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SHADOW GYM - Classement</title>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="css/solo-leveling.css" rel="stylesheet">
+    <link href="css/gym.css" rel="stylesheet">
+    <script src="js/config.js"></script>
+    <script src="js/store.js"></script>
+    <script src="js/i18n.js"></script>
+    <script src="js/quests.js"></script>
+    <script src="js/weekly.js"></script>
+    <script src="js/cloud.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/auth-ui.js"></script>
+    <style>
+        body { opacity: 0; animation: fadeIn 0.5s ease-out forwards; overflow-x: hidden; overflow-y: auto; min-height: 100vh; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .lb-wrap { max-width: 900px; margin: 0 auto; padding: 20px; width: 100%; box-sizing: border-box; }
+        .lb-header { text-align: center; margin-bottom: 24px; }
+        .lb-title { font-size: 2.2em; color: #fff; letter-spacing: 6px; text-shadow: 0 0 20px #85acb9; margin: 0; -webkit-text-stroke: 0.5px #85acb9; }
+        .lb-sub { color: rgba(255,255,255,.55); letter-spacing: 2px; font-size: .85em; margin-top: 6px; }
+
+        .lb-badge-demo { display: inline-block; margin-top: 10px; padding: 4px 14px; border: 1px solid #ff9800; color: #ff9800;
+            font-size: .72em; letter-spacing: 2px; border-radius: 2px; }
+
+        .lb-filters { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-bottom: 22px; }
+        .lb-filter { padding: 7px 16px; background: transparent; border: 1px solid rgba(133,172,185,.4); color: rgba(255,255,255,.7);
+            cursor: pointer; letter-spacing: 1px; font-size: .82em; font-family: inherit; transition: all .2s; }
+        .lb-filter:hover { border-color: #85acb9; color: #fff; }
+        .lb-filter.active { background: rgba(133,172,185,.2); border-color: #fff; color: #fff; box-shadow: 0 0 14px rgba(133,172,185,.4); }
+
+        .lb-me-banner { background: linear-gradient(90deg, rgba(133,172,185,.18), rgba(133,172,185,.04)); border: 1px solid #85acb9;
+            padding: 14px 20px; margin-bottom: 18px; display: flex; align-items: center; justify-content: space-between;
+            box-shadow: 0 0 20px rgba(133,172,185,.25); }
+        .lb-me-banner .pos { font-size: 1.8em; color: #ffd700; text-shadow: 0 0 12px rgba(255,215,0,.5); letter-spacing: 1px; }
+        .lb-me-banner .lbl { color: rgba(255,255,255,.6); font-size: .72em; letter-spacing: 2px; }
+
+        /* Ligne en FLEX (jamais de débordement : le nom rétrécit/tronque) */
+        .lb-row { display: flex; align-items: center; gap: 12px;
+            padding: 12px 14px; margin-bottom: 8px; border: 1px solid rgba(133,172,185,.18); background: rgba(8,14,24,.55);
+            transition: all .2s; box-sizing: border-box; max-width: 100%; }
+        .lb-row:hover { border-color: rgba(133,172,185,.5); }
+        .lb-row.me { border-color: #85acb9; background: rgba(133,172,185,.12); box-shadow: 0 0 18px rgba(133,172,185,.3); }
+        .lb-pos { flex: 0 0 36px; font-size: 1.2em; font-weight: 700; color: rgba(255,255,255,.5); text-align: center; }
+        .lb-row.top1 .lb-pos { color: #ffd700; text-shadow: 0 0 14px #ffd700; }
+        .lb-row.top2 .lb-pos { color: #c0c0c0; text-shadow: 0 0 10px #c0c0c0; }
+        .lb-row.top3 .lb-pos { color: #cd7f32; text-shadow: 0 0 10px #cd7f32; }
+        .lb-row.top1 { border-color: rgba(255,215,0,.5); }
+
+        .lb-hunter { flex: 1 1 auto; display: flex; align-items: center; gap: 10px; min-width: 0; }
+        .lb-avatar { width: 40px; height: 40px; border-radius: 50%; border: 2px solid #85acb9; display: flex; align-items: center;
+            justify-content: center; color: #85acb9; flex: 0 0 40px; }
+        .lb-namewrap { min-width: 0; }
+        .lb-name { color: #fff; letter-spacing: 1px; font-size: .95em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .lb-meta { color: rgba(255,255,255,.45); font-size: .72em; letter-spacing: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .lb-rank { flex: 0 0 auto; font-weight: 700; font-size: .85em; padding: 3px 9px; border: 1.5px solid; letter-spacing: 1px; }
+        .lb-cp { flex: 0 0 auto; text-align: right; }
+        .lb-cp .val { color: #ffd700; font-size: 1.02em; font-weight: 700; text-shadow: 0 0 8px rgba(255,215,0,.35); white-space: nowrap; }
+        .lb-cp .lbl { color: rgba(255,255,255,.4); font-size: .62em; letter-spacing: 2px; display: block; }
+        .lb-duel { flex: 0 0 auto; background: rgba(156,39,176,.15); border: 1px solid #9c27b0; color: #fff; width: 36px; height: 36px;
+            cursor: pointer; border-radius: 4px; transition: all .2s; }
+        .lb-duel:hover { background: rgba(156,39,176,.45); box-shadow: 0 0 12px rgba(156,39,176,.5); }
+
+        .lb-loading { text-align: center; color: #85acb9; padding: 40px; letter-spacing: 2px; }
+        .lb-spinner { width: 44px; height: 44px; border: 3px solid rgba(133,172,185,.2); border-top-color: #85acb9; border-radius: 50%;
+            animation: spin 1s linear infinite; margin: 0 auto 16px; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        @media (max-width: 600px) {
+            .lb-wrap { padding: 10px; }
+            .lb-title { font-size: 1.4em; letter-spacing: 2px; }
+            .lb-row { padding: 9px 10px; gap: 8px; }
+            .lb-rank { display: none; }
+            .lb-cp .lbl { display: none; }
+            .lb-cp .val { font-size: .9em; }
+            .lb-avatar { width: 34px; height: 34px; flex-basis: 34px; font-size: .85em; }
+            .lb-pos { flex-basis: 26px; font-size: 1em; }
+        }
+        /* La nav passe en colonne sous 1024px → décale le contenu */
+        @media (max-width: 1200px) { .gym-container { padding-top: 190px !important; } }
+    </style>
+</head>
+<body>
+    <div class="sl-background">
+        <div class="sl-background-image" style="background: linear-gradient(135deg, #0a1628 0%, #0d1f3c 50%, #0a1628 100%);"></div>
+        <div class="sl-light-rays"></div>
+        <div class="sl-glow"></div>
+    </div>
+    <div class="scene-overlay"></div>
+    <div class="bg-particles"></div>
+    <div class="sl-particles"></div>
+
+    <nav class="gym-nav">
+        <div class="nav-brand">SHADOW GYM</div>
+        <div class="nav-links">
+            <a href="gym-dashboard.html" class="nav-link">ACCUEIL</a>
+            <a href="gym-workouts.html" class="nav-link">QUÊTES</a>
+            <a href="gym-exercises.html" class="nav-link">TALENTS</a>
+            <a href="gym-progress.html" class="nav-link">PROGRÈS</a>
+            <a href="gym-leaderboard.html" class="nav-link active">CLASSEMENT</a>
+            <a href="gym-challenges.html" class="nav-link">ARÈNE</a>
+            <a href="gym-guilds.html" class="nav-link">GUILDES</a>
+            <a href="gym-profile.html" class="nav-link">PROFIL</a>
+        </div>
+        <div class="nav-profile" id="navProfile">
+            <div class="nav-xp-bar"><div class="nav-xp-fill" id="navXpFill" style="width: 0%"></div></div>
+            <span class="nav-level">LV.<span id="navLevel">1</span></span>
+        </div>
+    </nav>
+
+    <div class="gym-container" style="align-items: flex-start; padding-top: 90px;">
+        <div class="lb-wrap">
+            <div class="lb-header">
+                <h1 class="lb-title"><i class="fas fa-trophy" style="color:#ffd700;"></i> <span data-i18n="lb.title">CLASSEMENT</span></h1>
+                <div class="lb-sub" data-i18n="lb.subtitle">LES HUNTERS LES PLUS PUISSANTS DU SYSTÈME</div>
+                <div id="demoBadge" class="lb-badge-demo" style="display:none;">
+                    <i class="fas fa-circle-info"></i> <span data-i18n="lb.demo">DONNÉES DE DÉMO — connecte-toi pour le classement réel</span>
+                </div>
+            </div>
+
+            <div class="lb-filters" id="lbFilters">
+                <button class="lb-filter active" data-rank="" data-i18n="lb.all">TOUS</button>
+                <button class="lb-filter" data-rank="S">RANG S</button>
+                <button class="lb-filter" data-rank="A">RANG A</button>
+                <button class="lb-filter" data-rank="B">RANG B</button>
+                <button class="lb-filter" data-rank="C">RANG C</button>
+                <button class="lb-filter" data-rank="D">RANG D</button>
+                <button class="lb-filter" data-rank="E">RANG E</button>
+            </div>
+
+            <div id="myRankBanner"></div>
+
+            <div id="lbList">
+                <div class="lb-loading"><div class="lb-spinner"></div>CHARGEMENT DU CLASSEMENT...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const rankColors = { E:'#888', D:'#4caf50', C:'#2196f3', B:'#9c27b0', A:'#ff9800', S:'#ffd700' };
+        let currentFilter = '';
+        let unsubscribe = null;
+        const t = (k) => (window.I18n ? I18n.t(k) : k);
+
+        function fmtNum(n) {
+            n = n || 0;
+            if (n >= 1000000) return (n/1000000).toFixed(1) + 'M';
+            if (n >= 1000) return (n/1000).toFixed(1) + 'K';
+            return String(n);
+        }
+
+        function rowHTML(h, pos) {
+            const isMe = h.isMe || (Cloud.user && h.id === Cloud.user.id);
+            const topClass = pos === 1 ? 'top1' : pos === 2 ? 'top2' : pos === 3 ? 'top3' : '';
+            const medal = pos <= 3 ? '<i class="fas fa-crown"></i>' : '#' + pos;
+            const color = rankColors[h.rank] || '#85acb9';
+            const avColor = h.avatar_color || color;
+            return `
+                <div class="lb-row ${topClass} ${isMe ? 'me' : ''}">
+                    <div class="lb-pos">${pos <= 3 ? medal : '<span style="font-size:.7em;">#'+pos+'</span>'}</div>
+                    <div class="lb-hunter">
+                        <div class="lb-avatar" style="border-color:${avColor};color:${avColor};"><i class="fas ${h.avatar || 'fa-user-ninja'}"></i></div>
+                        <div style="min-width:0;">
+                            <div class="lb-name">${escapeHtml(h.name || 'Hunter')}</div>
+                            <div class="lb-meta">${t('lb.lvl')} ${h.level} · ${fmtNum(h.total_xp)} XP · <i class="fas fa-fire" style="color:#ff7043;"></i> ${h.longest_streak||0}</div>
+                        </div>
+                    </div>
+                    <div class="lb-rank" style="color:${color};border-color:${color};">${h.rank}</div>
+                    <div class="lb-cp"><span class="val">${fmtNum(h.combat_power)}</span><span class="lbl">${t('lb.power_label')}</span></div>
+                    ${(Cloud.enabled && Cloud.isLoggedIn() && !isMe && !String(h.id).startsWith('demo')) ? `<button class="lb-duel" data-duel="${h.id}" data-name="${escapeHtml(h.name||'')}" title="${t('ar.recruit')}"><i class="fas fa-khanda"></i></button>` : ''}
+                </div>`;
+        }
+
+        function escapeHtml(s) { return String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+        async function loadLeaderboard() {
+            const list = document.getElementById('lbList');
+            list.innerHTML = '<div class="lb-loading"><div class="lb-spinner"></div>' + t('common.loading') + '</div>';
+            try {
+                const res = await Cloud.getLeaderboard({ rank: currentFilter, limit: 100 });
+                document.getElementById('demoBadge').style.display = res.demo ? 'inline-block' : 'none';
+
+                if (!res.rows.length) {
+                    list.innerHTML = '<div class="lb-loading">' + t('lb.empty') + '</div>';
+                    return;
+                }
+                list.innerHTML = res.rows.map((h, i) => rowHTML(h, i + 1)).join('');
+
+                // Bannière "ma position"
+                const banner = document.getElementById('myRankBanner');
+                const myId = Cloud.user ? Cloud.user.id : 'me';
+                const myIndex = res.rows.findIndex(h => h.id === myId || h.isMe);
+                if (myIndex >= 0) {
+                    const me = res.rows[myIndex];
+                    banner.innerHTML = `
+                        <div class="lb-me-banner">
+                            <div><div class="lbl">${t('lb.my_position')}</div><div class="pos">#${myIndex + 1}</div></div>
+                            <div style="text-align:center;"><div class="lbl">${t('lb.power_label')}</div><div style="color:#fff;font-size:1.3em;">${fmtNum(me.combat_power)}</div></div>
+                            <div style="text-align:right;"><div class="lbl">${t('common.rank')}</div><div style="color:${rankColors[me.rank]};font-size:1.3em;font-weight:700;">${me.rank}</div></div>
+                        </div>`;
+                } else { banner.innerHTML = ''; }
+            } catch (e) {
+                console.error(e);
+                list.innerHTML = '<div class="lb-loading" style="color:#ff4757;">' + t('lb.error') + '</div>';
+            }
+        }
+
+        // Défier un Hunter directement depuis le classement (social)
+        document.getElementById('lbList').addEventListener('click', async (e) => {
+            const b = e.target.closest('[data-duel]');
+            if (!b) return;
+            try {
+                await Cloud.createChallenge(b.dataset.duel, 'xp', 500);
+                GymUI.toast(t('ar.duel_sent') + ' — ' + b.dataset.name, 'achievement');
+            } catch (err) { GymUI.toast(err.message || 'Erreur', 'stat'); }
+        });
+
+        // Filtres
+        document.getElementById('lbFilters').addEventListener('click', (e) => {
+            const btn = e.target.closest('.lb-filter');
+            if (!btn) return;
+            document.querySelectorAll('.lb-filter').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            currentFilter = btn.dataset.rank;
+            loadLeaderboard();
+        });
+
+        // Puce de compte dans la nav
+        document.addEventListener('DOMContentLoaded', () => {
+            if (window.AuthUI) AuthUI.mountChip('#navProfile');
+        });
+
+        // Init : charge, puis abonne au temps réel si connecté
+        (async () => {
+            await Cloud.init();
+            await loadLeaderboard();
+            if (Cloud.enabled) {
+                unsubscribe = Cloud.subscribeLeaderboard(() => loadLeaderboard());
+            }
+            Cloud.on('auth', () => loadLeaderboard());
+        })();
+
+        window.addEventListener('beforeunload', () => { if (unsubscribe) unsubscribe(); });
+
+        // Effet d'entrée
+        document.body.style.opacity = '1';
+    </script>
+    <script src="js/solo-leveling.js"></script>
+</body>
+</html>

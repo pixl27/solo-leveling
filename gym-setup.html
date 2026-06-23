@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SHADOW GYM - Hunter Setup</title>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="css/solo-leveling.css" rel="stylesheet">
+    <link href="css/gym.css" rel="stylesheet">
+    <script src="js/config.js"></script>
+    <script src="js/store.js"></script>
+    <script src="js/i18n.js"></script>
+    <script src="js/cloud.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/auth-ui.js"></script>
+    <style>
+        body {
+            opacity: 0;
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .setup-container {
+            max-width: 500px;
+            width: 90%;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .setup-title {
+            color: #85acb9;
+            font-size: 1.8em;
+            letter-spacing: 3px;
+            margin-bottom: 10px;
+            text-shadow: 0 0 15px #85acb9;
+            -webkit-text-stroke: 0.5px #fff;
+        }
+
+        .setup-subtitle {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9em;
+            margin-bottom: 30px;
+            letter-spacing: 1px;
+        }
+
+        .hunter-name-display {
+            color: #ffd700;
+            font-size: 1.2em;
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .form-label {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.85em;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .form-input {
+            background: transparent;
+            border: 1px solid #85acb9;
+            color: #fff;
+            padding: 12px 15px;
+            font-size: 1em;
+            width: 100%;
+            box-sizing: border-box;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            font-family: 'Lato', sans-serif;
+        }
+
+        .form-input:focus {
+            outline: none;
+            box-shadow: 0 0 15px rgba(133, 172, 185, 0.4);
+            border-color: #fff;
+        }
+
+        .form-input::placeholder {
+            color: rgba(133, 172, 185, 0.5);
+        }
+
+        .input-row {
+            display: flex;
+            gap: 15px;
+        }
+
+        .input-row .form-group {
+            flex: 1;
+        }
+
+        .objective-options {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .objective-btn {
+            flex: 1;
+            min-width: 120px;
+            background: transparent;
+            border: 1px solid #85acb9;
+            color: #85acb9;
+            padding: 12px 15px;
+            font-size: 0.85em;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Lato', sans-serif;
+        }
+
+        .objective-btn:hover {
+            background: rgba(133, 172, 185, 0.1);
+            box-shadow: 0 0 15px rgba(133, 172, 185, 0.3);
+        }
+
+        .objective-btn.selected {
+            background: rgba(133, 172, 185, 0.2);
+            border-color: #fff;
+            color: #fff;
+            box-shadow: 0 0 20px rgba(133, 172, 185, 0.5);
+        }
+
+        .generate-btn {
+            margin-top: 30px;
+            width: 100%;
+        }
+
+        .loading-container {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+        }
+
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 3px solid rgba(133, 172, 185, 0.2);
+            border-top-color: #85acb9;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            color: #85acb9;
+            font-size: 1em;
+            letter-spacing: 2px;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+
+        .loading-status {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.8em;
+            margin-top: 10px;
+            letter-spacing: 1px;
+        }
+
+        .error-message {
+            color: #ff4757;
+            font-size: 0.85em;
+            margin-top: 10px;
+            text-shadow: 0 0 10px rgba(255, 71, 87, 0.5);
+            display: none;
+        }
+
+        .result-container {
+            display: none;
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        .result-title {
+            color: #85acb9;
+            font-size: 1.2em;
+            letter-spacing: 2px;
+            margin-bottom: 15px;
+            text-shadow: 0 0 10px #85acb9;
+        }
+
+        .result-message {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9em;
+            margin-bottom: 20px;
+        }
+
+        .quest-preview {
+            text-align: left;
+            margin: 20px 0;
+        }
+
+        .quest-preview-item {
+            background: rgba(133, 172, 185, 0.1);
+            border: 1px solid rgba(133, 172, 185, 0.3);
+            padding: 12px 15px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .quest-preview-name {
+            color: #fff;
+            font-size: 0.9em;
+        }
+
+        .quest-preview-xp {
+            color: #ffd700;
+            font-size: 0.85em;
+            text-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+        }
+
+        .glowing-blue {
+            color: #03a9f4 !important;
+            text-shadow: 0 0 10px #03a9f4, 0 0 20px #03a9f4, 0 0 30px #03a9f4 !important;
+        }
+
+        .glowing-green {
+            color: #4caf50 !important;
+            text-shadow: 0 0 10px #4caf50, 0 0 20px #4caf50, 0 0 30px #4caf50 !important;
+        }
+
+        .glowing-purple {
+            color: #9c27b0 !important;
+            text-shadow: 0 0 10px #9c27b0, 0 0 20px #9c27b0, 0 0 30px #9c27b0 !important;
+        }
+
+        .glowing-gold {
+            color: #ffd700 !important;
+            text-shadow: 0 0 10px #ffd700, 0 0 20px #ffd700, 0 0 30px #ffd700 !important;
+        }
+
+        .glowing-red {
+            color: #ff4757 !important;
+            text-shadow: 0 0 10px #ff4757, 0 0 20px #ff4757, 0 0 30px #ff4757 !important;
+        }
+
+        .glowing-orange {
+            color: #ff9800 !important;
+            text-shadow: 0 0 10px #ff9800, 0 0 20px #ff9800, 0 0 30px #ff9800 !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="sl-background">
+        <div class="sl-background-image" style="background: linear-gradient(135deg, #0a1628 0%, #0d1f3c 50%, #0a1628 100%);"></div>
+        <div class="sl-light-rays"></div>
+        <div class="sl-glow"></div>
+    </div>
+
+    <div class="scene-overlay"></div>
+    <div class="bg-particles"></div>
+    <div class="sl-particles"></div>
+
+    <div class="sl-notification setup-container" style="width: auto; max-width: 550px; padding: 40px; transform: translate(-50%, -50%);">
+        
+        <div class="sl-title">
+            <span class="sl-exclamation">!</span>
+            <span>HUNTER ASSESSMENT</span>
+        </div>
+
+        <p class="hunter-name-display"><span class="glowing-blue">Hunter</span>: <span id="displayName">-</span> | <span class="glowing-purple">Rank</span>: <span id="displayRank" class="glowing-gold">-</span></p>
+
+        <p class="setup-subtitle">[SYSTEM] Analyzing <span class="glowing-green">physical parameters</span> for optimal <span class="glowing-orange">training protocol</span>...</p>
+
+        <div id="formContainer">
+            <div class="input-row">
+                <div class="form-group">
+                    <label class="form-label">HEIGHT (cm)</label>
+                    <input type="number" class="form-input" id="heightInput" placeholder="170" min="100" max="250">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">WEIGHT (kg)</label>
+                    <input type="number" class="form-input" id="weightInput" placeholder="70" min="30" max="300">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">AGE</label>
+                <input type="number" class="form-input" id="ageInput" placeholder="25" min="10" max="100">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">YOUR OBJECTIVE</label>
+                <div class="objective-options">
+                    <button type="button" class="objective-btn" data-objective="lose">
+                        <i class="fas fa-fire"></i> LOSE WEIGHT
+                    </button>
+                    <button type="button" class="objective-btn" data-objective="gain">
+                        <i class="fas fa-dumbbell"></i> GAIN MUSCLE
+                    </button>
+                    <button type="button" class="objective-btn" data-objective="maintain">
+                        <i class="fas fa-balance-scale"></i> MAINTAIN
+                    </button>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">FITNESS LEVEL</label>
+                <div class="objective-options">
+                    <button type="button" class="fitness-btn" data-fitness="beginner">
+                        BEGINNER
+                    </button>
+                    <button type="button" class="fitness-btn" data-fitness="intermediate">
+                        INTERMEDIATE
+                    </button>
+                    <button type="button" class="fitness-btn" data-fitness="advanced">
+                        ADVANCED
+                    </button>
+                </div>
+            </div>
+
+            <p class="error-message" id="errorMessage"></p>
+
+            <div class="buttons-container">
+                <button class="btn-custom generate-btn" id="generateBtn">
+                    <span class="btn-glow"></span>
+                    <i class="fas fa-brain"></i> GENERATE TRAINING PROTOCOL
+                </button>
+            </div>
+        </div>
+
+        <div class="loading-container" id="loadingContainer">
+            <div class="loading-spinner"></div>
+            <div class="loading-text">ANALYZING DATA...</div>
+            <div class="loading-status" id="loadingStatus">Connecting to System AI...</div>
+        </div>
+
+        <div class="result-container" id="resultContainer">
+            <div class="result-title"><i class="fas fa-check-circle"></i> PROTOCOL GENERATED</div>
+            <p class="result-message">[SYSTEM] Your personalized training quests have been created!</p>
+            
+            <div class="quest-preview" id="questPreview">
+                <!-- Quest previews will be inserted here -->
+            </div>
+            
+            <div class="buttons-container" style="margin-top: 20px;">
+                <button class="btn-custom" id="continueBtn">
+                    <span class="btn-glow"></span>
+                    BEGIN TRAINING <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/quests.js"></script>
+    <script src="js/weekly.js"></script>
+    <script>
+        // Get hunter data from localStorage
+        const hunterName = localStorage.getItem('hunterName') || 'Hunter';
+        const hunterRank = localStorage.getItem('hunterRank') || 'E';
+        
+        document.getElementById('displayName').textContent = hunterName;
+        document.getElementById('displayRank').textContent = hunterRank;
+
+        // Objective selection
+        let selectedObjective = null;
+        document.querySelectorAll('.objective-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.objective-btn').forEach(b => b.classList.remove('selected'));
+                this.classList.add('selected');
+                selectedObjective = this.dataset.objective;
+            });
+        });
+
+        // Fitness level selection
+        let selectedFitness = null;
+        document.querySelectorAll('.fitness-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.fitness-btn').forEach(b => b.classList.remove('selected'));
+                this.classList.add('selected');
+                selectedFitness = this.dataset.fitness;
+            });
+        });
+
+        // Style fitness buttons same as objective buttons
+        document.querySelectorAll('.fitness-btn').forEach(btn => {
+            btn.className = 'objective-btn fitness-btn';
+        });
+
+        // Generate training protocol
+        document.getElementById('generateBtn').addEventListener('click', async function() {
+            const height = document.getElementById('heightInput').value;
+            const weight = document.getElementById('weightInput').value;
+            const age = document.getElementById('ageInput').value;
+            const errorEl = document.getElementById('errorMessage');
+
+            // Validation
+            if (!height || !weight || !age) {
+                errorEl.textContent = '[ERROR] All physical parameters are required!';
+                errorEl.style.display = 'block';
+                return;
+            }
+
+            if (!selectedObjective) {
+                errorEl.textContent = '[ERROR] Select your training objective!';
+                errorEl.style.display = 'block';
+                return;
+            }
+
+            if (!selectedFitness) {
+                errorEl.textContent = '[ERROR] Select your fitness level!';
+                errorEl.style.display = 'block';
+                return;
+            }
+
+            errorEl.style.display = 'none';
+
+            // Store user data
+            localStorage.setItem('hunterHeight', height);
+            localStorage.setItem('hunterWeight', weight);
+            localStorage.setItem('hunterAge', age);
+            localStorage.setItem('hunterObjective', selectedObjective);
+            localStorage.setItem('hunterFitness', selectedFitness);
+
+            // Calculate BMI
+            const heightM = height / 100;
+            const bmi = (weight / (heightM * heightM)).toFixed(1);
+            localStorage.setItem('hunterBMI', bmi);
+
+            // Show loading
+            document.getElementById('formContainer').style.display = 'none';
+            document.getElementById('loadingContainer').style.display = 'flex';
+
+            try {
+                await generateTrainingProtocol(height, weight, age, selectedObjective, selectedFitness, bmi);
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('loadingContainer').style.display = 'none';
+                document.getElementById('formContainer').style.display = 'block';
+                errorEl.textContent = '[ERROR] Failed to connect to System AI. Please try again.';
+                errorEl.style.display = 'block';
+            }
+        });
+
+        async function generateTrainingProtocol(height, weight, age, objective, fitness, bmi) {
+            const statusEl = document.getElementById('loadingStatus');
+            
+            statusEl.textContent = 'Analyse des paramètres physiques...';
+
+            // Génération 100% locale via la bibliothèque de quêtes.
+            // Aucune clé API, aucun appel réseau : instantané, gratuit et hors-ligne.
+            await new Promise(r => setTimeout(r, 700));
+            statusEl.textContent = 'Génération du protocole personnalisé...';
+            await new Promise(r => setTimeout(r, 600));
+
+            try {
+                if (typeof QuestLibrary === 'undefined') {
+                    throw new Error('QuestLibrary non chargée');
+                }
+                const protocol = QuestLibrary.generateProtocol({
+                    objective: objective,
+                    fitness: fitness,
+                    rank: hunterRank,
+                    lang: (window.Hunter && Hunter.get('settings') && Hunter.get('settings').language) || 'fr'
+                });
+                
+                // Clear any previous quest completion data for fresh start
+                localStorage.removeItem('completedDailyQuests');
+                
+                // Store each part separately in localStorage
+                localStorage.setItem('dailyQuests', JSON.stringify(protocol.dailyQuests || []));
+                localStorage.setItem('weeklyQuest', JSON.stringify(protocol.weeklyQuest || {}));
+                localStorage.setItem('weeklySchedule', JSON.stringify(protocol.weeklySchedule || {}));
+                localStorage.setItem('nutritionTips', JSON.stringify(protocol.nutritionTips || []));
+                localStorage.setItem('protocolMeta', JSON.stringify(protocol.meta || {}));
+                localStorage.setItem('protocolGenerated', 'true');
+
+                // Show result with quest preview
+                document.getElementById('loadingContainer').style.display = 'none';
+                document.getElementById('resultContainer').style.display = 'block';
+                
+                // Display quest preview
+                const previewContainer = document.getElementById('questPreview');
+                let previewHTML = '<p style="color: #85acb9; margin-bottom: 10px; font-size: 0.85em;">QUÊTES DU JOUR :</p>';
+
+                protocol.dailyQuests.forEach(quest => {
+                    previewHTML += `
+                        <div class="quest-preview-item">
+                            <span class="quest-preview-name"><i class="fas fa-scroll" style="color: #85acb9; margin-right: 8px;"></i>${quest.name}<br><span style="font-size:0.78em;opacity:0.6;">⟪${quest.slName || ''}⟫ · ${quest.target || ''}</span></span>
+                            <span class="quest-preview-xp">+${quest.xp} XP</span>
+                        </div>
+                    `;
+                });
+
+                if (protocol.weeklyQuest) {
+                    previewHTML += `
+                        <p style="color: #ffd700; margin: 15px 0 10px 0; font-size: 0.85em;">QUÊTE HEBDOMADAIRE :</p>
+                        <div class="quest-preview-item" style="border-color: rgba(255, 215, 0, 0.3); background: rgba(255, 215, 0, 0.05);">
+                            <span class="quest-preview-name"><i class="fas fa-crown" style="color: #ffd700; margin-right: 8px;"></i>${protocol.weeklyQuest.name}</span>
+                            <span class="quest-preview-xp">+${protocol.weeklyQuest.xp} XP</span>
+                        </div>
+                    `;
+                }
+                
+                previewContainer.innerHTML = previewHTML;
+                
+            } catch (genError) {
+                console.error('Erreur de génération:', genError);
+                // Repli : protocole par défaut garanti (jamais d'échec visible pour le Hunter)
+                const fallback = (typeof QuestLibrary !== 'undefined')
+                    ? QuestLibrary.generateProtocol({ objective: 'maintain', fitness: 'beginner', rank: hunterRank })
+                    : { dailyQuests: [], weeklyQuest: {}, weeklySchedule: {}, nutritionTips: [] };
+                localStorage.setItem('dailyQuests', JSON.stringify(fallback.dailyQuests));
+                localStorage.setItem('weeklyQuest', JSON.stringify(fallback.weeklyQuest));
+                localStorage.setItem('weeklySchedule', JSON.stringify(fallback.weeklySchedule));
+                localStorage.setItem('nutritionTips', JSON.stringify(fallback.nutritionTips));
+                localStorage.setItem('protocolGenerated', 'true');
+
+                document.getElementById('loadingContainer').style.display = 'none';
+                document.getElementById('resultContainer').style.display = 'block';
+                document.getElementById('questPreview').innerHTML = '<p style="color: rgba(255,255,255,0.7);">Protocole généré avec succès !</p>';
+            }
+        }
+
+        // Continue to dashboard
+        document.getElementById('continueBtn').addEventListener('click', function() {
+            document.body.style.transition = 'opacity 0.5s ease-out';
+            document.body.style.opacity = '0';
+            
+            setTimeout(() => {
+                window.location.href = 'gym-accept.html';
+            }, 500);
+        });
+
+        // Initialize particles
+        function createBackgroundParticles() {
+            const container = document.querySelector('.bg-particles');
+            if (!container) return;
+            
+            const particleCount = 50;
+            
+            function createParticle() {
+                const particle = document.createElement('div');
+                particle.className = 'bg-particle';
+                particle.style.left = Math.random() * 100 + '%';
+                const size = Math.random() * 3 + 1;
+                particle.style.width = size + 'px';
+                particle.style.height = size + 'px';
+                particle.style.opacity = Math.random() * 0.4 + 0.1;
+                const duration = Math.random() * 3 + 2;
+                const delay = Math.random() * 2;
+                particle.style.animation = `floatUpDiagonal ${duration}s ${delay}s linear infinite`;
+                container.appendChild(particle);
+            }
+
+            for (let i = 0; i < particleCount; i++) {
+                createParticle();
+            }
+        }
+
+        createBackgroundParticles();
+    </script>
+    <script src="js/solo-leveling.js"></script>
+</body>
+</html>

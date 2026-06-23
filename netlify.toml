@@ -1,0 +1,57 @@
+# =====================================================================
+# SHADOW GYM - Configuration Netlify
+# Site statique (aucune étape de build). Déploiement : voir README.md
+# =====================================================================
+
+[build]
+  publish = "."
+  command = ""
+
+# La racine "/" sert la page d'accueil du gym (réécriture, l'URL reste "/")
+[[redirects]]
+  from = "/"
+  to = "/start.html"
+  status = 200
+
+# En-têtes de sécurité sur toutes les pages
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "SAMEORIGIN"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "geolocation=(), microphone=(), camera=()"
+
+# HTML : toujours revalider (pour livrer les mises à jour rapidement)
+[[headers]]
+  for = "/*.html"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+# JS / CSS : cache court (le service worker gère le hors-ligne)
+[[headers]]
+  for = "/js/*"
+  [headers.values]
+    Cache-Control = "public, max-age=600"
+
+[[headers]]
+  for = "/css/*"
+  [headers.values]
+    Cache-Control = "public, max-age=600"
+
+# Images / icône : cache long
+[[headers]]
+  for = "/*.svg"
+  [headers.values]
+    Cache-Control = "public, max-age=86400"
+
+[[headers]]
+  for = "/*.png"
+  [headers.values]
+    Cache-Control = "public, max-age=86400"
+
+# Le service worker ne doit jamais être mis en cache longtemps
+[[headers]]
+  for = "/sw.js"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"

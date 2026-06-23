@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SHADOW GYM - Hunter Profile</title>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="css/solo-leveling.css" rel="stylesheet">
+    <link href="css/gym.css" rel="stylesheet">
+    <script src="js/config.js"></script>
+    <script src="js/store.js"></script>
+    <script src="js/i18n.js"></script>
+    <script src="js/quests.js"></script>
+    <script src="js/weekly.js"></script>
+    <script src="js/cloud.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/auth-ui.js"></script>
+    <script src="js/avatars.js"></script>
+    <style>
+        body {
+            opacity: 0;
+            animation: fadeIn 0.5s ease-out forwards;
+            overflow-x: hidden;
+            overflow-y: auto;
+            height: auto;
+            min-height: 100vh;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .profile-container {
+            width: 100%;
+            max-width: 1000px;
+            padding: 20px;
+        }
+
+        .profile-header {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 40px;
+            padding: 30px;
+            background: transparent;
+            border: 2px solid #fff;
+            position: relative;
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
+        }
+
+        .profile-header::before {
+            content: '';
+            position: absolute;
+            top: -3px;
+            left: -3px;
+            right: -3px;
+            bottom: -3px;
+            border: 1px solid rgba(133, 172, 185, 0.3);
+            pointer-events: none;
+        }
+
+        .profile-avatar-section {
+            text-align: center;
+        }
+
+        .profile-avatar {
+            width: 150px;
+            height: 150px;
+            border: 3px solid #85acb9;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4em;
+            color: #85acb9;
+            background: rgba(0, 0, 0, 0.5);
+            margin-bottom: 15px;
+            box-shadow: 0 0 30px rgba(133, 172, 185, 0.5);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .profile-avatar::after {
+            content: '';
+            position: absolute;
+            inset: -5px;
+            border: 1px solid rgba(133, 172, 185, 0.3);
+            border-radius: 50%;
+        }
+
+        .avatar-edit-btn {
+            background: transparent;
+            border: 1px solid rgba(133, 172, 185, 0.5);
+            color: #85acb9;
+            padding: 8px 15px;
+            font-size: 0.75em;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .avatar-edit-btn:hover {
+            background: rgba(133, 172, 185, 0.2);
+            border-color: #85acb9;
+        }
+
+        .profile-info {
+            flex: 1;
+        }
+
+        .hunter-name {
+            color: #fff;
+            font-size: 2em;
+            letter-spacing: 3px;
+            margin-bottom: 5px;
+            text-shadow: 0 0 20px #85acb9;
+        }
+
+        .hunter-title {
+            color: #ffd700;
+            font-size: 1em;
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+
+        .profile-stats-row {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 20px;
+        }
+
+        .profile-stat-box {
+            text-align: center;
+            padding: 15px 25px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(133, 172, 185, 0.3);
+        }
+
+        .profile-stat-value {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #fff;
+        }
+
+        .profile-stat-label {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.7em;
+            letter-spacing: 2px;
+            margin-top: 5px;
+        }
+
+        .rank-badge-large {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 25px;
+            border: 2px solid;
+            font-size: 1.3em;
+            font-weight: bold;
+            letter-spacing: 3px;
+            box-shadow: 0 0 20px currentColor;
+        }
+
+        /* Profile Sections */
+        .profile-section {
+            margin-bottom: 30px;
+            background: transparent;
+            border: 2px solid #fff;
+            padding: 25px;
+            position: relative;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+        }
+
+        .profile-section::before {
+            content: '';
+            position: absolute;
+            top: -3px;
+            left: -3px;
+            right: -3px;
+            bottom: -3px;
+            border: 1px solid rgba(133, 172, 185, 0.3);
+            pointer-events: none;
+        }
+
+        .section-title {
+            color: #fff;
+            font-size: 1.1em;
+            letter-spacing: 3px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-shadow: 0 0 10px #85acb9;
+        }
+
+        .section-title i {
+            color: #85acb9;
+        }
+
+        /* Title Selection */
+        .title-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(min(100%, 200px), 1fr));
+            gap: 10px;
+        }
+
+        .title-option {
+            padding: 12px 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(133, 172, 185, 0.3);
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.85em;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .title-option:hover {
+            border-color: #85acb9;
+            background: rgba(133, 172, 185, 0.1);
+        }
+
+        .title-option.selected {
+            border-color: #ffd700;
+            color: #ffd700;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+        }
+
+        .title-option.locked {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .title-option.locked:hover {
+            border-color: rgba(133, 172, 185, 0.3);
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        /* Equipment/Gear Section */
+        .gear-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(min(100%, 180px), 1fr));
+            gap: 15px;
+        }
+
+        .gear-slot {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(133, 172, 185, 0.3);
+            padding: 20px;
+            text-align: center;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .gear-slot:hover {
+            border-color: #85acb9;
+            box-shadow: 0 0 15px rgba(133, 172, 185, 0.3);
+        }
+
+        .gear-slot.equipped {
+            border-color: #ffd700;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.2);
+        }
+
+        .gear-icon {
+            font-size: 2.5em;
+            color: #85acb9;
+            margin-bottom: 10px;
+        }
+
+        .gear-slot.equipped .gear-icon {
+            color: #ffd700;
+        }
+
+        .gear-slot-name {
+            color: #fff;
+            font-size: 0.9em;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+
+        .gear-slot-item {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.75em;
+        }
+
+        .gear-slot.equipped .gear-slot-item {
+            color: #ffd700;
+        }
+
+        .gear-bonus {
+            color: #00ff62;
+            font-size: 0.7em;
+            margin-top: 8px;
+        }
+
+        /* Settings Section */
+        .settings-grid {
+            display: grid;
+            gap: 15px;
+        }
+
+        .setting-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(133, 172, 185, 0.2);
+        }
+
+        .setting-info {
+            flex: 1;
+        }
+
+        .setting-name {
+            color: #fff;
+            font-size: 0.95em;
+            margin-bottom: 5px;
+        }
+
+        .setting-desc {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.75em;
+        }
+
+        .toggle-switch {
+            width: 50px;
+            height: 25px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(133, 172, 185, 0.5);
+            border-radius: 25px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-switch.active {
+            background: rgba(133, 172, 185, 0.3);
+            border-color: #85acb9;
+        }
+
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            width: 19px;
+            height: 19px;
+            border-radius: 50%;
+            background: #fff;
+            top: 2px;
+            left: 2px;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-switch.active::after {
+            left: calc(100% - 21px);
+            background: #85acb9;
+            box-shadow: 0 0 10px #85acb9;
+        }
+
+        /* Stats Distribution */
+        .stat-distribution {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(133, 172, 185, 0.3);
+            padding: 20px;
+            text-align: center;
+        }
+
+        .stat-card-icon {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+        }
+
+        .stat-card-value {
+            font-size: 1.8em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stat-card-name {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.7em;
+            letter-spacing: 2px;
+        }
+
+        .stat-card.str {
+            border-color: rgba(255, 71, 87, 0.5);
+        }
+        .stat-card.str .stat-card-icon,
+        .stat-card.str .stat-card-value {
+            color: #ff4757;
+        }
+
+        .stat-card.agi {
+            border-color: rgba(0, 255, 98, 0.5);
+        }
+        .stat-card.agi .stat-card-icon,
+        .stat-card.agi .stat-card-value {
+            color: #00ff62;
+        }
+
+        .stat-card.end {
+            border-color: rgba(255, 215, 0, 0.5);
+        }
+        .stat-card.end .stat-card-icon,
+        .stat-card.end .stat-card-value {
+            color: #ffd700;
+        }
+
+        .stat-card.vit {
+            border-color: rgba(33, 150, 243, 0.5);
+        }
+        .stat-card.vit .stat-card-icon,
+        .stat-card.vit .stat-card-value {
+            color: #2196f3;
+        }
+
+        .available-points {
+            text-align: center;
+            padding: 15px;
+            background: rgba(133, 172, 185, 0.1);
+            border: 1px dashed rgba(133, 172, 185, 0.5);
+            color: #85acb9;
+            margin-bottom: 20px;
+        }
+
+        .available-points span {
+            font-size: 1.5em;
+            color: #ffd700;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+
+        .stat-allocate-btns {
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+            margin-top: 10px;
+        }
+
+        .stat-btn {
+            width: 30px;
+            height: 30px;
+            border: 1px solid rgba(133, 172, 185, 0.5);
+            background: transparent;
+            color: #85acb9;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .stat-btn:hover:not(:disabled) {
+            background: rgba(133, 172, 185, 0.2);
+            border-color: #85acb9;
+        }
+
+        .stat-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        /* Action Buttons */
+        .profile-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        .profile-btn {
+            padding: 12px 30px;
+            background: transparent;
+            border: 2px solid #fff;
+            color: #fff;
+            font-size: 0.9em;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .profile-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+        }
+
+        .profile-btn.danger {
+            border-color: #ff4757;
+            color: #ff4757;
+        }
+
+        .profile-btn.danger:hover {
+            background: rgba(255, 71, 87, 0.1);
+            box-shadow: 0 0 20px rgba(255, 71, 87, 0.3);
+        }
+
+        @media (max-width: 768px) {
+            .profile-header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .profile-stats-row {
+                justify-content: center;
+            }
+
+            .stat-distribution {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="sl-background">
+        <div class="sl-background-image" style="background: linear-gradient(135deg, #0a1628 0%, #0d1f3c 50%, #0a1628 100%);"></div>
+        <div class="sl-light-rays"></div>
+        <div class="sl-glow"></div>
+    </div>
+
+    <div class="scene-overlay"></div>
+    <div class="bg-particles"></div>
+    <div class="sl-particles"></div>
+
+    <!-- Navigation -->
+    <nav class="gym-nav">
+        <div class="nav-brand">SHADOW GYM</div>
+        <div class="nav-links">
+            <a href="gym-dashboard.html" class="nav-link">ACCUEIL</a>
+            <a href="gym-workouts.html" class="nav-link">QUÊTES</a>
+            <a href="gym-exercises.html" class="nav-link">TALENTS</a>
+            <a href="gym-progress.html" class="nav-link">PROGRÈS</a>
+            <a href="gym-leaderboard.html" class="nav-link">CLASSEMENT</a>
+            <a href="gym-challenges.html" class="nav-link">ARÈNE</a>
+            <a href="gym-guilds.html" class="nav-link">GUILDES</a>
+            <a href="gym-profile.html" class="nav-link active">PROFIL</a>
+        </div>
+        <div class="nav-profile">
+            <div class="nav-xp-bar">
+                <div class="nav-xp-fill" id="navXpFill" style="width: 45%"></div>
+            </div>
+            <span class="nav-level">LV.<span id="navLevel">1</span></span>
+        </div>
+    </nav>
+
+    <div class="gym-container">
+        <div class="gym-main">
+            <div class="profile-container">
+                <!-- Profile Header -->
+                <div class="profile-header">
+                    <div class="profile-avatar-section">
+                        <div class="profile-avatar" id="avatarDisplay">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <button class="avatar-edit-btn" onclick="changeAvatar()">CHANGE</button>
+                    </div>
+                    <div class="profile-info">
+                        <div class="hunter-name" id="hunterName">SHADOW HUNTER</div>
+                        <div class="hunter-title" id="hunterTitle">★ RISING HUNTER ★</div>
+                        <div class="profile-stats-row">
+                            <div class="profile-stat-box">
+                                <div class="profile-stat-value" id="totalWorkouts">0</div>
+                                <div class="profile-stat-label">WORKOUTS</div>
+                            </div>
+                            <div class="profile-stat-box">
+                                <div class="profile-stat-value" id="totalXPEarned">0</div>
+                                <div class="profile-stat-label">TOTAL XP</div>
+                            </div>
+                            <div class="profile-stat-box">
+                                <div class="profile-stat-value" id="daysActive">0</div>
+                                <div class="profile-stat-label">DAYS ACTIVE</div>
+                            </div>
+                        </div>
+                        <div class="rank-badge-large rank-e" id="rankBadge" style="color: #888; border-color: #888;">E-RANK HUNTER</div>
+                    </div>
+                </div>
+
+                <!-- Stats Allocation -->
+                <div class="profile-section">
+                    <div class="section-title"><i class="fas fa-chart-pie"></i> STAT ALLOCATION</div>
+                    
+                    <div class="available-points" id="pointsContainer" style="display: none;">
+                        AVAILABLE STAT POINTS: <span id="availablePoints">0</span>
+                    </div>
+                    
+                    <div class="stat-distribution">
+                        <div class="stat-card str">
+                            <div class="stat-card-icon"><i class="fas fa-fist-raised"></i></div>
+                            <div class="stat-card-value" id="strValue">10</div>
+                            <div class="stat-card-name">STRENGTH</div>
+                            <div class="stat-allocate-btns">
+                                <button class="stat-btn" onclick="allocateStat('STR', -1)" disabled>-</button>
+                                <button class="stat-btn" onclick="allocateStat('STR', 1)" disabled>+</button>
+                            </div>
+                        </div>
+                        <div class="stat-card agi">
+                            <div class="stat-card-icon"><i class="fas fa-bolt"></i></div>
+                            <div class="stat-card-value" id="agiValue">10</div>
+                            <div class="stat-card-name">AGILITY</div>
+                            <div class="stat-allocate-btns">
+                                <button class="stat-btn" onclick="allocateStat('AGI', -1)" disabled>-</button>
+                                <button class="stat-btn" onclick="allocateStat('AGI', 1)" disabled>+</button>
+                            </div>
+                        </div>
+                        <div class="stat-card end">
+                            <div class="stat-card-icon"><i class="fas fa-shield-alt"></i></div>
+                            <div class="stat-card-value" id="endValue">10</div>
+                            <div class="stat-card-name">ENDURANCE</div>
+                            <div class="stat-allocate-btns">
+                                <button class="stat-btn" onclick="allocateStat('END', -1)" disabled>-</button>
+                                <button class="stat-btn" onclick="allocateStat('END', 1)" disabled>+</button>
+                            </div>
+                        </div>
+                        <div class="stat-card vit">
+                            <div class="stat-card-icon"><i class="fas fa-heart"></i></div>
+                            <div class="stat-card-value" id="vitValue">100</div>
+                            <div class="stat-card-name">VITALITY</div>
+                            <div class="stat-allocate-btns">
+                                <button class="stat-btn" onclick="allocateStat('VIT', -1)" disabled>-</button>
+                                <button class="stat-btn" onclick="allocateStat('VIT', 1)" disabled>+</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Title Selection -->
+                <div class="profile-section">
+                    <div class="section-title"><i class="fas fa-tag"></i> HUNTER TITLE</div>
+                    <div class="title-grid">
+                        <div class="title-option selected" data-title="★ RISING HUNTER ★" onclick="selectTitle(this)">★ RISING HUNTER ★</div>
+                        <div class="title-option" data-title="THE AWAKENED" onclick="selectTitle(this)">THE AWAKENED</div>
+                        <div class="title-option locked" data-title="IRON WARRIOR">🔒 IRON WARRIOR</div>
+                        <div class="title-option locked" data-title="SHADOW SOLDIER">🔒 SHADOW SOLDIER</div>
+                        <div class="title-option locked" data-title="GATE CRUSHER">🔒 GATE CRUSHER</div>
+                        <div class="title-option locked" data-title="DEMON SLAYER">🔒 DEMON SLAYER</div>
+                        <div class="title-option locked" data-title="S-RANK HUNTER">🔒 S-RANK HUNTER</div>
+                        <div class="title-option locked" data-title="SHADOW MONARCH">🔒 SHADOW MONARCH</div>
+                    </div>
+                </div>
+
+                <!-- Equipment -->
+                <div class="profile-section">
+                    <div class="section-title"><i class="fas fa-tshirt"></i> EQUIPPED GEAR</div>
+                    <div class="gear-grid">
+                        <div class="gear-slot equipped">
+                            <div class="gear-icon"><i class="fas fa-dumbbell"></i></div>
+                            <div class="gear-slot-name">WEAPON</div>
+                            <div class="gear-slot-item">Iron Dumbbells</div>
+                            <div class="gear-bonus">+5% STR XP</div>
+                        </div>
+                        <div class="gear-slot">
+                            <div class="gear-icon"><i class="fas fa-hard-hat"></i></div>
+                            <div class="gear-slot-name">HEAD</div>
+                            <div class="gear-slot-item">None</div>
+                        </div>
+                        <div class="gear-slot">
+                            <div class="gear-icon"><i class="fas fa-vest"></i></div>
+                            <div class="gear-slot-name">CHEST</div>
+                            <div class="gear-slot-item">None</div>
+                        </div>
+                        <div class="gear-slot equipped">
+                            <div class="gear-icon"><i class="fas fa-mitten"></i></div>
+                            <div class="gear-slot-name">HANDS</div>
+                            <div class="gear-slot-item">Training Gloves</div>
+                            <div class="gear-bonus">+3% All XP</div>
+                        </div>
+                        <div class="gear-slot">
+                            <div class="gear-icon"><i class="fas fa-ring"></i></div>
+                            <div class="gear-slot-name">ACCESSORY</div>
+                            <div class="gear-slot-item">None</div>
+                        </div>
+                        <div class="gear-slot equipped">
+                            <div class="gear-icon"><i class="fas fa-shoe-prints"></i></div>
+                            <div class="gear-slot-name">BOOTS</div>
+                            <div class="gear-slot-item">Running Shoes</div>
+                            <div class="gear-bonus">+5% AGI XP</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Settings -->
+                <div class="profile-section">
+                    <div class="section-title"><i class="fas fa-cog"></i> SETTINGS</div>
+                    <div class="settings-grid">
+                        <div class="setting-row">
+                            <div class="setting-info">
+                                <div class="setting-name">Notifications</div>
+                                <div class="setting-desc">Receive quest reminders and level up alerts</div>
+                            </div>
+                            <div class="toggle-switch active" onclick="toggleSetting(this)"></div>
+                        </div>
+                        <div class="setting-row">
+                            <div class="setting-info">
+                                <div class="setting-name">Sound Effects</div>
+                                <div class="setting-desc">Play sounds for achievements and level ups</div>
+                            </div>
+                            <div class="toggle-switch active" onclick="toggleSetting(this)"></div>
+                        </div>
+                        <div class="setting-row">
+                            <div class="setting-info">
+                                <div class="setting-name">Particle Effects</div>
+                                <div class="setting-desc">Show animated background particles</div>
+                            </div>
+                            <div class="toggle-switch active" onclick="toggleSetting(this)"></div>
+                        </div>
+                        <div class="setting-row">
+                            <div class="setting-info">
+                                <div class="setting-name">Dark Mode</div>
+                                <div class="setting-desc">Use dark theme (default enabled)</div>
+                            </div>
+                            <div class="toggle-switch active" onclick="toggleSetting(this)"></div>
+                        </div>
+                        <div class="setting-row">
+                            <div class="setting-info">
+                                <div class="setting-name">Rest Day Reminders</div>
+                                <div class="setting-desc">Get notified when you should take a rest day</div>
+                            </div>
+                            <div class="toggle-switch" onclick="toggleSetting(this)"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="profile-actions">
+                    <button class="profile-btn" onclick="saveProfile()">SAVE CHANGES</button>
+                    <button class="profile-btn" onclick="exportData()">EXPORT DATA</button>
+                    <button class="profile-btn danger" onclick="resetProgress()">RESET PROGRESS</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize particles
+        function createBackgroundParticles() {
+            const container = document.querySelector('.bg-particles');
+            if (!container) return;
+            
+            const particleCount = 80;
+            
+            function createParticle() {
+                const particle = document.createElement('div');
+                particle.className = 'bg-particle';
+                particle.style.left = Math.random() * 100 + '%';
+                const size = Math.random() * 4 + 1;
+                particle.style.width = size + 'px';
+                particle.style.height = size + 'px';
+                particle.style.opacity = Math.random() * 0.5 + 0.2;
+                const duration = Math.random() * 3 + 2;
+                const delay = Math.random() * 2;
+                particle.style.animation = `floatUpDiagonal ${duration}s ${delay}s linear infinite`;
+                container.appendChild(particle);
+            }
+
+            for (let i = 0; i < particleCount; i++) {
+                createParticle();
+            }
+        }
+
+        createBackgroundParticles();
+
+        // Load profile data
+        function loadProfile() {
+            const level = parseInt(localStorage.getItem('hunterLevel') || '1');
+            const xp = parseInt(localStorage.getItem('hunterXP') || '0');
+            const rank = localStorage.getItem('hunterRank') || 'E';
+            const str = parseInt(localStorage.getItem('hunterSTR') || '10');
+            const agi = parseInt(localStorage.getItem('hunterAGI') || '10');
+            const end = parseInt(localStorage.getItem('hunterEND') || '10');
+            const vit = parseInt(localStorage.getItem('hunterVIT') || '100');
+            const totalWorkouts = parseInt(localStorage.getItem('totalWorkouts') || '0');
+            const totalXP = parseInt(localStorage.getItem('totalXPEarned') || '0');
+            const daysActive = parseInt(localStorage.getItem('daysActive') || '1');
+            const hunterName = localStorage.getItem('hunterName') || 'SHADOW HUNTER';
+            const hunterTitle = localStorage.getItem('hunterTitle') || '★ RISING HUNTER ★';
+
+            // Nav bar
+            const xpForNextLevel = level * 100;
+            const xpPercent = (xp / xpForNextLevel) * 100;
+            document.getElementById('navLevel').textContent = level;
+            document.getElementById('navXpFill').style.width = xpPercent + '%';
+
+            // Profile header
+            document.getElementById('hunterName').textContent = hunterName;
+            document.getElementById('hunterTitle').textContent = hunterTitle;
+
+            // Avatar (icône + couleur personnalisées)
+            const avIcon = (window.Hunter && Hunter.get('avatar')) || 'fa-user-ninja';
+            const avColor = (window.Hunter && Hunter.get('avatarColor')) || '#85acb9';
+            const avEl = document.getElementById('avatarDisplay');
+            if (avEl) { avEl.innerHTML = `<i class="fas ${avIcon}"></i>`; avEl.style.color = avColor; avEl.style.borderColor = avColor; }
+            document.getElementById('totalWorkouts').textContent = totalWorkouts;
+            document.getElementById('totalXPEarned').textContent = totalXP;
+            document.getElementById('daysActive').textContent = daysActive;
+
+            // Stats
+            document.getElementById('strValue').textContent = str;
+            document.getElementById('agiValue').textContent = agi;
+            document.getElementById('endValue').textContent = end;
+            document.getElementById('vitValue').textContent = vit;
+
+            // Rank badge
+            const rankNames = {
+                'E': 'E-RANK HUNTER',
+                'D': 'D-RANK HUNTER',
+                'C': 'C-RANK HUNTER',
+                'B': 'B-RANK HUNTER',
+                'A': 'A-RANK HUNTER',
+                'S': 'S-RANK HUNTER'
+            };
+            const rankColors = {
+                'E': '#888',
+                'D': '#4caf50',
+                'C': '#2196f3',
+                'B': '#9c27b0',
+                'A': '#ff9800',
+                'S': '#ffd700'
+            };
+            const rankBadge = document.getElementById('rankBadge');
+            rankBadge.textContent = rankNames[rank];
+            rankBadge.style.color = rankColors[rank];
+            rankBadge.style.borderColor = rankColors[rank];
+
+            // Selected title
+            document.querySelectorAll('.title-option').forEach(opt => {
+                if (opt.dataset.title === hunterTitle) {
+                    opt.classList.add('selected');
+                } else {
+                    opt.classList.remove('selected');
+                }
+            });
+        }
+
+        function selectTitle(element) {
+            if (element.classList.contains('locked')) return;
+            
+            document.querySelectorAll('.title-option').forEach(opt => opt.classList.remove('selected'));
+            element.classList.add('selected');
+            
+            const title = element.dataset.title;
+            document.getElementById('hunterTitle').textContent = title;
+            localStorage.setItem('hunterTitle', title);
+        }
+
+        function toggleSetting(element) {
+            element.classList.toggle('active');
+        }
+
+        function changeAvatar() {
+            if (window.Avatars) Avatars.open({ onSave: () => loadProfile() });
+        }
+
+        function allocateStat(stat, amount) {
+            // Stat allocation logic
+            const points = parseInt(localStorage.getItem('availablePoints') || '0');
+            if (amount > 0 && points <= 0) return;
+            
+            const current = parseInt(localStorage.getItem('hunter' + stat) || '10');
+            if (amount < 0 && current <= 10) return;
+            
+            localStorage.setItem('hunter' + stat, current + amount);
+            localStorage.setItem('availablePoints', points - amount);
+            loadProfile();
+        }
+
+        function saveProfile() {
+            // Show save confirmation
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: rgba(0, 0, 0, 0.9);
+                border: 2px solid #00ff62;
+                padding: 30px 50px;
+                color: #00ff62;
+                font-size: 1.2em;
+                letter-spacing: 2px;
+                z-index: 1000;
+                box-shadow: 0 0 30px rgba(0, 255, 98, 0.5);
+            `;
+            notification.textContent = 'PROFILE SAVED!';
+            document.body.appendChild(notification);
+            
+            setTimeout(() => notification.remove(), 2000);
+        }
+
+        function exportData() {
+            const data = {
+                hunterLevel: localStorage.getItem('hunterLevel'),
+                hunterXP: localStorage.getItem('hunterXP'),
+                hunterRank: localStorage.getItem('hunterRank'),
+                hunterSTR: localStorage.getItem('hunterSTR'),
+                hunterAGI: localStorage.getItem('hunterAGI'),
+                hunterEND: localStorage.getItem('hunterEND'),
+                hunterVIT: localStorage.getItem('hunterVIT'),
+                totalWorkouts: localStorage.getItem('totalWorkouts'),
+                currentStreak: localStorage.getItem('currentStreak'),
+                hunterName: localStorage.getItem('hunterName'),
+                hunterTitle: localStorage.getItem('hunterTitle')
+            };
+            
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'shadow-gym-data.json';
+            a.click();
+        }
+
+        function resetProgress() {
+            if (confirm('WARNING: This will reset ALL progress. Are you sure?')) {
+                if (confirm('This action is PERMANENT. Type "RESET" to confirm.')) {
+                    localStorage.clear();
+                    location.reload();
+                }
+            }
+        }
+
+        loadProfile();
+    </script>
+    <script src="js/solo-leveling.js"></script>
+</body>
+</html>

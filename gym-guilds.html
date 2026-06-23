@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SHADOW GYM - Guildes</title>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="css/solo-leveling.css" rel="stylesheet">
+    <link href="css/gym.css" rel="stylesheet">
+    <script src="js/config.js"></script>
+    <script src="js/store.js"></script>
+    <script src="js/i18n.js"></script>
+    <script src="js/quests.js"></script>
+    <script src="js/weekly.js"></script>
+    <script src="js/cloud.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/auth-ui.js"></script>
+    <script src="js/avatars.js"></script>
+    <style>
+        body { opacity: 0; animation: fadeIn 0.5s ease-out forwards; overflow-x: hidden; overflow-y: auto; min-height: 100vh; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .gu-wrap { max-width: 960px; margin: 0 auto; padding: 20px; width: 100%; box-sizing: border-box; }
+        .gu-header { text-align: center; margin-bottom: 24px; }
+        .gu-title { font-size: 2.2em; color: #fff; letter-spacing: 6px; text-shadow: 0 0 20px #85acb9; margin: 0; -webkit-text-stroke: 0.5px #85acb9; }
+        .gu-sub { color: rgba(255,255,255,.55); letter-spacing: 2px; font-size: .85em; margin-top: 6px; }
+
+        .gu-card { border: 1px solid rgba(133,172,185,.3); background: rgba(8,14,24,.6); padding: 22px; margin-bottom: 18px; }
+        .gu-card h3 { color: #85acb9; letter-spacing: 2px; font-size: 1em; margin: 0 0 16px; }
+        .gu-input { width: 100%; box-sizing: border-box; background: transparent; border: 1px solid #85acb9; color: #fff;
+            padding: 11px 14px; font-size: .92em; letter-spacing: 1px; font-family: inherit; margin-bottom: 12px; }
+        .gu-input:focus { outline: none; border-color: #fff; box-shadow: 0 0 12px rgba(133,172,185,.4); }
+        .gu-row2 { display: flex; gap: 12px; } .gu-row2 .gu-input { flex: 1; }
+
+        .gu-emblem-pick { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+        .gu-em { width: 40px; height: 40px; border: 1px solid rgba(133,172,185,.3); display: flex; align-items: center; justify-content: center;
+            color: rgba(255,255,255,.7); cursor: pointer; transition: all .15s; }
+        .gu-em.sel { border-color: #fff; background: rgba(133,172,185,.25); color: #fff; }
+
+        .gu-btn { width: 100%; padding: 13px; background: rgba(133,172,185,.18); border: 1px solid #85acb9; color: #fff;
+            letter-spacing: 2px; cursor: pointer; font-family: inherit; font-size: .92em; transition: all .2s; }
+        .gu-btn:hover { background: rgba(133,172,185,.32); box-shadow: 0 0 20px rgba(133,172,185,.4); }
+        .gu-btn.danger { border-color: #ff4757; color: #ff4757; background: transparent; }
+        .gu-btn.danger:hover { background: rgba(255,71,87,.12); box-shadow: 0 0 16px rgba(255,71,87,.3); }
+
+        .gu-guild { display: flex; align-items: center; gap: 16px; padding: 14px 16px; border: 1px solid rgba(133,172,185,.2);
+            margin-bottom: 10px; transition: all .2s; }
+        .gu-guild:hover { border-color: rgba(133,172,185,.5); }
+        .gu-emblem { width: 50px; height: 50px; border-radius: 8px; border: 2px solid; display: flex; align-items: center; justify-content: center; font-size: 1.4em; flex-shrink: 0; }
+        .gu-ginfo { flex: 1; min-width: 0; }
+        .gu-gname { color: #fff; letter-spacing: 1px; font-size: 1.05em; }
+        .gu-gtag { color: rgba(255,255,255,.5); font-size: .75em; letter-spacing: 2px; }
+        .gu-gmeta { text-align: right; font-size: .78em; color: rgba(255,255,255,.6); }
+        .gu-gmeta .pwr { color: #ffd700; font-weight: 700; font-size: 1.1em; }
+
+        .gu-hero { text-align: center; padding: 24px; }
+        .gu-hero .gu-emblem { width: 90px; height: 90px; font-size: 2.6em; margin: 0 auto 14px; border-radius: 14px; }
+        .gu-hero h2 { color: #fff; letter-spacing: 3px; margin: 0 0 4px; }
+        .gu-stats { display: flex; justify-content: center; gap: 30px; margin: 18px 0; }
+        .gu-stat .v { color: #ffd700; font-size: 1.6em; font-weight: 700; } .gu-stat .l { color: rgba(255,255,255,.5); font-size: .7em; letter-spacing: 2px; }
+        .gu-member { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-bottom: 1px solid rgba(133,172,185,.12); }
+        .gu-mav { width: 34px; height: 34px; border-radius: 50%; border: 2px solid #85acb9; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+
+        .gu-offline { text-align: center; padding: 30px 20px; }
+        .gu-offline i.big { font-size: 2.5em; color: #85acb9; margin-bottom: 14px; }
+        .gu-empty { text-align: center; color: rgba(255,255,255,.4); padding: 20px; font-size: .85em; }
+        .gu-msg { color: #ff4757; font-size: .8em; margin-top: 8px; min-height: 1em; }
+        @media (max-width: 1200px) { .gym-container { padding-top: 190px !important; } }
+        @media (max-width: 600px) { .gu-wrap { padding: 8px; } .gu-card { padding: 16px; } .gu-title { font-size: 1.5em; letter-spacing: 2px; } .gu-stats { gap: 18px; } }
+    </style>
+</head>
+<body>
+    <div class="sl-background">
+        <div class="sl-background-image" style="background: linear-gradient(135deg, #0a1628 0%, #0d1f3c 50%, #0a1628 100%);"></div>
+        <div class="sl-light-rays"></div>
+        <div class="sl-glow"></div>
+    </div>
+    <div class="scene-overlay"></div>
+    <div class="bg-particles"></div>
+    <div class="sl-particles"></div>
+
+    <nav class="gym-nav">
+        <div class="nav-brand">SHADOW GYM</div>
+        <div class="nav-links">
+            <a href="gym-dashboard.html" class="nav-link">ACCUEIL</a>
+            <a href="gym-workouts.html" class="nav-link">QUÊTES</a>
+            <a href="gym-exercises.html" class="nav-link">TALENTS</a>
+            <a href="gym-progress.html" class="nav-link">PROGRÈS</a>
+            <a href="gym-leaderboard.html" class="nav-link">CLASSEMENT</a>
+            <a href="gym-challenges.html" class="nav-link">ARÈNE</a>
+            <a href="gym-guilds.html" class="nav-link active">GUILDES</a>
+            <a href="gym-profile.html" class="nav-link">PROFIL</a>
+        </div>
+        <div class="nav-profile" id="navProfile">
+            <div class="nav-xp-bar"><div class="nav-xp-fill" id="navXpFill" style="width: 0%"></div></div>
+            <span class="nav-level">LV.<span id="navLevel">1</span></span>
+        </div>
+    </nav>
+
+    <div class="gym-container" style="align-items: flex-start; padding-top: 90px;">
+        <div class="gu-wrap">
+            <div class="gu-header">
+                <h1 class="gu-title"><i class="fas fa-shield-halved" style="color:#85acb9;"></i> <span data-i18n="gu.title">LES GUILDES</span></h1>
+                <div class="gu-sub" data-i18n="gu.subtitle">UNIS-TOI · DOMINEZ ENSEMBLE LE CLASSEMENT</div>
+            </div>
+
+            <!-- Vue : ma guilde -->
+            <div id="myGuildView" style="display:none;"></div>
+
+            <!-- Vue : créer + parcourir -->
+            <div id="createSection" style="display:none;">
+                <div class="gu-card">
+                    <h3><i class="fas fa-plus"></i> <span data-i18n="gu.create">FONDER UNE GUILDE</span></h3>
+                    <div class="gu-row2">
+                        <input class="gu-input" id="guildName" data-i18n-ph="gu.name_ph" placeholder="NOM DE LA GUILDE" maxlength="28">
+                        <input class="gu-input" id="guildTag" placeholder="TAG (4)" maxlength="5" style="max-width:120px;">
+                    </div>
+                    <div class="gu-emblem-pick" id="emblemPick"></div>
+                    <button class="gu-btn" id="createBtn" data-i18n="gu.found">FONDER</button>
+                    <div class="gu-msg" id="createMsg"></div>
+                </div>
+            </div>
+
+            <!-- Liste des guildes -->
+            <div class="gu-card" id="browseSection">
+                <h3><i class="fas fa-ranking-star"></i> <span data-i18n="gu.browse">GUILDES OUVERTES</span></h3>
+                <div id="guildsList"><div class="gu-empty">…</div></div>
+            </div>
+
+            <!-- Non connecté -->
+            <div id="offlineNotice" style="display:none;">
+                <div class="gu-card gu-offline">
+                    <i class="fas fa-user-lock big"></i>
+                    <h3 style="color:#fff;" data-i18n="gu.offline_title">CONNEXION REQUISE</h3>
+                    <p style="color:rgba(255,255,255,.6);font-size:.88em;max-width:460px;margin:0 auto 18px;" data-i18n="gu.offline_text">
+                        Rejoins une guilde pour cumuler la puissance de tes alliés et grimper le classement des guildes. Connecte-toi pour commencer.
+                    </p>
+                    <button class="gu-btn" style="max-width:280px;margin:0 auto;" onclick="AuthUI.open('signup')"><i class="fas fa-bolt"></i> <span data-i18n="ar.join">REJOINDRE</span></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const EMBLEMS = ['fa-shield-halved','fa-ghost','fa-dragon','fa-skull','fa-fire','fa-khanda','fa-crow','fa-paw','fa-bolt','fa-crown'];
+        let selectedEmblem = EMBLEMS[0];
+        let selectedColor = '#85acb9';
+
+        function fmtNum(n){ n=n||0; if(n>=1000000)return (n/1000000).toFixed(1)+'M'; if(n>=1000)return (n/1000).toFixed(1)+'K'; return String(n); }
+        function escapeHtml(s){ return String(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+        const t = (k)=> (window.I18n? I18n.t(k):k);
+
+        // Sélecteur d'emblème
+        document.getElementById('emblemPick').innerHTML = EMBLEMS.map((e,i)=>`<div class="gu-em${i===0?' sel':''}" data-em="${e}"><i class="fas ${e}"></i></div>`).join('');
+        document.getElementById('emblemPick').addEventListener('click', e=>{
+            const b=e.target.closest('.gu-em'); if(!b) return;
+            selectedEmblem=b.dataset.em;
+            document.querySelectorAll('.gu-em').forEach(x=>x.classList.toggle('sel', x===b));
+        });
+
+        function guildRowHTML(g){
+            return `<div class="gu-guild">
+                <div class="gu-emblem" style="border-color:${g.color||'#85acb9'};color:${g.color||'#85acb9'};"><i class="fas ${g.emblem||'fa-shield-halved'}"></i></div>
+                <div class="gu-ginfo">
+                    <div class="gu-gname">${escapeHtml(g.name)} ${g.tag?`<span class="gu-gtag">[${escapeHtml(g.tag)}]</span>`:''} ${(g.member_count||0) < 10 ? `<span style="color:#4caf50;font-size:.6em;border:1px solid #4caf50;padding:1px 6px;border-radius:3px;letter-spacing:1px;">${t('gu.recruiting')}</span>`:''}</div>
+                    <div class="gu-gtag">${escapeHtml(g.description||'')}</div>
+                </div>
+                <div class="gu-gmeta">
+                    <div class="pwr">${fmtNum(g.total_power)}</div>
+                    <div><i class="fas fa-users"></i> ${g.member_count||0}</div>
+                </div>
+                ${(Cloud.enabled && Cloud.isLoggedIn()) ? `<button class="gu-btn" style="width:auto;padding:9px 16px;" data-join="${g.id}" data-name="${escapeHtml(g.name)}">${t('gu.join')}</button>` : ''}
+            </div>`;
+        }
+
+        function myGuildHTML(data){
+            const g = data.guild;
+            const membersHTML = data.members.map(m=>`
+                <div class="gu-member">
+                    <div class="gu-mav" style="border-color:${m.avatar_color||'#85acb9'};color:${m.avatar_color||'#85acb9'};"><i class="fas ${m.avatar||'fa-user-ninja'}"></i></div>
+                    <div style="flex:1;min-width:0;"><div style="color:#fff;font-size:.92em;">${escapeHtml(m.name)} ${m.role==='owner'?'<i class="fas fa-crown" style="color:#ffd700;font-size:.8em;"></i>':''}</div>
+                        <div style="color:rgba(255,255,255,.45);font-size:.72em;">${t('lb.lvl')} ${m.level||1} · ${t('common.rank')} ${m.rank||'E'}</div></div>
+                    <div style="color:#ffd700;font-size:.85em;">${fmtNum(m.combat_power)}</div>
+                </div>`).join('');
+            return `<div class="gu-card gu-hero">
+                <div class="gu-emblem" style="border-color:${g.color};color:${g.color};"><i class="fas ${g.emblem}"></i></div>
+                <h2>${escapeHtml(g.name)}</h2>
+                <div class="gu-gtag">${g.tag?`[${escapeHtml(g.tag)}] · `:''}${escapeHtml(g.description||'')}</div>
+                <div class="gu-stats">
+                    <div class="gu-stat"><div class="v">${fmtNum(g.total_power)}</div><div class="l">${t('gu.total_power')}</div></div>
+                    <div class="gu-stat"><div class="v">${g.member_count}</div><div class="l">${t('gu.members').toUpperCase()}</div></div>
+                </div>
+                <button class="gu-btn danger" id="leaveBtn" style="max-width:240px;margin:0 auto;">${t('gu.leave')}</button>
+            </div>
+            <div class="gu-card"><h3><i class="fas fa-users"></i> ${t('gu.members').toUpperCase()}</h3>${membersHTML}</div>`;
+        }
+
+        async function render(){
+            const online = Cloud.enabled && Cloud.isLoggedIn();
+            document.getElementById('offlineNotice').style.display = (Cloud.enabled && !online) ? 'block' : 'none';
+
+            // Ma guilde ?
+            let mine = null;
+            if (online) { try { mine = await Cloud.getMyGuild(); } catch(e){} }
+
+            if (mine && mine.guild) {
+                document.getElementById('myGuildView').style.display = 'block';
+                document.getElementById('myGuildView').innerHTML = myGuildHTML(mine);
+                document.getElementById('createSection').style.display = 'none';
+                document.getElementById('browseSection').style.display = 'none';
+                const lv = document.getElementById('leaveBtn');
+                if (lv) lv.onclick = async ()=>{ if(confirm(t('gu.leave_confirm'))){ await Cloud.leaveGuild(); GymUI.toast(t('gu.left'),'stat'); render(); } };
+            } else {
+                document.getElementById('myGuildView').style.display = 'none';
+                document.getElementById('createSection').style.display = online ? 'block' : 'none';
+                document.getElementById('browseSection').style.display = 'block';
+                const res = await Cloud.browseGuilds();
+                const list = document.getElementById('guildsList');
+                list.innerHTML = res.rows.length ? res.rows.map(guildRowHTML).join('') : `<div class="gu-empty">${t('ar.no_challenges')}</div>`;
+                list.querySelectorAll('[data-join]').forEach(b=> b.onclick = async ()=>{
+                    try { await Cloud.joinGuild(b.dataset.join, b.dataset.name); GymUI.toast(t('gu.welcome'),'xp'); render(); }
+                    catch(e){ GymUI.toast(e.message||'Erreur','stat'); }
+                });
+            }
+        }
+
+        document.getElementById('createBtn').addEventListener('click', async ()=>{
+            const name = document.getElementById('guildName').value.trim();
+            const tag = document.getElementById('guildTag').value.trim();
+            const msg = document.getElementById('createMsg');
+            msg.style.color=''; msg.textContent='';
+            if (name.length < 3) { msg.textContent = t('gu.name_short'); return; }
+            try {
+                await Cloud.createGuild(name, tag, selectedEmblem, selectedColor);
+                GymUI.toast(t('gu.founded'),'achievement');
+                render();
+            } catch(e){ msg.textContent = /duplicate|unique/i.test(e.message)?t('gu.name_taken'):(e.message||'Erreur'); }
+        });
+
+        (async ()=>{
+            await Cloud.init();
+            if (window.AuthUI) AuthUI.mountChip('#navProfile');
+            render();
+            Cloud.on('auth', render);
+            Cloud.on('ready', render);
+        })();
+    </script>
+    <script src="js/solo-leveling.js"></script>
+</body>
+</html>

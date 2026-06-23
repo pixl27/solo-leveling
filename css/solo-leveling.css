@@ -423,12 +423,13 @@ body {
     position: fixed;
     /* bottom: 50%; */
     font-weight: 300;
+    font-size: 0.85em;
     transform: translate(-50%, -50%) scale(0);
     animation: appearEffect 0.5s ease-out 0.5s forwards;
     opacity: 0;
     z-index: 1;
-    border: 2px solid #fff;
-    box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+    border: none;
+    box-shadow: none;
 }
 
 .sl-notification p {
