@@ -58,6 +58,13 @@
             .sg-auth-skip { display: block; width: 100%; text-align: center; margin-top: 16px; color: rgba(255,255,255,.45);
                 font-size: .8em; cursor: pointer; background: none; border: none; letter-spacing: 1px; }
             .sg-auth-skip:hover { color: rgba(255,255,255,.8); }
+            .sg-auth-support { display: flex; align-items: center; justify-content: center; gap: 8px; width: max-content;
+                max-width: 90%; margin: 2px auto 16px; padding: 6px 14px; border: 1px solid rgba(255,215,0,.4);
+                background: rgba(255,215,0,.07); color: #ffd700; font-size: .7em; letter-spacing: 1.5px; text-decoration: none;
+                transition: all .25s; text-shadow: 0 0 10px rgba(255,215,0,.35); }
+            .sg-auth-support:hover { background: rgba(255,215,0,.16); box-shadow: 0 0 16px rgba(255,215,0,.32); color: #fff; }
+            .sg-auth-support i { animation: sgSteam 2.6s ease-in-out infinite; }
+            @keyframes sgSteam { 0%, 100% { transform: translateY(0); opacity: .85; } 50% { transform: translateY(-2px); opacity: 1; } }
             .sg-chip { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; padding: 5px 12px;
                 border: 1px solid rgba(133,172,185,.4); color: #85acb9; font-size: .8em; letter-spacing: 1px; background: rgba(133,172,185,.08); }
             .sg-chip:hover { border-color: #85acb9; color: #fff; }
@@ -93,6 +100,7 @@
         back.innerHTML = `
             <div class="sg-auth-modal">
                 <button class="sg-auth-close" aria-label="${t('auth.close', 'Fermer')}">&times;</button>
+                <a class="sg-auth-support" href="https://ko-fi.com/maheryrakotondrazaka" target="_blank" rel="noopener noreferrer"><i class="fas fa-mug-hot"></i> <span data-i18n="auth.support">Built by one Hunter — support the dev</span></a>
                 <h2>SHADOW GYM</h2>
                 <div class="sg-auth-sub" data-i18n="auth.subtitle">Synchronise ta progression · Rejoins le classement</div>
                 <div class="sg-auth-tabs">
