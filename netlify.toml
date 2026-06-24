@@ -7,10 +7,10 @@
   publish = "."
   command = ""
 
-# La racine "/" sert la page d'accueil du gym (réécriture, l'URL reste "/")
+# La racine "/" sert l'index du gym (réécriture, l'URL reste "/")
 [[redirects]]
   from = "/"
-  to = "/start.html"
+  to = "/gym-index.html"
   status = 200
 
 # En-têtes de sécurité sur toutes les pages

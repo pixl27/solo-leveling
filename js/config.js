@@ -18,12 +18,12 @@
  * ==========================================================
  */
 window.SHADOW_GYM_CONFIG = {
-    SUPABASE_URL: 'https://VOTRE-PROJET.supabase.co',
-    SUPABASE_ANON_KEY: 'VOTRE_CLE_ANON_PUBLIQUE',
+    SUPABASE_URL: 'https://gghadbiyytwxgchafhez.supabase.co',
+    SUPABASE_ANON_KEY: 'sb_publishable_E7X-rGDsi1s3VFqvjJUkHQ_cuWsDzFY',
 
     // Réglages divers
     APP_NAME: 'SHADOW GYM',
-    DEFAULT_LANGUAGE: 'fr'
+    DEFAULT_LANGUAGE: 'en'
 };
 
 // Détecte si le cloud est réellement configuré (pas les placeholders)

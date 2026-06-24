@@ -2,7 +2,7 @@
   "name": "Shadow Gym — Deviens un Hunter",
   "short_name": "Shadow Gym",
   "description": "Transforme ton entraînement en aventure Solo Leveling : niveaux, rangs, classement mondial et duels PvP.",
-  "start_url": "start.html",
+  "start_url": "gym-index.html",
   "scope": ".",
   "display": "standalone",
   "orientation": "portrait-primary",

@@ -1,11 +1,11 @@
 /**
  * SHADOW GYM - Service Worker (PWA hors-ligne)
  * Stratégies :
- *   - Navigation (pages)      → réseau d'abord, repli sur cache, puis start.html
+ *   - Navigation (pages)      → réseau d'abord, repli sur cache, puis gym-index.html
  *   - Statique même origine   → cache d'abord + rafraîchissement en arrière-plan
  *   - Externe (CDN, Supabase) → réseau direct (non intercepté)
  */
-const CACHE = 'shadow-gym-v4';
+const CACHE = 'shadow-gym-v5';
 
 const APP_SHELL = [
     'start.html',
@@ -49,7 +49,7 @@ self.addEventListener('fetch', (e) => {
         e.respondWith(
             fetch(req)
                 .then(res => { cachePut(req, res.clone()); return res; })
-                .catch(() => caches.match(req).then(r => r || caches.match('start.html')))
+                .catch(() => caches.match(req).then(r => r || caches.match('gym-index.html')))
         );
         return;
     }
