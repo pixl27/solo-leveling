@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SHADOW GYM - Forge</title>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="css/solo-leveling.css" rel="stylesheet">
+    <link href="css/gym.css" rel="stylesheet">
+    <script src="js/config.js"></script>
+    <script src="js/store.js"></script>
+    <script src="js/equipment.js"></script>
+    <script src="js/i18n.js"></script>
+    <script src="js/quests.js"></script>
+    <script src="js/weekly.js"></script>
+    <script src="js/cloud.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/auth-ui.js"></script>
+    <style>
+        body { opacity: 0; animation: fadeIn 0.5s ease-out forwards; overflow-x: hidden; overflow-y: auto; min-height: 100vh; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .fg-wrap { max-width: 1100px; margin: 0 auto; padding: 20px; width: 100%; box-sizing: border-box; }
+        .fg-header { text-align: center; margin-bottom: 22px; }
+        .fg-title { font-size: 2.2em; color: #fff; letter-spacing: 6px; text-shadow: 0 0 20px #ffd700; margin: 0; -webkit-text-stroke: 0.5px #ffd700; }
+        .fg-sub { color: rgba(255,255,255,.55); letter-spacing: 2px; font-size: .85em; margin-top: 6px; }
+
+        .fg-card { border: 1px solid rgba(133,172,185,.3); background: rgba(8,14,24,.6); padding: 20px; margin-bottom: 18px; }
+        .fg-card h3 { color: #85acb9; letter-spacing: 2px; font-size: 1em; margin: 0 0 16px; display:flex; align-items:center; gap:8px; }
+
+        /* Barre de résumé */
+        .fg-summary { display:flex; flex-wrap:wrap; gap:14px; justify-content:center; }
+        .fg-pill { display:flex; align-items:center; gap:8px; padding:10px 16px; border:1px solid rgba(133,172,185,.3); background:rgba(0,0,0,.3); }
+        .fg-pill .v { font-size:1.3em; font-weight:700; } .fg-pill .l { color:rgba(255,255,255,.5); font-size:.7em; letter-spacing:2px; }
+        .fg-chips { display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin-top:14px; }
+        .fg-chip { padding:6px 12px; border:1px solid; font-size:.8em; letter-spacing:1px; border-radius:3px; }
+
+        /* Emplacements équipés */
+        .fg-slots { display:grid; grid-template-columns:repeat(5,1fr); gap:12px; }
+        @media (max-width:680px){ .fg-slots{ grid-template-columns:repeat(2,1fr); } }
+        .fg-slot { border:1px solid rgba(133,172,185,.25); background:rgba(0,0,0,.25); padding:14px; text-align:center; position:relative; min-height:150px;
+            display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; transition:all .2s; }
+        .fg-slot.filled { cursor:pointer; }
+        .fg-slot.filled:hover { box-shadow:0 0 18px rgba(133,172,185,.4); transform:translateY(-3px); }
+        .fg-slot-ic { width:54px; height:54px; border:1px solid; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:1.7em; }
+        .fg-slot-empty { color:rgba(255,255,255,.25); }
+        .fg-slot-label { color:rgba(255,255,255,.4); font-size:.68em; letter-spacing:2px; text-transform:uppercase; }
+        .fg-slot-name { color:#fff; font-size:.82em; letter-spacing:.5px; line-height:1.2; }
+        .fg-slot-rar { font-size:.66em; letter-spacing:1px; }
+        .fg-unequip { position:absolute; top:6px; right:8px; color:rgba(255,255,255,.35); font-size:.75em; }
+        .fg-slot.filled:hover .fg-unequip { color:#ff4757; }
+
+        /* Forge / invocations */
+        .fg-forge { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+        @media (max-width:680px){ .fg-forge{ grid-template-columns:1fr; } }
+        .fg-chest { border:1px solid; padding:16px; text-align:center; background:rgba(0,0,0,.25); }
+        .fg-chest i.big { font-size:2em; margin-bottom:8px; }
+        .fg-chest .name { color:#fff; letter-spacing:1px; font-size:.92em; margin-bottom:4px; }
+        .fg-chest .cost { color:#ffd700; font-size:.85em; margin:6px 0 12px; }
+        .fg-btn { width:100%; padding:11px; background:rgba(255,215,0,.12); border:1px solid #ffd700; color:#fff; letter-spacing:2px;
+            cursor:pointer; font-family:inherit; font-size:.85em; transition:all .2s; }
+        .fg-btn:hover { background:rgba(255,215,0,.28); box-shadow:0 0 18px rgba(255,215,0,.4); }
+        .fg-btn:disabled { opacity:.4; cursor:not-allowed; box-shadow:none; }
+
+        /* Sac */
+        .fg-bag { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:14px; }
+        .fg-item { border:1px solid; padding:14px; background:rgba(0,0,0,.3); display:flex; flex-direction:column; gap:8px; transition:all .2s; position:relative; }
+        .fg-item:hover { transform:translateY(-3px); }
+        .fg-item-top { display:flex; align-items:center; gap:10px; }
+        .fg-item-ic { width:44px; height:44px; border:1px solid; border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:1.4em; flex-shrink:0; }
+        .fg-item-name { color:#fff; font-size:.9em; letter-spacing:.5px; line-height:1.2; }
+        .fg-item-rar { font-size:.68em; letter-spacing:1px; }
+        .fg-stats { display:flex; flex-wrap:wrap; gap:6px 12px; font-size:.78em; }
+        .fg-stat-str{color:#ff4757;} .fg-stat-agi{color:#00ff62;} .fg-stat-end{color:#ffd700;} .fg-stat-vit{color:#2196f3;} .fg-stat-xp{color:#9c27b0;} .fg-stat-pwr{color:#85acb9;}
+        .fg-delta { font-size:.72em; letter-spacing:1px; }
+        .fg-item-actions { display:flex; gap:6px; margin-top:auto; }
+        .fg-mini { flex:1; padding:7px; font-size:.74em; letter-spacing:1px; cursor:pointer; font-family:inherit; border:1px solid; background:transparent; transition:all .2s; }
+        .fg-equip { color:#85acb9; border-color:#85acb9; } .fg-equip:hover { background:rgba(133,172,185,.15); }
+        .fg-sell { color:#ffd700; border-color:rgba(255,215,0,.5); } .fg-sell:hover { background:rgba(255,215,0,.12); }
+        .fg-empty { text-align:center; color:rgba(255,255,255,.4); padding:30px 20px; font-size:.9em; letter-spacing:1px; }
+        .fg-tools { display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; }
+
+        @media (max-width: 1200px) { .gym-container { padding-top: 190px !important; } }
+        @media (max-width: 600px) { .fg-wrap { padding: 8px; } .fg-card { padding: 14px; } .fg-title { font-size: 1.5em; letter-spacing: 2px; } }
+    </style>
+</head>
+<body>
+    <div class="sl-background">
+        <div class="sl-background-image" style="background: linear-gradient(135deg, #0a1628 0%, #2a1f06 50%, #0a1628 100%);"></div>
+        <div class="sl-light-rays"></div>
+        <div class="sl-glow"></div>
+    </div>
+    <div class="scene-overlay"></div>
+    <div class="bg-particles"></div>
+    <div class="sl-particles"></div>
+
+    <nav class="gym-nav">
+        <div class="nav-brand">SHADOW GYM</div>
+        <div class="nav-links">
+            <a href="gym-dashboard.html" class="nav-link">ACCUEIL</a>
+            <a href="gym-workouts.html" class="nav-link">QUÊTES</a>
+            <a href="gym-exercises.html" class="nav-link">TALENTS</a>
+            <a href="gym-progress.html" class="nav-link">PROGRÈS</a>
+            <a href="gym-leaderboard.html" class="nav-link">CLASSEMENT</a>
+            <a href="gym-challenges.html" class="nav-link">ARÈNE</a>
+            <a href="gym-guilds.html" class="nav-link">GUILDES</a>
+            <a href="gym-inventory.html" class="nav-link active">FORGE</a>
+            <a href="gym-profile.html" class="nav-link">PROFIL</a>
+        </div>
+        <div class="nav-profile" id="navProfile">
+            <div class="nav-xp-bar"><div class="nav-xp-fill" id="navXpFill" style="width: 0%"></div></div>
+            <span class="nav-level">LV.<span id="navLevel">1</span></span>
+        </div>
+    </nav>
+
+    <div class="gym-container" style="align-items: flex-start; padding-top: 90px;">
+        <div class="fg-wrap">
+            <div class="fg-header">
+                <h1 class="fg-title"><i class="fas fa-hammer" style="color:#ffd700;"></i> <span data-i18n="inv.title">LA FORGE</span></h1>
+                <div class="fg-sub" data-i18n="inv.subtitle">ÉQUIPE-TOI · DEVIENS PLUS PUISSANT</div>
+            </div>
+
+            <!-- Résumé -->
+            <div class="fg-card">
+                <div class="fg-summary" id="summaryBar"></div>
+                <div class="fg-chips" id="bonusChips"></div>
+            </div>
+
+            <!-- Équipement porté -->
+            <div class="fg-card">
+                <h3><i class="fas fa-user-shield"></i> <span data-i18n="inv.equipped">ÉQUIPEMENT</span></h3>
+                <div class="fg-slots" id="slots"></div>
+            </div>
+
+            <!-- Forge -->
+            <div class="fg-card">
+                <h3><i class="fas fa-dice"></i> <span data-i18n="inv.forge_title">INVOQUER UN OBJET</span></h3>
+                <p style="color:rgba(255,255,255,.55);font-size:.82em;margin:-6px 0 14px;" data-i18n="inv.forge_desc">Dépense de l'or pour invoquer un objet aléatoire.</p>
+                <div class="fg-forge" id="forge"></div>
+            </div>
+
+            <!-- Sac -->
+            <div class="fg-card">
+                <div class="fg-tools" style="margin-bottom:16px;">
+                    <h3 style="margin:0;"><i class="fas fa-sack-xmark"></i> <span data-i18n="inv.inventory">SAC</span> <span id="bagCount" style="color:rgba(255,255,255,.4);font-size:.8em;"></span></h3>
+                    <button class="fg-mini fg-sell" id="sellCommons" style="flex:none;padding:8px 14px;" data-i18n="inv.sell_commons">VENDRE LES COMMUNS</button>
+                </div>
+                <div class="fg-bag" id="bag"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const H = window.Hunter, E = window.Equipment;
+        const t = (k) => (window.I18n ? I18n.t(k) : k);
+        const STAT_COLORS = { STR:'#ff4757', AGI:'#00ff62', END:'#ffd700', VIT:'#2196f3' };
+
+        // Coffres d'invocation : { coût en or, chance, rareté minimale }
+        const CHESTS = [
+            { id:'basic', icon:'fa-box',          color:'#9aa6b2', nameFr:'Coffre du Hunter', nameEn:"Hunter's Chest", cost:60,  luck:0.15 },
+            { id:'rare',  icon:'fa-gift',         color:'#3a9bdc', nameFr:'Coffre Rare',      nameEn:'Rare Chest',     cost:220, luck:0.5,  minRarity:'rare' },
+            { id:'epic',  icon:'fa-treasure-chest', icon2:'fa-box-open', color:'#9c27b0', nameFr:'Coffre Épique', nameEn:'Epic Chest', cost:650, luck:0.85, minRarity:'epic' }
+        ];
+
+        function itemScore(it){ if(!it) return 0; const s=it.stats||{}; return (s.STR||0)+(s.AGI||0)+(s.END||0)+(s.VIT||0)/4 + (it.power||0)/10 + (it.xpBonus||0); }
+        function statLinesHTML(it){
+            const parts = [];
+            ['STR','AGI','END','VIT'].forEach(s => { if(it.stats && it.stats[s]) parts.push(`<span class="fg-stat-${s.toLowerCase()}">+${it.stats[s]} ${s}</span>`); });
+            if(it.xpBonus) parts.push(`<span class="fg-stat-xp">+${it.xpBonus}% XP</span>`);
+            if(it.power) parts.push(`<span class="fg-stat-pwr"><i class="fas fa-bolt"></i> ${it.power}</span>`);
+            return parts.join('');
+        }
+
+        function renderSummary(){
+            const power = H.getCombatPower();
+            const b = H.getEquipBonuses();
+            document.getElementById('summaryBar').innerHTML = `
+                <div class="fg-pill"><i class="fas fa-coins" style="color:#ffd700;"></i><div><div class="v" style="color:#ffd700;">${H.get('gold')}</div><div class="l">${t('inv.gold')}</div></div></div>
+                <div class="fg-pill"><i class="fas fa-bolt" style="color:#85acb9;"></i><div><div class="v" style="color:#85acb9;">${power.toLocaleString()}</div><div class="l">${t('inv.power')}</div></div></div>
+                <div class="fg-pill"><i class="fas fa-shield-halved" style="color:#9c27b0;"></i><div><div class="v" style="color:#9c27b0;">${b.count}/5</div><div class="l">${t('inv.equipped')}</div></div></div>`;
+
+            const chips = [];
+            ['STR','AGI','END','VIT'].forEach(s => { if(b[s]) chips.push(`<span class="fg-chip" style="border-color:${STAT_COLORS[s]};color:${STAT_COLORS[s]};">+${b[s]} ${s}</span>`); });
+            if(b.xpPct) chips.push(`<span class="fg-chip" style="border-color:#9c27b0;color:#9c27b0;">+${b.xpPct}% XP</span>`);
+            if(b.power) chips.push(`<span class="fg-chip" style="border-color:#85acb9;color:#85acb9;"><i class="fas fa-bolt"></i> +${b.power} ${t('inv.power')}</span>`);
+            document.getElementById('bonusChips').innerHTML = chips.length ? chips.join('') : `<span style="color:rgba(255,255,255,.35);font-size:.82em;">${t('inv.no_bonus')}</span>`;
+        }
+
+        function renderSlots(){
+            const eq = H.get('equipment') || {};
+            document.getElementById('slots').innerHTML = E.SLOT_ORDER.map(slot => {
+                const it = eq[slot];
+                const slotInfo = E.slotInfo(slot);
+                if(!it){
+                    return `<div class="fg-slot">
+                        <div class="fg-slot-ic fg-slot-empty" style="border-color:rgba(255,255,255,.12);"><i class="fas ${slotInfo.icon}"></i></div>
+                        <div class="fg-slot-label">${E.slotName(slot)}</div>
+                        <div class="fg-slot-name" style="color:rgba(255,255,255,.3);">${t('inv.empty_slot')}</div>
+                    </div>`;
+                }
+                const col = E.rarityColor(it.rarity);
+                return `<div class="fg-slot filled" data-unequip="${slot}" title="${t('inv.unequip')}">
+                    <span class="fg-unequip"><i class="fas fa-times"></i></span>
+                    <div class="fg-slot-ic" style="border-color:${col};color:${col};box-shadow:0 0 14px ${col}55;"><i class="fas ${it.icon}"></i></div>
+                    <div class="fg-slot-label">${E.slotName(slot)}</div>
+                    <div class="fg-slot-name">${E.itemName(it)}</div>
+                    <div class="fg-slot-rar" style="color:${col};">${E.rarityName(it.rarity)}</div>
+                </div>`;
+            }).join('');
+        }
+
+        function renderForge(){
+            const gold = H.get('gold');
+            const lang = (window.I18n && I18n.lang) === 'en' ? 'en' : 'fr';
+            document.getElementById('forge').innerHTML = CHESTS.map(ch => {
+                const can = gold >= ch.cost;
+                const name = lang === 'en' ? ch.nameEn : ch.nameFr;
+                return `<div class="fg-chest" style="border-color:${ch.color};">
+                    <i class="fas ${ch.icon2 || ch.icon} big" style="color:${ch.color};"></i>
+                    <div class="name">${name}</div>
+                    <div class="cost"><i class="fas fa-coins"></i> ${ch.cost}</div>
+                    <button class="fg-btn" data-chest="${ch.id}" ${can?'':'disabled'} style="border-color:${ch.color};">${t('inv.forge_btn')}</button>
+                </div>`;
+            }).join('');
+        }
+
+        function renderBag(){
+            const inv = (H.get('inventory') || []).slice().sort((a,b)=> E.rarityRank(b.rarity)-E.rarityRank(a.rarity) || itemScore(b)-itemScore(a));
+            const eq = H.get('equipment') || {};
+            document.getElementById('bagCount').textContent = '(' + inv.length + ')';
+            if(!inv.length){ document.getElementById('bag').innerHTML = `<div class="fg-empty" style="grid-column:1/-1;">${t('inv.empty_bag')}</div>`; return; }
+            document.getElementById('bag').innerHTML = inv.map(it => {
+                const col = E.rarityColor(it.rarity);
+                const cur = eq[it.slot];
+                const diff = itemScore(it) - itemScore(cur);
+                let delta = '';
+                if(cur){ delta = diff > 0 ? `<span class="fg-delta" style="color:#00ff62;">▲ ${t('inv.compare')}</span>` : (diff < 0 ? `<span class="fg-delta" style="color:#ff4757;">▼ ${t('inv.compare')}</span>` : ''); }
+                const val = E.sellValue(it);
+                return `<div class="fg-item" style="border-color:${col};box-shadow:0 0 12px ${col}33;">
+                    <div class="fg-item-top">
+                        <div class="fg-item-ic" style="border-color:${col};color:${col};"><i class="fas ${it.icon}"></i></div>
+                        <div>
+                            <div class="fg-item-name">${E.itemName(it)}</div>
+                            <div class="fg-item-rar" style="color:${col};">${E.rarityName(it.rarity)} · ${E.slotName(it.slot)} ${delta}</div>
+                        </div>
+                    </div>
+                    <div class="fg-stats">${statLinesHTML(it)}</div>
+                    <div class="fg-item-actions">
+                        <button class="fg-mini fg-equip" data-equip="${it.id}">${t('inv.equip')}</button>
+                        <button class="fg-mini fg-sell" data-sell="${it.id}"><i class="fas fa-coins"></i> ${val}</button>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        function renderAll(){ renderSummary(); renderSlots(); renderForge(); renderBag(); if(window.GymUI) GymUI.syncNav(); }
+
+        // ---- Interactions ----
+        document.getElementById('slots').addEventListener('click', (e)=>{
+            const s = e.target.closest('[data-unequip]'); if(!s) return;
+            H.unequipItem(s.dataset.unequip); renderAll();
+        });
+        document.getElementById('bag').addEventListener('click', (e)=>{
+            const eq = e.target.closest('[data-equip]');
+            const sl = e.target.closest('[data-sell]');
+            if(eq){ H.equipItem(eq.dataset.equip); GymUI.toast(t('inv.equipped_toast'),'stat'); renderAll(); }
+            if(sl){ const v = H.sellItem(sl.dataset.sell); if(v) GymUI.toast(t('inv.sold') + ' +' + v + ' ' + t('inv.gold'),'xp'); renderAll(); }
+        });
+        document.getElementById('forge').addEventListener('click', (e)=>{
+            const b = e.target.closest('[data-chest]'); if(!b) return;
+            const ch = CHESTS.find(c=>c.id===b.dataset.chest); if(!ch) return;
+            if(H.get('gold') < ch.cost){ GymUI.toast(t('inv.need_gold'),'stat'); return; }
+            H.spendGold(ch.cost);
+            // grantDrop émet 'loot' → ui.js affiche déjà le butin obtenu
+            H.grantDrop({ source:'forge', level:H.get('level'), luck:ch.luck, minRarity:ch.minRarity, autoEquip:false });
+            renderAll();
+        });
+        document.getElementById('sellCommons').addEventListener('click', ()=>{
+            const inv = (H.get('inventory')||[]).filter(i=>i.rarity==='common');
+            if(!inv.length){ GymUI.toast(t('inv.nothing_to_sell'),'stat'); return; }
+            let total = 0; inv.forEach(i=>{ total += H.sellItem(i.id); });
+            if(total) GymUI.toast(t('inv.sold') + ' +' + total + ' ' + t('inv.gold'),'xp');
+            renderAll();
+        });
+
+        // ---- Init ----
+        (async ()=>{
+            if(window.Cloud) { try { await Cloud.init(); } catch(e){} }
+            if(window.AuthUI) AuthUI.mountChip('#navProfile');
+            renderAll();
+            H.on('change', renderSummary);   // garde l'or/puissance à jour si modifié ailleurs
+            if(window.I18n) I18n.onChange(renderAll);
+        })();
+    </script>
+    <script src="js/solo-leveling.js"></script>
+</body>
+</html>

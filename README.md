@@ -78,23 +78,31 @@ Le fichier [`netlify.toml`](netlify.toml) configure déjà la page d'accueil, le
 | `gym-index → setup → accept → dashboard` | Parcours d'éveil et hub principal |
 | `gym-leaderboard.html` | Classement mondial (temps réel / démo) |
 | `gym-challenges.html` | Arène PvP (duels XP / séances / séries) |
-| `js/store.js` | **Moteur unifié** : XP, niveaux, rangs, stats, streak, succès + hooks cloud |
+| `js/store.js` | **Moteur unifié** : XP, niveaux, rangs, stats, streak, succès, **équipement/butin**, **or** + hooks cloud |
+| `js/equipment.js` | **Système d'équipement & butin** : catalogue, raretés (Commun → Mythique), tirages de loot, bonus de stats/XP/puissance |
 | `js/quests.js` | Bibliothèque de quêtes locale (remplace l'ancienne IA) |
-| `js/cloud.js` | Adaptateur Supabase (auth, sync, classement, challenges, guildes) |
+| `js/cloud.js` | Adaptateur Supabase (auth, sync, classement, duels PvP + mise, guildes, **candidatures**, **chat**) |
 | `js/ui.js` | Notifications, overlays, sons synthétisés, particules, PWA |
 | `js/auth-ui.js` | Modale de connexion / inscription |
 | `js/i18n.js` | Mode **Français / Anglais** (bascule persistante) |
 | `js/avatars.js` | Sélecteur d'avatar (icône + couleur) |
 | `js/weekly.js` | Défi hebdomadaire mondial automatique (rotation par semaine) |
-| `gym-guilds.html` | **Guildes** : fonder/rejoindre, classement de guilde |
+| `gym-challenges.html` | **Arène PvP** : duels XP/séances/séries, **combat rapide**, **mise en or**, **duel d'entraînement** (hors-ligne) avec animation VS |
+| `gym-guilds.html` | **Guildes** : fonder/rejoindre, **postuler**, **recruter/inviter**, rôles (maître/officier/membre), **chat temps réel**, classement de guilde |
+| `gym-inventory.html` | **La Forge** : équiper/retirer le butin, invoquer des objets contre de l'or, vendre, bonus cumulés |
 | `js/config.js` | **Seul fichier à éditer** pour activer le cloud |
 | `supabase/schema.sql` | Schéma base de données + sécurité RLS |
 | `sw.js` / `manifest.json` | PWA installable + hors-ligne |
 
 ### Progression
-- **XP** : 100 × niveau pour passer au niveau suivant.
+- **XP** : 100 × niveau pour passer au niveau suivant. L'**équipement** porté ajoute un multiplicateur d'XP.
 - **Rangs** : E → D → C → B → A → S (exigent niveau **+** séances **+** force).
-- **Puissance de combat** : métrique unique de classement (niveau, stats, série, séances, rang).
+- **Puissance de combat** : métrique unique de classement (niveau, stats **effectives**, série, séances, rang, bonus d'équipement).
+- **Équipement & butin** : 5 emplacements (arme, armure, bottes, amulette, anneau) · 5 raretés (Commun → Mythique). Butin **garanti à chaque niveau** (Épique min. tous les 10 niveaux) et chance de drop en fin de quête (boostée par le **chronomètre**). Gagne de l'**or** pour invoquer/forger à *La Forge*.
+- **Chronomètre** : les quêtes se jouent en mode guidé (séries, temps de gainage, repos) ; finir vite donne un **bonus de vitesse** (XP + meilleur butin).
+
+### ⚠️ Mise à jour de la base (si tu utilises déjà le cloud)
+Le recrutement de guilde, le chat et la mise PvP ajoutent des tables. **Ré-exécute** [`supabase/schema.sql`](supabase/schema.sql) (idempotent), puis active *Realtime* sur `guild_applications` et `guild_messages`.
 
 ---
 

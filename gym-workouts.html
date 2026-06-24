@@ -10,6 +10,7 @@
     <link href="css/gym.css" rel="stylesheet">
     <script src="js/config.js"></script>
     <script src="js/store.js"></script>
+    <script src="js/equipment.js"></script>
     <script src="js/i18n.js"></script>
     <script src="js/quests.js"></script>
     <script src="js/weekly.js"></script>
@@ -452,6 +453,7 @@
             <a href="gym-leaderboard.html" class="nav-link">CLASSEMENT</a>
             <a href="gym-challenges.html" class="nav-link">ARÈNE</a>
             <a href="gym-guilds.html" class="nav-link">GUILDES</a>
+            <a href="gym-inventory.html" class="nav-link">FORGE</a>
             <a href="gym-profile.html" class="nav-link">PROFIL</a>
         </div>
         <div class="nav-profile">
@@ -466,15 +468,15 @@
         <div class="gym-main">
             <div class="workout-container">
                 <div class="page-header">
-                    <h1 class="page-title">QUEST BOARD</h1>
-                    <p class="page-subtitle">SELECT YOUR TRAINING MISSION</p>
+                    <h1 class="page-title" data-i18n="wb.title">QUEST BOARD</h1>
+                    <p class="page-subtitle" data-i18n="wb.subtitle">SELECT YOUR TRAINING MISSION</p>
                 </div>
 
                 <div class="quest-filters">
-                    <button class="filter-btn active" data-filter="all">ALL QUESTS</button>
-                    <button class="filter-btn" data-filter="daily">DAILY</button>
-                    <button class="filter-btn" data-filter="weekly">WEEKLY</button>
-                    <button class="filter-btn" data-filter="special">SPECIAL</button>
+                    <button class="filter-btn active" data-filter="all" data-i18n="wb.all">ALL QUESTS</button>
+                    <button class="filter-btn" data-filter="daily" data-i18n="wb.daily">DAILY</button>
+                    <button class="filter-btn" data-filter="weekly" data-i18n="wb.weekly">WEEKLY</button>
+                    <button class="filter-btn" data-filter="special" data-i18n="wb.special">SPECIAL</button>
                 </div>
 
                 <div class="quest-grid" id="questGrid">
@@ -824,33 +826,32 @@
         </div>
     </div>
 
-    <!-- Workout Modal -->
+    <!-- Workout Modal (chronomètre) -->
     <div class="workout-modal" id="workoutModal">
         <div class="workout-modal-content">
-            <div class="sl-title" style="margin-bottom: 20px;">
+            <div class="sl-title" style="margin-bottom: 14px;">
                 <span class="sl-exclamation">!</span>
-                <span>QUEST ACTIVE</span>
+                <span id="wkPhaseLabel" data-i18n="wk.quest_active">QUEST ACTIVE</span>
             </div>
-            <div class="current-exercise" id="currentExercise">PUSH-UPS</div>
-            <div class="exercise-counter" id="exerciseCounter">0</div>
-            <div class="exercise-target">TARGET: <span id="exerciseTarget">80</span></div>
-            
-            <div class="quest-progress-bar" style="margin: 20px 0;">
-                <div class="quest-progress-fill" id="modalProgress" style="width: 0%"></div>
+            <div class="current-exercise" id="wkExName">EXERCISE</div>
+            <div id="wkSetInfo" style="color:#85acb9; letter-spacing:2px; font-size:.85em; min-height:1em; margin-bottom:4px;"></div>
+            <div class="exercise-counter" id="wkBig">0</div>
+            <div class="exercise-target" id="wkTargetLine">/ 0</div>
+
+            <div class="quest-progress-bar" style="margin: 18px 0 14px;">
+                <div class="quest-progress-fill" id="wkProgress" style="width: 0%"></div>
             </div>
 
-            <div class="modal-controls">
-                <button class="btn-custom" onclick="incrementCounter()">
-                    <span class="btn-glow"></span>
-                    +1 REP
-                </button>
-                <button class="btn-custom" onclick="completeExercise()">
-                    <span class="btn-glow"></span>
-                    COMPLETE SET
-                </button>
+            <!-- Chronomètre inversé : compte à rebours du défi -->
+            <div style="font-size:.85em; letter-spacing:2px; margin-bottom:16px;">
+                <i class="fas fa-hourglass-half" style="color:#ff9800;"></i> <span style="color:rgba(255,255,255,.5);" data-i18n="wk.time_left">TIME LEFT</span>
+                <span id="wkClock" style="color:#fff; font-weight:700; margin-left:6px;">00:00</span>
+                <span style="margin-left:14px; color:rgba(255,255,255,.3);" id="wkStepInfo"></span>
             </div>
 
-            <button class="quest-btn" style="margin-top: 20px;" onclick="closeModal()">EXIT QUEST</button>
+            <div class="modal-controls" id="wkControls"></div>
+
+            <button class="quest-btn" style="margin-top: 18px;" id="wkExit" data-i18n="wk.exit">QUITTER</button>
         </div>
     </div>
 
@@ -918,8 +919,20 @@
                     const questCard = createQuestCard(quest, index, 'daily', isCompleted);
                     aiContainer.appendChild(questCard);
                 });
+            } else if (window.QuestLibrary) {
+                // Pas encore de quêtes générées → protocole localisé (remplace les cartes statiques anglaises)
+                const lang = (window.Hunter && Hunter.get('settings') && Hunter.get('settings').language) || 'en';
+                const rank = (window.Hunter && Hunter.get('rank')) || 'E';
+                const p = QuestLibrary.generateProtocol({ objective: 'maintain', fitness: 'beginner', rank: rank, lang: lang });
+                localStorage.setItem('dailyQuests', JSON.stringify(p.dailyQuests || []));
+                if (p.weeklyQuest) localStorage.setItem('weeklyQuest', JSON.stringify(p.weeklyQuest));
+                defaultContainer.style.display = 'none';
+                (p.dailyQuests || []).forEach((quest, index) => {
+                    aiContainer.appendChild(createQuestCard(quest, index, 'daily', false));
+                });
+                if (p.weeklyQuest) weeklyContainer.appendChild(createQuestCard(p.weeklyQuest, 'weekly', 'weekly', false));
             } else {
-                // Show default quests
+                // Repli ultime : cartes statiques
                 defaultContainer.style.display = 'contents';
             }
             
@@ -1032,71 +1045,7 @@
             return card;
         }
         
-        function startAIQuest(button, questIndex) {
-            const dailyQuestsJSON = localStorage.getItem('dailyQuests');
-            if (!dailyQuestsJSON) return;
-            
-            const dailyQuests = JSON.parse(dailyQuestsJSON);
-            const quest = dailyQuests[questIndex];
-            
-            exercises = [{
-                name: quest.name,
-                reps: quest.sets ? `${quest.sets} × ${quest.reps}` : quest.duration
-            }];
-            
-            currentExerciseIndex = 0;
-            currentQuestIndex = questIndex;
-            loadExercise();
-            document.getElementById('workoutModal').classList.add('show');
-        }
-        
-        let currentQuestIndex = null;
-        
-        function completeAIQuest() {
-            closeModal();
-            
-            if (currentQuestIndex !== null) {
-                // Mark quest as completed in localStorage
-                const completedQuestsJSON = localStorage.getItem('completedDailyQuests');
-                const completedQuests = completedQuestsJSON ? JSON.parse(completedQuestsJSON) : [];
-                
-                if (!completedQuests.includes(currentQuestIndex)) {
-                    completedQuests.push(currentQuestIndex);
-                    localStorage.setItem('completedDailyQuests', JSON.stringify(completedQuests));
-                }
-                
-                // Get XP from quest
-                const dailyQuestsJSON = localStorage.getItem('dailyQuests');
-                const dailyQuests = JSON.parse(dailyQuestsJSON);
-                const quest = dailyQuests[currentQuestIndex];
-                const xpGain = quest.xp;
-                
-                // Add XP
-                let xp = parseInt(localStorage.getItem('hunterXP') || '0');
-                xp += xpGain;
-                
-                // Check for level up
-                const level = parseInt(localStorage.getItem('hunterLevel') || '1');
-                if (xp >= level * 100) {
-                    localStorage.setItem('hunterXP', xp - (level * 100));
-                    localStorage.setItem('hunterLevel', level + 1);
-                    alert(`LEVEL UP! You are now Level ${level + 1}!`);
-                } else {
-                    localStorage.setItem('hunterXP', xp);
-                }
-
-                // Update UI
-                const questCard = document.querySelector(`[data-quest-index="${currentQuestIndex}"]`);
-                if (questCard) {
-                    questCard.classList.add('completed');
-                    questCard.querySelector('.quest-actions').innerHTML = '<button class="quest-btn complete" disabled><i class="fas fa-check"></i> COMPLETED</button>';
-                }
-                
-                alert(`QUEST COMPLETE! +${xpGain} XP gained`);
-                loadNavData();
-                currentQuestIndex = null;
-            }
-        }
+        // startQuest / startAIQuest sont définis plus bas (moteur d'entraînement chronométré).
 
         loadAIQuests();
 
@@ -1118,128 +1067,251 @@
             });
         });
 
-        // Quest modal
-        let currentCounter = 0;
-        let currentTarget = 80;
-        let currentExerciseIndex = 0;
-        let exercises = [];
+        // ============== MOTEUR D'ENTRAÎNEMENT CHRONOMÉTRÉ ==============
+        // Gère séries de répétitions, exercices chronométrés (gainage…), repos
+        // entre séries, chronomètre global et bonus de vitesse. La complétion
+        // passe par Hunter.completeQuest (XP, niveau, butin, or, streak, succès).
+        const tr = (k) => (window.I18n ? I18n.t(k) : k);
+        const fmtTime = (s) => { s = Math.max(0, Math.round(s)); const m = Math.floor(s / 60), r = s % 60; return (m < 10 ? '0' : '') + m + ':' + (r < 10 ? '0' : '') + r; };
 
-        function startQuest(button) {
-            const quest = button.closest('.workout-quest');
-            const exerciseItems = quest.querySelectorAll('.exercise-item');
-            
-            exercises = [];
-            exerciseItems.forEach(item => {
-                exercises.push({
-                    name: item.querySelector('.exercise-name').textContent,
-                    reps: item.querySelector('.exercise-reps').textContent
-                });
+        let WK = null; // session d'entraînement courante
+
+        // "4 × 20", "3 × 60s", "60s", "100 total" → structure exploitable
+        function parseExercise(repsText) {
+            const txt = String(repsText || '').toLowerCase().replace(/x/g, '×');
+            let m;
+            if ((m = txt.match(/(\d+)\s*×\s*(\d+)\s*s/))) return { type: 'time', sets: +m[1], value: +m[2] };
+            if ((m = txt.match(/(\d+)\s*×\s*(\d+)/)))     return { type: 'reps', sets: +m[1], value: +m[2] };
+            if ((m = txt.match(/(\d+)\s*s\b/)))            return { type: 'time', sets: 1, value: +m[1] };
+            if ((m = txt.match(/(\d+)/)))                  return { type: 'reps', sets: 1, value: +m[1] };
+            return { type: 'reps', sets: 1, value: 20 };
+        }
+
+        function buildSteps(exercises) {
+            const steps = [];
+            exercises.forEach((ex, ei) => {
+                const p = parseExercise(ex.reps);
+                for (let s = 0; s < p.sets; s++) {
+                    steps.push({ kind: 'work', name: ex.name, type: p.type, target: p.value, set: s + 1, sets: p.sets });
+                    const lastSet = (s === p.sets - 1), lastEx = (ei === exercises.length - 1);
+                    if (!(lastSet && lastEx)) steps.push({ kind: 'rest', seconds: (p.type === 'time' ? 20 : 30) });
+                }
             });
+            return steps;
+        }
 
-            currentExerciseIndex = 0;
-            loadExercise();
+        function expectedSeconds(steps) {
+            let t = 0;
+            steps.forEach(s => { t += (s.kind === 'rest') ? s.seconds : (s.type === 'time' ? s.target : s.target * 2.2); });
+            return Math.max(20, t);
+        }
+
+        function beginWorkout(exercises, quest, opts) {
+            opts = opts || {};
+            if (!exercises || !exercises.length) return;
+            const steps = buildSteps(exercises);
+            const expected = expectedSeconds(steps);
+            WK = {
+                steps: steps, idx: 0, count: 0, paused: false, phaseLeft: 0, startTs: Date.now(),
+                expected: expected, limit: Math.round(expected * 1.2), timeUp: false, quest: quest || {},
+                aiIndex: (opts.aiIndex != null ? opts.aiIndex : null), card: opts.card || null,
+                phaseTimer: null, elapsedTimer: null
+            };
             document.getElementById('workoutModal').classList.add('show');
+            // Compte à rebours global du défi (chrono inversé)
+            WK.elapsedTimer = setInterval(() => {
+                const clock = document.getElementById('wkClock');
+                if (!clock) return;
+                const remaining = Math.max(0, WK.limit - (Date.now() - WK.startTs) / 1000);
+                clock.textContent = fmtTime(remaining);
+                if (remaining <= 0) {
+                    clock.style.color = '#ff4757';
+                    if (!WK.timeUp) { WK.timeUp = true; clock.textContent = tr('wk.time_up'); if (window.GymUI) { GymUI.toast('<i class="fas fa-hourglass-end"></i> ' + tr('wk.time_up'), 'stat'); GymUI.screenFlash && GymUI.screenFlash(); } }
+                } else if (remaining < WK.limit * 0.25) {
+                    clock.style.color = '#ff9800';
+                } else {
+                    clock.style.color = '#fff';
+                }
+            }, 250);
+            runStep();
         }
 
-        function loadExercise() {
-            if (currentExerciseIndex >= exercises.length) {
-                completeQuest();
+        function setControls(html) { document.getElementById('wkControls').innerHTML = html; }
+
+        function nextWorkLabel() {
+            for (let i = WK.idx + 1; i < WK.steps.length; i++) {
+                if (WK.steps[i].kind === 'work') {
+                    const s = WK.steps[i];
+                    return String(s.name).toUpperCase() + (s.sets > 1 ? (' · ' + tr('wk.set') + ' ' + s.set) : '');
+                }
+            }
+            return tr('wk.finish');
+        }
+
+        function runStep() {
+            if (!WK) return;
+            clearInterval(WK.phaseTimer); WK.phaseTimer = null; WK.paused = false;
+            if (WK.idx >= WK.steps.length) { finishWorkout(); return; }
+            const step = WK.steps[WK.idx];
+            const stepInfo = document.getElementById('wkStepInfo');
+            if (stepInfo) stepInfo.textContent = (WK.idx + 1) + '/' + WK.steps.length;
+            const big = document.getElementById('wkBig');
+            const targetLine = document.getElementById('wkTargetLine');
+            const progress = document.getElementById('wkProgress');
+
+            if (step.kind === 'rest') {
+                document.getElementById('wkPhaseLabel').textContent = tr('wk.rest');
+                const exName = document.getElementById('wkExName');
+                exName.textContent = tr('wk.next') + ' → '; exName.style.color = '#ffd700';
+                document.getElementById('wkSetInfo').textContent = nextWorkLabel();
+                targetLine.style.visibility = 'hidden';
+                big.style.color = '#ffd700';
+                WK.phaseLeft = step.seconds; big.textContent = WK.phaseLeft; progress.style.width = '0%';
+                setControls(`<button class="btn-custom" id="wkSkip"><span class="btn-glow"></span>${tr('wk.skip')}</button>`);
+                document.getElementById('wkSkip').onclick = runNext;
+                WK.phaseTimer = setInterval(() => {
+                    if (WK.paused) return;
+                    WK.phaseLeft--; big.textContent = WK.phaseLeft;
+                    progress.style.width = (100 * (step.seconds - WK.phaseLeft) / step.seconds) + '%';
+                    if (WK.phaseLeft <= 0) { if (window.GymUI) GymUI.sound('xp'); runNext(); }
+                }, 1000);
                 return;
             }
 
-            const exercise = exercises[currentExerciseIndex];
-            document.getElementById('currentExercise').textContent = exercise.name.toUpperCase();
-            
-            // Parse target reps
-            const repsText = exercise.reps;
-            const match = repsText.match(/(\d+)\s*×\s*(\d+)/);
-            if (match) {
-                currentTarget = parseInt(match[1]) * parseInt(match[2]);
-            } else {
-                currentTarget = parseInt(repsText) || 20;
-            }
-            
-            document.getElementById('exerciseTarget').textContent = currentTarget;
-            currentCounter = 0;
-            updateCounter();
-        }
+            // ---- WORK ----
+            const exName = document.getElementById('wkExName');
+            exName.style.color = ''; exName.textContent = String(step.name).toUpperCase();
+            document.getElementById('wkSetInfo').textContent = step.sets > 1 ? (tr('wk.set') + ' ' + step.set + ' ' + tr('wk.of') + ' ' + step.sets) : '';
 
-        function incrementCounter() {
-            if (currentCounter < currentTarget) {
-                currentCounter++;
-                updateCounter();
-                
-                // Create particle effect
-                const counter = document.getElementById('exerciseCounter');
-                const particle = document.createElement('div');
-                particle.style.cssText = `
-                    position: absolute;
-                    color: #85acb9;
-                    font-size: 1.5em;
-                    animation: floatUp 0.5s ease-out forwards;
-                    pointer-events: none;
-                `;
-                particle.textContent = '+1';
-                counter.parentElement.appendChild(particle);
-                setTimeout(() => particle.remove(), 500);
-            }
-        }
-
-        function updateCounter() {
-            document.getElementById('exerciseCounter').textContent = currentCounter;
-            const progress = (currentCounter / currentTarget) * 100;
-            document.getElementById('modalProgress').style.width = progress + '%';
-        }
-
-        function completeExercise() {
-            currentCounter = currentTarget;
-            updateCounter();
-            
-            setTimeout(() => {
-                currentExerciseIndex++;
-                loadExercise();
-            }, 500);
-        }
-
-        function completeQuest() {
-            // If it's an AI quest, use the AI quest completion
-            if (currentQuestIndex !== null) {
-                completeAIQuest();
+            if (step.type === 'time') {
+                document.getElementById('wkPhaseLabel').textContent = tr('wk.hold');
+                targetLine.style.visibility = 'hidden';
+                big.style.color = '#85acb9';
+                WK.phaseLeft = step.target; big.textContent = WK.phaseLeft; progress.style.width = '0%';
+                setControls(`<button class="btn-custom" id="wkPause"><span class="btn-glow"></span>${tr('wk.pause')}</button>
+                             <button class="btn-custom" id="wkSkip2"><span class="btn-glow"></span>${tr('wk.skip')}</button>`);
+                document.getElementById('wkPause').onclick = function () { WK.paused = !WK.paused; this.lastChild.textContent = WK.paused ? tr('wk.resume') : tr('wk.pause'); };
+                document.getElementById('wkSkip2').onclick = runNext;
+                WK.phaseTimer = setInterval(() => {
+                    if (WK.paused) return;
+                    WK.phaseLeft--; big.textContent = WK.phaseLeft;
+                    progress.style.width = (100 * (step.target - WK.phaseLeft) / step.target) + '%';
+                    if (WK.phaseLeft <= 0) { if (window.GymUI) GymUI.sound('levelup'); runNext(); }
+                }, 1000);
                 return;
             }
-            
-            closeModal();
-            
-            // Add XP
-            let xp = parseInt(localStorage.getItem('hunterXP') || '0');
-            xp += 50; // Base XP reward
-            localStorage.setItem('hunterXP', xp);
-            
-            // Check for level up
-            const level = parseInt(localStorage.getItem('hunterLevel') || '1');
-            if (xp >= level * 100) {
-                localStorage.setItem('hunterXP', xp - (level * 100));
-                localStorage.setItem('hunterLevel', level + 1);
-            }
 
-            // Show completion notification
-            alert('QUEST COMPLETE! +50 XP gained');
-            loadNavData();
+            // reps
+            document.getElementById('wkPhaseLabel').textContent = tr('wk.quest_active');
+            big.style.color = '#85acb9';
+            WK.count = 0; big.textContent = '0';
+            targetLine.style.visibility = 'visible'; targetLine.textContent = '/ ' + step.target;
+            progress.style.width = '0%';
+            setControls(`<button class="btn-custom" id="wkRep"><span class="btn-glow"></span>${tr('wk.add_rep')}</button>
+                         <button class="btn-custom" id="wkDone"><span class="btn-glow"></span>${tr('wk.done_set')}</button>`);
+            document.getElementById('wkRep').onclick = () => addRep(step);
+            document.getElementById('wkDone').onclick = runNext;
         }
 
-        function closeModal() {
+        function addRep(step) {
+            WK.count++;
+            const big = document.getElementById('wkBig');
+            big.textContent = WK.count;
+            document.getElementById('wkProgress').style.width = Math.min(100, 100 * WK.count / step.target) + '%';
+            const p = document.createElement('div');
+            p.style.cssText = 'position:absolute;color:#85acb9;font-size:1.4em;animation:floatUp .5s ease-out forwards;pointer-events:none;';
+            p.textContent = '+1'; big.parentElement.appendChild(p); setTimeout(() => p.remove(), 500);
+            if (WK.count >= step.target) { if (window.GymUI) GymUI.sound('xp'); setTimeout(runNext, 350); }
+        }
+
+        function runNext() { if (!WK) return; clearInterval(WK.phaseTimer); WK.phaseTimer = null; WK.idx++; runStep(); }
+
+        function finishWorkout() {
+            if (!WK) return;
+            clearInterval(WK.phaseTimer); clearInterval(WK.elapsedTimer);
+            const elapsed = (Date.now() - WK.startTs) / 1000;
+            // Bonus de vitesse = temps restant au compte à rebours (0 si le temps est écoulé)
+            const speedBonus = Math.max(0, Math.min(1, (WK.limit - elapsed) / WK.limit));
+            const session = WK; WK = null;
+            document.getElementById('workoutModal').classList.remove('show');
+
+            // Quête IA → marque comme terminée + maj de la carte
+            if (session.aiIndex != null) {
+                const raw = localStorage.getItem('completedDailyQuests');
+                const done = raw ? JSON.parse(raw) : [];
+                if (!done.includes(session.aiIndex)) { done.push(session.aiIndex); localStorage.setItem('completedDailyQuests', JSON.stringify(done)); }
+                const card = session.card || document.querySelector(`[data-quest-index="${session.aiIndex}"]`);
+                if (card) {
+                    card.classList.add('completed');
+                    const a = card.querySelector('.quest-actions');
+                    if (a) a.innerHTML = '<button class="quest-btn complete" disabled><i class="fas fa-check"></i> COMPLETED</button>';
+                }
+            }
+
+            // Complétion unifiée (XP avec bonus d'équipement, niveau, butin, or, streak, succès, cloud)
+            const quest = Object.assign({}, session.quest, { speedBonus: speedBonus });
+            if (window.Hunter) Hunter.completeQuest(quest);
+
+            // Bonus de vitesse : XP supplémentaire + retour visuel
+            if (speedBonus > 0.05) {
+                const bonusXp = Math.round((quest.xp || 50) * speedBonus * 0.5);
+                if (bonusXp > 0 && window.Hunter) Hunter.addXP(bonusXp, tr('wk.speed_bonus'));
+                if (window.GymUI) GymUI.toast('<i class="fas fa-gauge-high"></i> ' + tr('wk.speed_bonus') + ' +' + Math.round(speedBonus * 100) + '%', 'achievement');
+            }
+            if (window.GymUI) { GymUI.toast('<i class="fas fa-flag-checkered"></i> ' + tr('wk.quest_complete'), 'xp'); GymUI.syncNav(); }
+        }
+
+        function exitWorkout() {
+            if (WK) { clearInterval(WK.phaseTimer); clearInterval(WK.elapsedTimer); WK = null; }
             document.getElementById('workoutModal').classList.remove('show');
         }
+        document.getElementById('wkExit').addEventListener('click', exitWorkout);
 
-        // Add float up animation
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes floatUp {
-                0% { transform: translateY(0); opacity: 1; }
-                100% { transform: translateY(-50px); opacity: 0; }
-            }
-        `;
-        document.head.appendChild(style);
+        // ---- Lancements (appelés par les boutons des cartes de quête) ----
+        function extractQuestMeta(card) {
+            const titleEl = card.querySelector('.quest-title');
+            const name = titleEl ? titleEl.textContent : 'Quête';
+            let xp = 50;
+            const xpEl = card.querySelector('.detail-value.xp');
+            if (xpEl) { const m = xpEl.textContent.match(/(\d+)/); if (m) xp = +m[1]; }
+            let stat = null;
+            const sEl = card.querySelector('.detail-value.stat-boost');
+            if (sEl) { const m = sEl.textContent.match(/(STR|AGI|END|VIT)/i); if (m) stat = m[1].toUpperCase(); }
+            return { name: name, xp: xp, stat: stat, type: null };
+        }
+
+        function startQuest(button) {
+            const card = button.closest('.workout-quest');
+            const exercises = [];
+            card.querySelectorAll('.exercise-item').forEach(item => exercises.push({
+                name: item.querySelector('.exercise-name').textContent,
+                reps: item.querySelector('.exercise-reps').textContent
+            }));
+            beginWorkout(exercises, extractQuestMeta(card), { card: card });
+        }
+
+        function startAIQuest(button, questIndex) {
+            const raw = localStorage.getItem('dailyQuests');
+            if (!raw) return;
+            const quest = JSON.parse(raw)[questIndex];
+            if (!quest) return;
+            const exercises = [{ name: quest.name, reps: quest.sets ? `${quest.sets} × ${quest.reps}` : (quest.duration || '20') }];
+            const card = button ? button.closest('.workout-quest') : document.querySelector('[data-quest-index="' + questIndex + '"]');
+            beginWorkout(exercises, quest, { aiIndex: questIndex, card: card });
+        }
+
+        // Lancement automatique depuis le dashboard : gym-workouts.html?start=<index>
+        (function () {
+            const s = new URLSearchParams(location.search).get('start');
+            if (s === null || !localStorage.getItem('dailyQuests')) return;
+            const idx = parseInt(s);
+            if (!isNaN(idx)) setTimeout(() => startAIQuest(null, idx), 400);
+        })();
+
+        // Animation flottante "+1"
+        const wkStyle = document.createElement('style');
+        wkStyle.textContent = `@keyframes floatUp { 0% { transform: translateY(0); opacity: 1; } 100% { transform: translateY(-50px); opacity: 0; } }`;
+        document.head.appendChild(wkStyle);
     </script>
     <script src="js/solo-leveling.js"></script>
 </body>

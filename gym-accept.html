@@ -8,6 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap" rel="stylesheet"> 
     <script src="js/config.js"></script>
     <script src="js/store.js"></script>
+    <script src="js/equipment.js"></script>
     <script src="js/i18n.js"></script>
     <script src="js/quests.js"></script>
     <script src="js/weekly.js"></script>
@@ -636,9 +637,9 @@
         <div class="rune-circle" style="animation-direction: reverse; width: 110%; height: 110%; top: -5%; left: -5%;"></div>
         <h4>
             <span class="exclamation">!</span>
-            <span>NOTIFICATION</span>
+            <span data-i18n="onb.notification">NOTIFICATION</span>
         </h4>
-        <p>If you don't accept, your heart will stop in <span id="countdown" style="text-shadow: 
+        <p><span data-i18n="onb.heart_warning">If you don't accept, your heart will stop in</span> <span id="countdown" style="text-shadow: 
             0 0 7px #ff0000,
             0 0 10px #ff0000,
             0 0 21px #ff0000,
@@ -647,31 +648,33 @@
             0 0 92px #ff0000,
             0 0 102px #ff0000,
             0 0 151px #ff0000;color: #ff0000; font-weight: bolder;">10 seconds</span></p>
-        <p>Do you want to accept ?</p>
+        <p data-i18n="onb.accept_q">Do you want to accept ?</p>
         <div class="buttons-container">
-            <button class="btn-custom" id="yesBtn">Yes</button>
-            <button class="btn-custom" id="noBtn">No</button>
+            <button class="btn-custom" id="yesBtn" data-i18n="onb.yes">Yes</button>
+            <button class="btn-custom" id="noBtn" data-i18n="onb.no">No</button>
         </div>
     </div>
 
     <div class="dramatic-reveal">
         <div class="shine-lines"></div>
-        <div class="dramatic-text">QUEST ACCEPTED</div>
+        <div class="dramatic-text" data-i18n="onb.quest_accepted">QUEST ACCEPTED</div>
     </div>
 
     <script>
+        const TR = (k) => (window.I18n ? I18n.t(k) : k);
         // Countdown timer
         let countdownTime = 10;
         const countdownEl = document.getElementById('countdown');
+        countdownEl.textContent = countdownTime + ' ' + TR('onb.seconds');
         
         const timer = setInterval(() => {
             countdownTime--;
             if (countdownTime <= 0) {
                 clearInterval(timer);
-                countdownEl.textContent = "0 seconds";
+                countdownEl.textContent = '0 ' + TR('onb.seconds');
                 triggerDeath();
             } else {
-                countdownEl.textContent = countdownTime + " seconds";
+                countdownEl.textContent = countdownTime + ' ' + TR('onb.seconds');
             }
         }, 1000);
 
@@ -684,9 +687,9 @@
             setTimeout(() => {
                 document.body.innerHTML = `
                     <div style="position: fixed; inset: 0; background: #000; display: flex; flex-direction: column; justify-content: center; align-items: center;">
-                        <div style="color: #ff4757; font-size: 3em; letter-spacing: 5px; text-shadow: 0 0 30px #ff4757; animation: pulse 2s ease-in-out infinite;">YOU DIED</div>
-                        <div style="color: rgba(255,255,255,0.6); font-size: 1em; margin-top: 20px; letter-spacing: 2px;">[SYSTEM] The player refused to awaken...</div>
-                        <button onclick="localStorage.clear(); window.location.href='gym-index.html';" style="margin-top: 40px; padding: 15px 30px; background: transparent; border: 1px solid #ff4757; color: #ff4757; font-size: 1em; letter-spacing: 2px; cursor: pointer; font-family: 'Lato', sans-serif;">TRY AGAIN</button>
+                        <div style="color: #ff4757; font-size: 3em; letter-spacing: 5px; text-shadow: 0 0 30px #ff4757; animation: pulse 2s ease-in-out infinite;">${TR('onb.you_died')}</div>
+                        <div style="color: rgba(255,255,255,0.6); font-size: 1em; margin-top: 20px; letter-spacing: 2px;">${TR('onb.refused')}</div>
+                        <button onclick="localStorage.clear(); window.location.href='gym-index.html';" style="margin-top: 40px; padding: 15px 30px; background: transparent; border: 1px solid #ff4757; color: #ff4757; font-size: 1em; letter-spacing: 2px; cursor: pointer; font-family: 'Lato', sans-serif;">${TR('onb.try_again')}</button>
                     </div>
                     <style>@keyframes pulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }</style>
                 `;

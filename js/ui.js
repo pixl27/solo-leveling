@@ -40,7 +40,36 @@
             .sg-toast.achievement { border-color: #9c27b0; color: #fff; box-shadow: 0 0 22px rgba(156,39,176,0.5); }
             .sg-toast.stat { border-color: #03a9f4; color: #03a9f4; }
             .sg-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 10001; display: flex;
-                align-items: center; justify-content: center; animation: sgFadeIn 0.3s ease-out; }
+                align-items: center; justify-content: center; animation: sgFadeIn 0.3s ease-out; overflow: hidden; }
+            /* ---- Montée de niveau cinématique ---- */
+            @keyframes sgRays { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+            @keyframes sgShake { 0%,100%{transform:translate(0,0);} 20%{transform:translate(-6px,3px);} 40%{transform:translate(6px,-3px);} 60%{transform:translate(-4px,-2px);} 80%{transform:translate(4px,2px);} }
+            @keyframes sgRise { from { transform: translateY(26px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+            @keyframes sgBurst { to { transform: translate(var(--bx), var(--by)) scale(0); opacity: 0; } }
+            @keyframes sgFlash { from { opacity: .85; } to { opacity: 0; } }
+            @keyframes sgRingPop { from { transform: scale(.2); opacity: .9; } to { transform: scale(1.8); opacity: 0; } }
+            .sg-shake { animation: sgShake .5s ease-in-out; }
+            .sg-rays { position:absolute; width:160vmax; height:160vmax; left:50%; top:50%; margin-left:-80vmax; margin-top:-80vmax;
+                background: repeating-conic-gradient(from 0deg, rgba(133,172,185,.16) 0deg 6deg, transparent 6deg 16deg);
+                animation: sgRays 14s linear infinite; pointer-events:none; }
+            .sg-flash { position:fixed; inset:0; background:#fff; z-index:10002; pointer-events:none; animation: sgFlash .55s ease-out forwards; }
+            .sg-lvl-card { position:relative; text-align:center; z-index:2; padding: 10px 24px; }
+            .sg-lvl-kicker { font-size: clamp(1.4em, 5vw, 3em); color:#ffd700; text-shadow:0 0 50px rgba(255,215,0,.8); letter-spacing:5px; }
+            .sg-lvl-num { font-size: clamp(3em, 13vw, 7em); color:#fff; text-shadow:0 0 40px #85acb9; line-height:1; margin:6px 0 14px; }
+            .sg-lvl-pts { color:#85acb9; font-size:1.05em; letter-spacing:2px; }
+            .sg-ring { position:absolute; left:50%; top:42%; width:160px; height:160px; margin:-80px 0 0 -80px; border:3px solid #ffd700;
+                border-radius:50%; animation: sgRingPop .9s ease-out forwards; pointer-events:none; }
+            .sg-loot-reveal { margin-top:18px; animation: sgRise .5s .35s both; display:inline-flex; align-items:center; gap:14px;
+                padding:12px 18px; border:1px solid; border-radius:6px; background:rgba(8,14,24,.7); }
+            .sg-loot-ic { width:48px; height:48px; display:flex; align-items:center; justify-content:center; font-size:1.6em; border:1px solid; border-radius:6px; }
+            .sg-loot-meta { text-align:left; }
+            .sg-loot-name { color:#fff; letter-spacing:1px; font-size:1.02em; }
+            .sg-loot-sub { font-size:.76em; letter-spacing:1px; margin-top:3px; }
+            .sg-cont { margin-top:22px; }
+            .sg-cont button { background:transparent; border:1px solid #85acb9; color:#fff; padding:10px 26px; letter-spacing:2px;
+                cursor:pointer; font-family:inherit; font-size:.9em; transition:all .2s; }
+            .sg-cont button:hover { background:rgba(133,172,185,.2); box-shadow:0 0 18px rgba(133,172,185,.5); }
+            .sg-toast.loot { color:#fff; }
             @media (max-width: 600px) { .sg-toast-wrap { top: 70px; right: 10px; left: 10px; } .sg-toast { font-size: 0.85em; padding: 10px 16px; } }
         `;
         document.head.appendChild(style);
@@ -65,20 +94,83 @@
         }, type === 'achievement' ? 3500 : 2200);
     }
 
-    // ==================== OVERLAY MONTÉE DE NIVEAU ====================
-    function levelUpOverlay(level, points) {
+    // ==================== OVERLAY MONTÉE DE NIVEAU (cinématique) ====================
+    function tr(k) { return (global.I18n ? global.I18n.t(k) : k); }
+
+    function lootRevealHTML(loot) {
+        if (!loot || !global.Equipment) return '';
+        const E = global.Equipment;
+        const color = E.rarityColor(loot.rarity);
+        return `
+            <div class="sg-loot-reveal" style="border-color:${color}; box-shadow:0 0 24px ${color}55;">
+                <div class="sg-loot-ic" style="border-color:${color}; color:${color}; box-shadow:0 0 16px ${color}55;"><i class="fas ${loot.icon}"></i></div>
+                <div class="sg-loot-meta">
+                    <div style="font-size:.7em; letter-spacing:2px; color:${color};">${tr('loot.obtained')}</div>
+                    <div class="sg-loot-name">${E.itemName(loot)}</div>
+                    <div class="sg-loot-sub" style="color:${color};">${E.rarityName(loot.rarity)} · ${E.slotName(loot.slot)}</div>
+                </div>
+            </div>`;
+    }
+
+    function screenFlash() {
+        const f = document.createElement('div');
+        f.className = 'sg-flash';
+        document.body.appendChild(f);
+        setTimeout(() => f.remove(), 600);
+    }
+
+    function burst(host, color, n) {
+        for (let i = 0; i < (n || 26); i++) {
+            const p = document.createElement('div');
+            const ang = Math.random() * Math.PI * 2;
+            const dist = 120 + Math.random() * 220;
+            p.style.cssText = `position:absolute; left:50%; top:42%; width:${3 + Math.random() * 5}px; height:${3 + Math.random() * 5}px;
+                background:${color}; border-radius:50%; pointer-events:none; box-shadow:0 0 8px ${color};
+                --bx:${Math.cos(ang) * dist}px; --by:${Math.sin(ang) * dist}px; animation: sgBurst ${0.7 + Math.random() * 0.6}s ease-out forwards;`;
+            host.appendChild(p);
+        }
+    }
+
+    function levelUpOverlay(level, points, loot) {
         injectStyles();
+        screenFlash();
         const o = document.createElement('div');
         o.className = 'sg-overlay';
         o.innerHTML = `
-            <div style="text-align:center; animation: sgScaleIn 0.5s ease-out;">
-                <div style="font-size:3em; color:#ffd700; text-shadow:0 0 50px rgba(255,215,0,0.8); letter-spacing:5px; margin-bottom:20px;">NIVEAU SUPÉRIEUR !</div>
-                <div style="font-size:5em; color:#fff; text-shadow:0 0 30px #85acb9; margin-bottom:30px;">NV. ${level}</div>
-                <div style="color:#85acb9; font-size:1.2em; letter-spacing:2px;">+${points} POINTS DE STAT DISPONIBLES</div>
+            <div class="sg-rays"></div>
+            <div class="sg-ring"></div>
+            <div class="sg-lvl-card sg-shake">
+                <div class="sg-lvl-kicker">${tr('lvl.up')}</div>
+                <div class="sg-lvl-num">${tr('lvl.lv')} ${level}</div>
+                <div class="sg-lvl-pts">+${points} ${tr('lvl.points')}</div>
+                ${lootRevealHTML(loot)}
+                <div class="sg-cont"><button type="button">${tr('lvl.continue')}</button></div>
             </div>`;
         document.body.appendChild(o);
+        burst(o, '#ffd700', 30);
         sound('levelup');
-        setTimeout(() => { o.style.animation = 'sgFadeOut 0.5s ease-out forwards'; setTimeout(() => o.remove(), 500); }, 2600);
+        const close = () => { o.style.animation = 'sgFadeOut 0.45s ease-out forwards'; setTimeout(() => o.remove(), 450); };
+        o.querySelector('.sg-cont button').addEventListener('click', close);
+        o.addEventListener('click', (e) => { if (e.target === o) close(); });
+        // Fermeture auto plus longue s'il y a un butin à admirer.
+        setTimeout(close, loot ? 5200 : 3200);
+    }
+
+    // ==================== BUTIN (hors level-up) ====================
+    function lootToast(item) {
+        if (!item || !global.Equipment) return;
+        const E = global.Equipment;
+        const color = E.rarityColor(item.rarity);
+        injectStyles();
+        const el = document.createElement('div');
+        el.className = 'sg-toast loot';
+        el.style.borderColor = color;
+        el.style.boxShadow = '0 0 22px ' + color + '66';
+        el.innerHTML = `<i class="fas ${item.icon}" style="color:${color}; margin-right:8px;"></i>
+            <span style="color:${color};">${E.rarityName(item.rarity)}</span> · ${E.itemName(item)}`;
+        toastWrap().appendChild(el);
+        sound('achievement');
+        setTimeout(() => { el.style.animation = 'sgSlideOut 0.35s ease-out forwards'; setTimeout(() => el.remove(), 350); }, 3200);
     }
 
     // ==================== OVERLAY MONTÉE DE RANG ====================
@@ -155,10 +247,19 @@
 
     // ==================== ABONNEMENTS AUX ÉVÉNEMENTS ====================
     Hunter.on('xp', (d) => { toast('+' + d.amount + ' XP', 'xp'); sound('xp'); syncNav(); });
-    Hunter.on('levelup', (d) => { levelUpOverlay(d.level, d.points); syncNav(); });
+    Hunter.on('levelup', (d) => { levelUpOverlay(d.level, d.points, d.loot); syncNav(); });
     Hunter.on('rankup', (d) => rankUpOverlay(d.rank));
     Hunter.on('achievement', (d) => { toast('🏆 ' + d.info.name + ' — ' + d.info.desc, 'achievement'); sound('achievement'); });
     Hunter.on('stat', (d) => { if (d.natural) toast(d.stat + ' +1', 'stat'); });
+    // Butin : le drop de level-up est déjà montré dans l'overlay → on ne re-toast pas.
+    Hunter.on('loot', (d) => { if (d && d.source !== 'levelup') lootToast(d.item); });
+    // Maîtrise de talent : palier atteint → bonus de stat permanent.
+    Hunter.on('talentup', (d) => {
+        let bonus = '';
+        if (d.statBoost) bonus = Object.keys(d.statBoost).map(s => '+' + d.statBoost[s] + ' ' + s).join(' · ');
+        toast('<i class="fas fa-star" style="color:#9c27b0;"></i> ' + tr('tal.mastered') + ' ' + tr('lvl.lv') + ' ' + d.level + (bonus ? ' — ' + bonus : ''), 'achievement');
+        sound('rankup');
+    });
     Hunter.on('change', syncNav);
 
     // ==================== API PUBLIQUE ====================
@@ -168,7 +269,10 @@
         initParticles: initParticles,
         syncNav: syncNav,
         levelUpOverlay: levelUpOverlay,
-        rankUpOverlay: rankUpOverlay
+        rankUpOverlay: rankUpOverlay,
+        lootToast: lootToast,
+        burst: burst,
+        screenFlash: screenFlash
     };
 
     // Init auto au chargement du DOM

@@ -10,6 +10,7 @@
     <link href="css/gym.css" rel="stylesheet">
     <script src="js/config.js"></script>
     <script src="js/store.js"></script>
+    <script src="js/equipment.js"></script>
     <script src="js/i18n.js"></script>
     <script src="js/quests.js"></script>
     <script src="js/weekly.js"></script>
@@ -191,20 +192,20 @@
     <div class="bg-particles"></div>
     <div class="sl-particles"></div>
 
-    <div class="sl-notification" style="width: 685px; height: 304px; padding: 40px 60px; transform: translate(-50%, -50%); border: 2px solid #fff; box-shadow: 0 0 20px rgba(255, 255, 255, 0.5); margin-left: 45px;">
+    <div class="sl-notification" style="width: 685px; height: 315px; padding: 40px 60px; transform: translate(-50%, -50%); border: 2px solid #fff; box-shadow: 0 0 20px rgba(255, 255, 255, 0.5); margin-left: 45px;">
         <!-- <div class="rune-circle"></div>
         <div class="rune-circle" style="animation-direction: reverse; width: 110%; height: 110%; top: -5%; left: -5%;"></div> -->
         
         <div class="sl-title">
             <span class="sl-exclamation">!</span>
-            <span>SYSTEM AWAKENING</span>
+            <span data-i18n="onb.awakening">SYSTEM AWAKENING</span>
         </div>
         
-        <p>You have been chosen to become a <span class="glowing glowing-blue">HUNTER</span></p>
+        <p><span data-i18n="onb.chosen">You have been chosen to become a</span> <span class="glowing glowing-blue" data-i18n="onb.hunter">HUNTER</span></p>
         
-        <input type="text" class="hunter-input" id="hunterName" placeholder="ENTER YOUR HUNTER NAME">
+        <input type="text" class="hunter-input" id="hunterName" data-i18n-ph="onb.name_ph" placeholder="ENTER YOUR HUNTER NAME">
 
-        <p style="font-size: 0.9em; opacity: 0.8;">Your <span class="glowing glowing-green">assigned</span> rank:</p>
+        <p style="font-size: 0.9em; opacity: 0.8;" data-i18n="onb.your_rank">Your assigned rank:</p>
         
         <div class="rank-display">
             <div class="rank-badge rank-e" data-rank="E" title="E-Rank: Beginner">E</div>
@@ -218,14 +219,14 @@
         <div class="buttons-container" style="margin-top: 20px;">
             <button class="btn-custom" id="beginBtn">
                 <span class="btn-glow"></span>
-                BEGIN TRAINING
+                <span data-i18n="onb.begin">BEGIN TRAINING</span>
             </button>
         </div>
     </div>
 
     <div class="dramatic-reveal">
         <div class="shine-lines"></div>
-        <div class="dramatic-text">SYSTEM ACTIVATED</div>
+        <div class="dramatic-text" data-i18n="onb.activated">SYSTEM ACTIVATED</div>
     </div>
 
     <script>
@@ -268,9 +269,17 @@
         // Rank selection (disabled - rank is randomly assigned)
         let selectedRank = 'E';
 
-        // Select random rank on page load
-        const ranks = ['E', 'D', 'C', 'B', 'A', 'S'];
-        const randomRank = ranks[Math.floor(Math.random() * ranks.length)];
+        // Rang assigné aléatoirement — PONDÉRÉ : les rangs élevés sont rares.
+        // (poids → ~ D 50%, E 30%, C 12%, B 5%, A 2.5%, S 0.5%)
+        const RANK_WEIGHTS = { E: 30, D: 50, C: 12, B: 5, A: 2.5, S: 0.5 };
+        function weightedRank() {
+            const entries = Object.keys(RANK_WEIGHTS).map(k => [k, RANK_WEIGHTS[k]]);
+            const total = entries.reduce((s, e) => s + e[1], 0);
+            let r = Math.random() * total;
+            for (const [rank, w] of entries) { r -= w; if (r <= 0) return rank; }
+            return 'E';
+        }
+        const randomRank = weightedRank();
         selectedRank = randomRank;
         
         // Apply selection to the random rank badge and disable all badges
@@ -338,7 +347,7 @@
             
             setTimeout(() => {
                 reveal.classList.add('active');
-                document.querySelector('.dramatic-text').textContent = `WELCOME, ${hunterName.toUpperCase()}`;
+                document.querySelector('.dramatic-text').textContent = (window.I18n ? I18n.t('onb.welcome',{name:hunterName.toUpperCase()}) : 'WELCOME, '+hunterName.toUpperCase());
                 
                 const burstInterval = setInterval(() => {
                     const angle = Math.random() * Math.PI * 2;

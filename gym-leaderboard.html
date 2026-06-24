@@ -10,6 +10,7 @@
     <link href="css/gym.css" rel="stylesheet">
     <script src="js/config.js"></script>
     <script src="js/store.js"></script>
+    <script src="js/equipment.js"></script>
     <script src="js/i18n.js"></script>
     <script src="js/quests.js"></script>
     <script src="js/weekly.js"></script>
@@ -105,6 +106,7 @@
             <a href="gym-leaderboard.html" class="nav-link active">CLASSEMENT</a>
             <a href="gym-challenges.html" class="nav-link">ARÈNE</a>
             <a href="gym-guilds.html" class="nav-link">GUILDES</a>
+            <a href="gym-inventory.html" class="nav-link">FORGE</a>
             <a href="gym-profile.html" class="nav-link">PROFIL</a>
         </div>
         <div class="nav-profile" id="navProfile">
@@ -125,18 +127,18 @@
 
             <div class="lb-filters" id="lbFilters">
                 <button class="lb-filter active" data-rank="" data-i18n="lb.all">TOUS</button>
-                <button class="lb-filter" data-rank="S">RANG S</button>
-                <button class="lb-filter" data-rank="A">RANG A</button>
-                <button class="lb-filter" data-rank="B">RANG B</button>
-                <button class="lb-filter" data-rank="C">RANG C</button>
-                <button class="lb-filter" data-rank="D">RANG D</button>
-                <button class="lb-filter" data-rank="E">RANG E</button>
+                <button class="lb-filter" data-rank="S"><span data-i18n="common.rank">RANG</span> S</button>
+                <button class="lb-filter" data-rank="A"><span data-i18n="common.rank">RANG</span> A</button>
+                <button class="lb-filter" data-rank="B"><span data-i18n="common.rank">RANG</span> B</button>
+                <button class="lb-filter" data-rank="C"><span data-i18n="common.rank">RANG</span> C</button>
+                <button class="lb-filter" data-rank="D"><span data-i18n="common.rank">RANG</span> D</button>
+                <button class="lb-filter" data-rank="E"><span data-i18n="common.rank">RANG</span> E</button>
             </div>
 
             <div id="myRankBanner"></div>
 
             <div id="lbList">
-                <div class="lb-loading"><div class="lb-spinner"></div>CHARGEMENT DU CLASSEMENT...</div>
+                <div class="lb-loading"><div class="lb-spinner"></div><span data-i18n="common.loading">CHARGEMENT DU CLASSEMENT...</span></div>
             </div>
         </div>
     </div>
@@ -161,10 +163,10 @@
             const color = rankColors[h.rank] || '#85acb9';
             const avColor = h.avatar_color || color;
             return `
-                <div class="lb-row ${topClass} ${isMe ? 'me' : ''}">
+                <div class="lb-row ${topClass} ${isMe ? 'me' : ''}" data-id="${h.id}">
                     <div class="lb-pos">${pos <= 3 ? medal : '<span style="font-size:.7em;">#'+pos+'</span>'}</div>
                     <div class="lb-hunter">
-                        <div class="lb-avatar" style="border-color:${avColor};color:${avColor};"><i class="fas ${h.avatar || 'fa-user-ninja'}"></i></div>
+                        <div class="lb-avatar" style="border-color:${avColor};color:${avColor};position:relative;"><i class="fas ${h.avatar || 'fa-user-ninja'}"></i><span class="lb-dot"></span></div>
                         <div style="min-width:0;">
                             <div class="lb-name">${escapeHtml(h.name || 'Hunter')}</div>
                             <div class="lb-meta">${t('lb.lvl')} ${h.level} · ${fmtNum(h.total_xp)} XP · <i class="fas fa-fire" style="color:#ff7043;"></i> ${h.longest_streak||0}</div>
@@ -178,6 +180,20 @@
 
         function escapeHtml(s) { return String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
 
+        // ---- Présence en ligne (point vert + compteur) ----
+        (function injectPresenceStyle() {
+            const s = document.createElement('style');
+            s.textContent = '.lb-dot{position:absolute;width:11px;height:11px;border-radius:50%;background:#4caf50;border:2px solid #0a1628;bottom:-2px;right:-2px;display:none;box-shadow:0 0 8px #4caf50;}.lb-row.online .lb-dot{display:block;}#onlineCount{color:#4caf50;letter-spacing:1px;font-size:.85em;margin-top:8px;min-height:1em;}#onlineCount i{font-size:.7em;margin-right:5px;}';
+            document.head.appendChild(s);
+        })();
+        async function refreshOnline() {
+            if (!Cloud.enabled) return;
+            const ids = await Cloud.getOnlineIds();
+            document.querySelectorAll('.lb-row[data-id]').forEach(r => r.classList.toggle('online', ids.has(r.dataset.id)));
+            const el = document.getElementById('onlineCount');
+            if (el) el.innerHTML = ids.size ? ('<i class="fas fa-circle"></i> ' + (window.I18n ? I18n.t('lb.online', { n: ids.size }) : ids.size + ' online')) : '';
+        }
+
         async function loadLeaderboard() {
             const list = document.getElementById('lbList');
             list.innerHTML = '<div class="lb-loading"><div class="lb-spinner"></div>' + t('common.loading') + '</div>';
@@ -190,6 +206,7 @@
                     return;
                 }
                 list.innerHTML = res.rows.map((h, i) => rowHTML(h, i + 1)).join('');
+                refreshOnline();   // marque les points "en ligne"
 
                 // Bannière "ma position"
                 const banner = document.getElementById('myRankBanner');
@@ -238,9 +255,13 @@
         // Init : charge, puis abonne au temps réel si connecté
         (async () => {
             await Cloud.init();
+            const header = document.querySelector('.lb-header');
+            if (header && !document.getElementById('onlineCount')) { const oc = document.createElement('div'); oc.id = 'onlineCount'; header.appendChild(oc); }
             await loadLeaderboard();
             if (Cloud.enabled) {
                 unsubscribe = Cloud.subscribeLeaderboard(() => loadLeaderboard());
+                refreshOnline();
+                setInterval(refreshOnline, 60000);   // rafraîchit le statut en ligne
             }
             Cloud.on('auth', () => loadLeaderboard());
         })();

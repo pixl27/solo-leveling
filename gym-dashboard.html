@@ -10,6 +10,7 @@
     <link href="css/gym.css" rel="stylesheet">
     <script src="js/config.js"></script>
     <script src="js/store.js"></script>
+    <script src="js/equipment.js"></script>
     <script src="js/i18n.js"></script>
     <script src="js/quests.js"></script>
     <script src="js/weekly.js"></script>
@@ -462,6 +463,7 @@
             <a href="gym-leaderboard.html" class="nav-link">CLASSEMENT</a>
             <a href="gym-challenges.html" class="nav-link">ARÈNE</a>
             <a href="gym-guilds.html" class="nav-link">GUILDES</a>
+            <a href="gym-inventory.html" class="nav-link">FORGE</a>
             <a href="gym-profile.html" class="nav-link">PROFIL</a>
         </div>
         <div class="nav-profile">
@@ -490,7 +492,7 @@
                         </div>
 
                         <div class="level-section">
-                            <div class="level-label">HUNTER LEVEL</div>
+                            <div class="level-label" data-i18n="dash.hunter_level">HUNTER LEVEL</div>
                             <div class="level-display">LV.<span id="levelDisplay">1</span></div>
                         </div>
 
@@ -499,8 +501,8 @@
                                 <div class="xp-bar-fill" id="xpBarFill" style="width: 0%"></div>
                             </div>
                             <div class="xp-text">
-                                <span>EXP: <span id="currentXP">0</span></span>
-                                <span>NEXT: <span id="nextLevelXP">100</span></span>
+                                <span><span data-i18n="dash.exp">EXP</span>: <span id="currentXP">0</span></span>
+                                <span><span data-i18n="dash.next">NEXT</span>: <span id="nextLevelXP">100</span></span>
                             </div>
                         </div>
 
@@ -508,22 +510,22 @@
                         <div class="stats-grid" style="margin-top: 25px;">
                             <div class="stat-card">
                                 <div class="stat-icon str"><i class="fas fa-fist-raised"></i></div>
-                                <div class="stat-name">STRENGTH</div>
+                                <div class="stat-name" data-i18n="dash.str">STRENGTH</div>
                                 <div class="stat-number" id="strStat" style="color: #ff4757;">10</div>
                             </div>
                             <div class="stat-card">
                                 <div class="stat-icon agi"><i class="fas fa-bolt"></i></div>
-                                <div class="stat-name">AGILITY</div>
+                                <div class="stat-name" data-i18n="dash.agi">AGILITY</div>
                                 <div class="stat-number" id="agiStat" style="color: #00ff62;">10</div>
                             </div>
                             <div class="stat-card">
                                 <div class="stat-icon end"><i class="fas fa-shield-alt"></i></div>
-                                <div class="stat-name">ENDURANCE</div>
+                                <div class="stat-name" data-i18n="dash.end">ENDURANCE</div>
                                 <div class="stat-number" id="endStat" style="color: #ffd700;">10</div>
                             </div>
                             <div class="stat-card">
                                 <div class="stat-icon vit"><i class="fas fa-heart"></i></div>
-                                <div class="stat-name">VITALITY</div>
+                                <div class="stat-name" data-i18n="dash.vit">VITALITY</div>
                                 <div class="stat-number" id="vitStat" style="color: #2196f3;">100</div>
                             </div>
                         </div>
@@ -535,14 +537,27 @@
                             <i class="fas fa-fire streak-flame"></i>
                             <div>
                                 <div class="streak-number" id="streakCount">0</div>
-                                <div class="streak-label">DAY STREAK</div>
+                                <div class="streak-label" data-i18n="dash.day_streak">DAY STREAK</div>
                             </div>
                             <i class="fas fa-fire streak-flame"></i>
                         </div>
                         <button class="btn-custom" onclick="window.location.href='gym-workouts.html'">
                             <span class="btn-glow"></span>
-                            START DAILY QUEST
+                            <span data-i18n="dash.start_daily">START DAILY QUEST</span>
                         </button>
+                    </div>
+
+                    <!-- Equipment widget -->
+                    <div class="hunter-card" id="gearCard">
+                        <div class="section-title" style="margin-bottom:14px; font-size:1em;">
+                            <i class="fas fa-shield-halved" style="color:#ffd700;"></i>
+                            <span data-i18n="inv.equipped">ÉQUIPEMENT</span>
+                            <span style="margin-left:auto; color:#ffd700; font-size:.85em;"><i class="fas fa-coins"></i> <span id="goldDisplay">0</span></span>
+                        </div>
+                        <div id="gearStrip" style="display:flex; gap:8px;"></div>
+                        <a href="gym-inventory.html" style="display:block; text-align:center; margin-top:14px; text-decoration:none; border:1px solid #ffd700; color:#ffd700; padding:10px; letter-spacing:2px; font-size:.85em; transition:all .3s;" onmouseover="this.style.background='rgba(255,215,0,.15)'" onmouseout="this.style.background='transparent'">
+                            <i class="fas fa-hammer"></i> <span data-i18n="inv.title">LA FORGE</span>
+                        </a>
                     </div>
                 </div>
 
@@ -552,7 +567,7 @@
                     <div class="daily-quest-section">
                         <div class="section-title">
                             <i class="fas fa-scroll"></i>
-                            <span>DAILY QUESTS</span>
+                            <span data-i18n="dash.daily_quests">DAILY QUESTS</span>
                             <span class="quest-text" style="margin-left: auto; font-size: 0.8em;">[<span id="questProgress">0/3</span>]</span>
                         </div>
 
@@ -560,7 +575,7 @@
                             <!-- Quests will be loaded dynamically from localStorage -->
                         </div>
 
-                        <p class="quest-warning" style="margin-top: 20px; font-size: 0.85em;">
+                        <p class="quest-warning" style="margin-top: 20px; font-size: 0.85em;" data-i18n="dash.warning">
                             ⚠️ WARNING: Failure to complete daily quest will result in penalty
                         </p>
                     </div>
@@ -569,7 +584,7 @@
                     <div class="daily-quest-section" id="weeklyQuestSection" style="display: none;">
                         <div class="section-title">
                             <i class="fas fa-crown" style="color: #ffd700;"></i>
-                            <span style="color: #ffd700;">WEEKLY QUEST</span>
+                            <span style="color: #ffd700;" data-i18n="dash.weekly_quest">WEEKLY QUEST</span>
                         </div>
                         <div id="weeklyQuestContainer">
                             <!-- Weekly quest will be loaded dynamically -->
@@ -589,7 +604,7 @@
                     <div class="daily-quest-section" id="scheduleSection" style="display: none;">
                         <div class="section-title">
                             <i class="fas fa-calendar-day"></i>
-                            <span>TODAY'S FOCUS</span>
+                            <span data-i18n="dash.today_focus">TODAY'S FOCUS</span>
                         </div>
                         <div id="todaySchedule" style="padding: 15px; background: rgba(133, 172, 185, 0.1); border: 1px solid rgba(133, 172, 185, 0.3);">
                             <p style="color: #fff; font-size: 1.1em; letter-spacing: 1px;" id="todayFocus">-</p>
@@ -600,7 +615,7 @@
                     <div class="recent-activity">
                         <div class="section-title">
                             <i class="fas fa-history"></i>
-                            <span>RECENT ACTIVITY</span>
+                            <span data-i18n="dash.recent_activity">RECENT ACTIVITY</span>
                         </div>
 
                         <div id="activityList">
@@ -608,8 +623,8 @@
                                 <div class="activity-icon">
                                     <i class="fas fa-trophy"></i>
                                 </div>
-                                <div class="activity-text">System Activated - Hunter Awakened</div>
-                                <div class="activity-time">Just now</div>
+                                <div class="activity-text" data-i18n="dash.awakened">System Activated - Hunter Awakened</div>
+                                <div class="activity-time" data-i18n="dash.just_now">Just now</div>
                             </div>
                         </div>
                     </div>
@@ -682,10 +697,20 @@
             }
             document.getElementById('levelDisplay').textContent = level;
             document.getElementById('navLevel').textContent = level;
-            document.getElementById('strStat').textContent = str;
-            document.getElementById('agiStat').textContent = agi;
-            document.getElementById('endStat').textContent = end;
-            document.getElementById('vitStat').textContent = vit;
+            // Stats EFFECTIVES (base + bonus d'équipement). Le bonus apparaît en vert.
+            const setStat = (id, key, fallback) => {
+                const el = document.getElementById(id);
+                if (!el) return;
+                if (window.Hunter) {
+                    const base = Hunter.getStat(key);
+                    const bonus = Hunter.getEffectiveStat(key) - base;
+                    el.innerHTML = (base + bonus) + (bonus > 0 ? ` <span style="font-size:.5em;color:#00ff62;vertical-align:super;text-shadow:0 0 6px #00ff62;">+${bonus}</span>` : '');
+                } else { el.textContent = fallback; }
+            };
+            setStat('strStat', 'STR', str);
+            setStat('agiStat', 'AGI', agi);
+            setStat('endStat', 'END', end);
+            setStat('vitStat', 'VIT', vit);
             document.getElementById('streakCount').textContent = streak;
             document.getElementById('currentXP').textContent = xp;
 
@@ -718,6 +743,57 @@
         }
 
         loadHunterData();
+
+        // ---- Widget équipement (gear strip + or) ----
+        function renderGear() {
+            if (!window.Hunter || !window.Equipment) return;
+            const goldEl = document.getElementById('goldDisplay');
+            if (goldEl) goldEl.textContent = Hunter.get('gold');
+            const strip = document.getElementById('gearStrip');
+            if (!strip) return;
+            const eq = Hunter.get('equipment') || {};
+            strip.innerHTML = Equipment.SLOT_ORDER.map(slot => {
+                const it = eq[slot];
+                const si = Equipment.slotInfo(slot);
+                if (!it) {
+                    return `<div title="${Equipment.slotName(slot)}" style="flex:1; aspect-ratio:1; border:1px solid rgba(255,255,255,.12); display:flex; align-items:center; justify-content:center; color:rgba(255,255,255,.2);"><i class="fas ${si.icon}"></i></div>`;
+                }
+                const col = Equipment.rarityColor(it.rarity);
+                return `<div title="${Equipment.itemName(it)} — ${Equipment.rarityName(it.rarity)}" style="flex:1; aspect-ratio:1; border:1px solid ${col}; color:${col}; display:flex; align-items:center; justify-content:center; box-shadow:0 0 10px ${col}55;"><i class="fas ${it.icon}"></i></div>`;
+            }).join('');
+        }
+        renderGear();
+        if (window.Hunter) Hunter.on('change', () => { renderGear(); });
+
+        // ---- Infobulle des PERKS DE RANG sur le badge (survol / clic) ----
+        (function () {
+            const badge = document.getElementById('rankBadge');
+            if (!badge || !window.Hunter) return;
+            const T = (k) => (window.I18n ? I18n.t(k) : k);
+            const st = document.createElement('style');
+            st.textContent = '#rankPerkTip{position:absolute;z-index:10020;background:rgba(8,14,24,.97);box-shadow:0 0 24px rgba(0,0,0,.6);padding:12px 14px;max-width:250px;display:none;border:1px solid #85acb9;}#rankPerkTip .t{letter-spacing:1px;font-size:.72em;margin-bottom:8px;}#rankPerkTip .p{font-size:.8em;letter-spacing:.5px;margin:4px 0;}';
+            document.head.appendChild(st);
+            const tip = document.createElement('div'); tip.id = 'rankPerkTip'; document.body.appendChild(tip);
+            badge.style.cursor = 'help';
+            function build() {
+                const rank = Hunter.get('rank'), p = Hunter.getRankPerks(rank), col = Hunter.getRankColor(rank);
+                const rows = [];
+                if (p.xpPct) rows.push('+' + p.xpPct + '% ' + T('perk.xp'));
+                if (p.luck) rows.push('+' + Math.round(p.luck * 100) + '% ' + T('perk.luck'));
+                if (p.goldPct) rows.push('+' + p.goldPct + '% ' + T('perk.gold'));
+                if (p.power) rows.push('+' + p.power + ' ' + T('perk.power'));
+                if (p.minRarity && window.Equipment) rows.push(T('perk.minloot') + ' ' + Equipment.rarityName(p.minRarity));
+                tip.style.borderColor = col;
+                tip.innerHTML = `<div class="t" style="color:${col};">${T('perk.title')} · ${rank}</div>` +
+                    (rows.length ? rows.map(r => `<div class="p" style="color:${col};">▸ ${r}</div>`).join('') : `<div class="p" style="color:rgba(255,255,255,.5);">${T('perk.none')}</div>`);
+            }
+            function show() { build(); tip.style.display = 'block'; const r = badge.getBoundingClientRect(); tip.style.left = (window.scrollX + r.left) + 'px'; tip.style.top = (window.scrollY + r.bottom + 8) + 'px'; }
+            function hide() { tip.style.display = 'none'; }
+            badge.addEventListener('mouseenter', show);
+            badge.addEventListener('mouseleave', hide);
+            badge.addEventListener('click', (e) => { e.stopPropagation(); tip.style.display === 'block' ? hide() : show(); });
+            document.addEventListener('click', (e) => { if (e.target !== badge && !tip.contains(e.target)) hide(); });
+        })();
 
         // Load AI-generated quests from localStorage
         function loadDailyQuests() {
@@ -830,49 +906,28 @@
         }
         
         function attachQuestClickHandlers() {
+            const t = (k) => (window.I18n ? I18n.t(k) : k);
             document.querySelectorAll('.daily-quest-item').forEach(item => {
-                item.addEventListener('click', function() {
+                item.addEventListener('click', function (e) {
                     if (this.classList.contains('completed')) return;
+                    if (e.target.closest('.dash-start-btn')) return;   // clic sur le bouton lui-même
 
-                    this.classList.add('completed');
-                    
-                    // Save completion to localStorage
-                    const questIndex = parseInt(this.dataset.questIndex);
-                    const completedQuestsJSON = localStorage.getItem('completedDailyQuests');
-                    const completedQuests = completedQuestsJSON ? JSON.parse(completedQuestsJSON) : [];
-                    
-                    if (!completedQuests.includes(questIndex)) {
-                        completedQuests.push(questIndex);
-                        localStorage.setItem('completedDailyQuests', JSON.stringify(completedQuests));
-                    }
-                    
-                    // Récupère la quête complète (xp, stat, type) depuis le store local
-                    let quest = null;
-                    const dqRaw = localStorage.getItem('dailyQuests');
-                    if (dqRaw) { try { quest = JSON.parse(dqRaw)[questIndex]; } catch (e) { /* ignore */ } }
-                    if (!quest) {
-                        const xpText = this.querySelector('.quest-xp').textContent;
-                        quest = { xp: parseInt(xpText.replace('+', '').replace(' XP', '')) || 20 };
-                    }
+                    // Bascule : un 2e clic referme le bouton
+                    const existing = this.querySelector('.dash-start-btn');
+                    if (existing) { existing.remove(); this.style.flexWrap = ''; return; }
+                    // Ferme les autres boutons ouverts
+                    document.querySelectorAll('.dash-start-btn').forEach(b => { const p = b.closest('.daily-quest-item'); if (p) p.style.flexWrap = ''; b.remove(); });
 
-                    // Complétion via le moteur unifié : gère XP, niveau, streak, stats,
-                    // succès, sons, overlay de level-up et synchro cloud automatiquement.
-                    const gainedXP = (window.Hunter)
-                        ? Hunter.completeQuest(quest)
-                        : (quest.xp || 20);
-
-                    // Met à jour la progression des quêtes
-                    updateQuestProgress();
-
-                    // Journal d'activité
-                    const questName = this.querySelector('.quest-name').textContent.split('(')[0].trim();
-                    addActivity('Quête complétée : ' + questName, gainedXP);
-
-                    // Rafraîchit l'affichage (lit les clés synchronisées par le moteur)
-                    loadHunterData();
-
-                    // Create completion effect
-                    createCompletionEffect(this);
+                    const idx = this.dataset.questIndex;
+                    const btn = document.createElement('button');
+                    btn.className = 'dash-start-btn';
+                    btn.innerHTML = '<i class="fas fa-play"></i> ' + t('dash.start_quest');
+                    btn.style.cssText = 'flex-basis:100%; margin-top:12px; background:rgba(133,172,185,.15); border:1px solid #85acb9; color:#fff; padding:11px; letter-spacing:2px; cursor:pointer; font-family:inherit; font-size:.85em; transition:all .25s;';
+                    btn.onmouseover = () => { btn.style.background = 'rgba(133,172,185,.3)'; btn.style.boxShadow = '0 0 18px rgba(133,172,185,.4)'; };
+                    btn.onmouseout = () => { btn.style.background = 'rgba(133,172,185,.15)'; btn.style.boxShadow = 'none'; };
+                    btn.onclick = (ev) => { ev.stopPropagation(); window.location.href = 'gym-workouts.html?start=' + idx; };
+                    this.style.flexWrap = 'wrap';
+                    this.appendChild(btn);
                 });
             });
         }

@@ -10,6 +10,7 @@
     <link href="css/gym.css" rel="stylesheet">
     <script src="js/config.js"></script>
     <script src="js/store.js"></script>
+    <script src="js/equipment.js"></script>
     <script src="js/i18n.js"></script>
     <script src="js/quests.js"></script>
     <script src="js/weekly.js"></script>
@@ -80,6 +81,36 @@
         /* La nav passe en colonne sous 1024px → décale le contenu */
         @media (max-width: 1200px) { .gym-container { padding-top: 190px !important; } }
         @media (max-width: 600px) { .ar-wrap { padding: 8px; } .ar-card { padding: 16px; } .ar-title { font-size: 1.5em; letter-spacing: 2px; } }
+
+        /* ---- Combat rapide / hero ---- */
+        .ar-battle-hero { border:1px solid rgba(156,39,176,.4); background:linear-gradient(135deg, rgba(156,39,176,.12), rgba(8,14,24,.6)); padding:20px; margin-bottom:22px; text-align:center; }
+        .ar-battle-hero h3 { color:#fff; letter-spacing:3px; margin:0 0 6px; }
+        .ar-battle-row { display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin-top:14px; }
+        .ar-battle-row .ar-btn { width:auto; flex:1; min-width:210px; }
+        .ar-wager-row { display:flex; align-items:center; gap:10px; justify-content:center; margin-top:12px; flex-wrap:wrap; }
+        .ar-wager-row input { width:120px; margin-bottom:0; }
+        .ar-deadline { font-size:.74em; color:#ff9800; letter-spacing:1px; margin-top:4px; }
+        .ar-prize { color:#ffd700; }
+
+        /* ---- Overlay de combat VS ---- */
+        .vs-ov { position:fixed; inset:0; background:rgba(0,0,0,.93); z-index:10050; display:flex; flex-direction:column; align-items:center; justify-content:center; overflow:hidden; animation: vsFade .3s ease-out; }
+        @keyframes vsFade { from{opacity:0;} to{opacity:1;} }
+        @keyframes vsPop { from{transform:scale(.4);opacity:0;} to{transform:scale(1);opacity:1;} }
+        .vs-arena { display:flex; align-items:center; justify-content:center; gap:18px; width:100%; max-width:780px; padding:20px; }
+        .vs-fighter { flex:1; text-align:center; min-width:0; }
+        .vs-av { width:96px; height:96px; border-radius:50%; border:3px solid; margin:0 auto 12px; display:flex; align-items:center; justify-content:center; font-size:2.6em; }
+        .vs-name { color:#fff; letter-spacing:1px; font-size:1em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        .vs-pow { font-size:.78em; color:rgba(255,255,255,.55); }
+        .vs-hpbar { height:12px; background:rgba(255,255,255,.1); border-radius:6px; overflow:hidden; margin-top:10px; }
+        .vs-hpfill { height:100%; width:100%; transition:width .45s ease; }
+        .vs-mid { font-size:2.2em; color:#9c27b0; text-shadow:0 0 24px #9c27b0; font-weight:900; }
+        .vs-hit { animation: vsHit .25s ease; }
+        @keyframes vsHit { 0%{transform:translateX(0);} 30%{transform:translateX(-9px);filter:brightness(2.2);} 60%{transform:translateX(9px);} 100%{transform:translateX(0);} }
+        .vs-count { position:absolute; font-size:7em; color:#fff; text-shadow:0 0 50px #9c27b0; animation: vsPop .4s ease-out; }
+        .vs-result { font-size:3em; letter-spacing:6px; margin-top:6px; animation: vsPop .45s ease-out; }
+        .vs-reward { margin-top:10px; color:#ffd700; letter-spacing:1px; min-height:1.2em; }
+        .vs-close { margin-top:22px; background:transparent; border:1px solid #85acb9; color:#fff; padding:10px 30px; letter-spacing:2px; cursor:pointer; font-family:inherit; }
+        .vs-close:hover { background:rgba(133,172,185,.2); }
     </style>
 </head>
 <body>
@@ -102,6 +133,7 @@
             <a href="gym-leaderboard.html" class="nav-link">CLASSEMENT</a>
             <a href="gym-challenges.html" class="nav-link active">ARÈNE</a>
             <a href="gym-guilds.html" class="nav-link">GUILDES</a>
+            <a href="gym-inventory.html" class="nav-link">FORGE</a>
             <a href="gym-profile.html" class="nav-link">PROFIL</a>
         </div>
         <div class="nav-profile" id="navProfile">
@@ -115,6 +147,21 @@
             <div class="ar-header">
                 <h1 class="ar-title"><i class="fas fa-khanda" style="color:#9c27b0;"></i> <span data-i18n="ar.title">L'ARÈNE</span></h1>
                 <div class="ar-sub" data-i18n="ar.subtitle">DÉFIE D'AUTRES HUNTERS · PROUVE TA DOMINANCE</div>
+            </div>
+
+            <!-- Combat rapide (jouable même hors-ligne via duel d'entraînement) -->
+            <div class="ar-card ar-battle-hero">
+                <h3><i class="fas fa-fire" style="color:#9c27b0;"></i> <span data-i18n="ar.quick">COMBAT RAPIDE</span></h3>
+                <p style="color:rgba(255,255,255,.6);font-size:.85em;margin:0 auto;max-width:480px;" data-i18n="ar.quick_desc">Affronte un adversaire de puissance proche.</p>
+                <div class="ar-wager-row">
+                    <span style="color:rgba(255,255,255,.5);font-size:.8em;letter-spacing:1px;"><i class="fas fa-coins" style="color:#ffd700;"></i> <span data-i18n="ar.wager">MISE (OR)</span></span>
+                    <input class="ar-input" id="wagerInput" type="number" value="0" min="0">
+                </div>
+                <div class="ar-battle-row">
+                    <button class="ar-btn" id="practiceBtn"><i class="fas fa-ghost"></i> <span data-i18n="ar.battle_practice">DUEL D'ENTRAÎNEMENT</span></button>
+                    <button class="ar-btn" id="quickBtn"><i class="fas fa-bolt"></i> <span data-i18n="ar.find_match">TROUVER UN ADVERSAIRE</span></button>
+                </div>
+                <div class="ar-msg" id="battleMsg" style="text-align:center;"></div>
             </div>
 
             <div id="offlineNotice" style="display:none;">
@@ -167,8 +214,114 @@
         let selectedOpponent = null;
         let selectedType = 'xp';
         let searchTimer = null;
+        let CHALLENGES = [];   // cache des duels (pour retrouver la mise à l'acceptation)
 
         function escapeHtml(s) { return String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+        // ============== COMBAT VS (animation cinématique) ==============
+        function meFighter() {
+            const H = window.Hunter;
+            return { name: H ? H.get('name') : 'Toi', avatar: H ? H.get('avatar') : 'fa-user-ninja', color: H ? H.get('avatarColor') : '#85acb9', power: H ? H.getCombatPower() : 600 };
+        }
+        function planBattle(myPower, oppPower) {
+            const p = myPower / Math.max(1, (myPower + oppPower));
+            const win = Math.random() < (0.15 + 0.7 * p);   // la puissance compte, l'upset reste possible
+            const rounds = 5, seq = []; let my = 100, op = 100;
+            const loserStep = 100 / rounds, winnerStep = (20 + Math.random() * 45) / rounds;
+            for (let i = 0; i < rounds; i++) {
+                if (win) { op -= loserStep; my -= winnerStep; } else { my -= loserStep; op -= winnerStep; }
+                seq.push({ my: Math.max(0, Math.round(my)), op: Math.max(0, Math.round(op)) });
+            }
+            return { win: win, seq: seq };
+        }
+        function vsBattle(me, opp, opts) {
+            opts = opts || {};
+            const ov = document.createElement('div'); ov.className = 'vs-ov';
+            ov.innerHTML = `
+                <div class="vs-arena">
+                    <div class="vs-fighter">
+                        <div class="vs-av" id="vsMeAv" style="border-color:${me.color};color:${me.color};"><i class="fas ${me.avatar}"></i></div>
+                        <div class="vs-name">${escapeHtml(me.name)}</div>
+                        <div class="vs-pow"><i class="fas fa-bolt"></i> ${me.power.toLocaleString()}</div>
+                        <div class="vs-hpbar"><div class="vs-hpfill" id="vsMeHp" style="background:linear-gradient(90deg,#4caf50,#8bc34a);"></div></div>
+                    </div>
+                    <div class="vs-mid">VS</div>
+                    <div class="vs-fighter">
+                        <div class="vs-av" id="vsOpAv" style="border-color:${opp.color || '#9c27b0'};color:${opp.color || '#9c27b0'};"><i class="fas ${opp.avatar || 'fa-ghost'}"></i></div>
+                        <div class="vs-name">${escapeHtml(opp.name)}</div>
+                        <div class="vs-pow"><i class="fas fa-bolt"></i> ${(opp.power || 0).toLocaleString()}</div>
+                        <div class="vs-hpbar"><div class="vs-hpfill" id="vsOpHp" style="background:linear-gradient(90deg,#ff4757,#ff7a86);"></div></div>
+                    </div>
+                </div>
+                <div id="vsStage" style="height:130px;display:flex;align-items:center;justify-content:center;position:relative;"></div>`;
+            document.body.appendChild(ov);
+            const stage = ov.querySelector('#vsStage');
+            const meHp = ov.querySelector('#vsMeHp'), opHp = ov.querySelector('#vsOpHp');
+            const meAv = ov.querySelector('#vsMeAv'), opAv = ov.querySelector('#vsOpAv');
+            const plan = planBattle(me.power, opp.power || 1);
+            let n = 3;
+            const showCount = () => {
+                if (n > 0) { stage.innerHTML = `<div class="vs-count">${n}</div>`; if (window.GymUI) GymUI.sound('click'); n--; setTimeout(showCount, 650); }
+                else { stage.innerHTML = ''; runRounds(0); }
+            };
+            const runRounds = (i) => {
+                if (i >= plan.seq.length) { finishVs(); return; }
+                const s = plan.seq[i];
+                meAv.classList.remove('vs-hit'); opAv.classList.remove('vs-hit'); void opAv.offsetWidth;
+                opAv.classList.add('vs-hit'); meAv.classList.add('vs-hit');
+                meHp.style.width = s.my + '%'; opHp.style.width = s.op + '%';
+                if (window.GymUI) GymUI.sound('xp');
+                setTimeout(() => runRounds(i + 1), 620);
+            };
+            const finishVs = () => {
+                const win = plan.win, color = win ? '#ffd700' : '#888', label = win ? tr('ar.victory') : tr('ar.defeat');
+                stage.innerHTML = `<div style="text-align:center;">
+                    <div class="vs-result" style="color:${color};text-shadow:0 0 30px ${color};">${label}</div>
+                    <div class="vs-reward" id="vsReward">${opts.onResult ? (opts.onResult(win) || '') : ''}</div>
+                    <button class="vs-close" id="vsClose">${tr('lvl.continue')}</button>
+                </div>`;
+                if (window.GymUI) { GymUI.sound(win ? 'levelup' : 'click'); if (win) GymUI.burst(ov, '#ffd700', 30); }
+                ov.querySelector('#vsClose').onclick = () => { ov.remove(); if (opts.onClose) opts.onClose(win); };
+            };
+            showCount();
+        }
+
+        function practiceDuel() {
+            const me = meFighter();
+            const oppPow = Math.max(200, Math.round(me.power * (0.7 + Math.random() * 0.7)));
+            const icons = ['fa-ghost', 'fa-skull', 'fa-dragon', 'fa-mask', 'fa-spider', 'fa-crow'];
+            const opp = { name: tr('ar.shadow_bot'), avatar: icons[Math.floor(Math.random() * icons.length)], color: '#9c27b0', power: oppPow };
+            const lvl = window.Hunter ? Hunter.get('level') : 1;
+            const winXp = 25 + lvl * 2, winGold = 15 + lvl, loseXp = 8;
+            vsBattle(me, opp, {
+                onResult: (win) => win ? `+${winXp} XP · +${winGold} <i class="fas fa-coins"></i>` : `+${loseXp} XP`,
+                onClose: (win) => { const H = window.Hunter; if (!H) return; if (win) { H.addGold(winGold); H.addXP(winXp, 'Duel'); } else { H.addXP(loseXp, 'Duel'); } }
+            });
+        }
+
+        async function quickMatch() {
+            const msg = document.getElementById('battleMsg');
+            if (!(Cloud.enabled && Cloud.isLoggedIn())) { msg.style.color = '#ff9800'; msg.textContent = tr('ar.offline_title'); if (window.AuthUI) AuthUI.open('signup'); return; }
+            const wager = parseInt(document.getElementById('wagerInput').value) || 0;
+            if (wager > 0 && window.Hunter && Hunter.get('gold') < wager) { msg.style.color = '#ff4757'; msg.textContent = tr('inv.need_gold'); return; }
+            const btn = document.getElementById('quickBtn'); btn.disabled = true; msg.style.color = ''; msg.textContent = tr('ar.searching');
+            try {
+                const res = await Cloud.findQuickMatch('xp', 300, wager);
+                if (!res) { msg.style.color = '#ff9800'; msg.textContent = tr('ar.no_opponent'); return; }
+                if (wager > 0 && window.Hunter) Hunter.spendGold(wager);   // mise en jeu
+                msg.style.color = '#4caf50'; msg.textContent = tr('ar.duel_started') + ' (' + res.opponent.name + ')';
+                if (window.GymUI) GymUI.toast(tr('ar.duel_sent'), 'achievement');
+                loadChallenges();
+            } catch (e) { msg.style.color = '#ff4757'; msg.textContent = e.message || 'Erreur'; }
+            finally { btn.disabled = false; }
+        }
+
+        function deadlineText(ends) {
+            const ms = new Date(ends).getTime() - Date.now();
+            if (ms <= 0) return tr('ar.expired');
+            const d = Math.floor(ms / 86400000), h = Math.floor((ms % 86400000) / 3600000);
+            return (d > 0 ? d + ' ' + tr('ar.days') + ' ' : '') + h + 'h ' + tr('ar.time_left');
+        }
 
         // ---- Recherche d'adversaires ----
         document.getElementById('searchInput').addEventListener('input', (e) => {
@@ -213,10 +366,13 @@
             const msg = document.getElementById('challengeMsg');
             if (!selectedOpponent) { msg.textContent = tr('ar.pick_opponent'); return; }
             const goal = parseInt(document.getElementById('goalInput').value) || GOAL_DEFAULTS[selectedType];
+            const wager = parseInt(document.getElementById('wagerInput').value) || 0;
+            if (wager > 0 && window.Hunter && Hunter.get('gold') < wager) { msg.style.color = '#ff4757'; msg.textContent = tr('inv.need_gold'); return; }
             const btn = document.getElementById('sendChallenge');
             btn.disabled = true; msg.style.color = ''; msg.textContent = '';
             try {
-                await Cloud.createChallenge(selectedOpponent.id, selectedType, goal);
+                await Cloud.createChallenge(selectedOpponent.id, selectedType, goal, null, wager);
+                if (wager > 0 && window.Hunter) Hunter.spendGold(wager);   // mise en jeu
                 msg.style.color = '#4caf50';
                 msg.textContent = tr('ar.sent_to') + ' ' + selectedOpponent.name + ' !';
                 GymUI && GymUI.toast && GymUI.toast(tr('ar.duel_sent'), 'achievement');
@@ -276,6 +432,8 @@
                     <div style="color:rgba(255,255,255,.5);font-size:.76em;margin-bottom:6px;">
                         <i class="fas fa-trophy" style="color:#9c27b0;"></i> ${tr('ar.first_to')} ${c.goal} ${typeLabel(c.type)}
                     </div>
+                    ${c.wager ? `<div style="font-size:.76em;margin-bottom:4px;" class="ar-prize"><i class="fas fa-coins"></i> ${tr('ar.prize')}: ${c.wager * 2} ${tr('inv.gold')}</div>` : ''}
+                    ${(c.status === 'active' && c.ends_at) ? `<div class="ar-deadline"><i class="fas fa-hourglass-half"></i> ${deadlineText(c.ends_at)}</div>` : ''}
                     ${body}${resultLine}${actions}
                 </div>`;
         }
@@ -288,6 +446,7 @@
 
                 // Résout les noms d'adversaires
                 const me = Cloud.user ? Cloud.user.id : null;
+                CHALLENGES = res.rows;
                 for (const c of res.rows) {
                     const oppId = c.challenger === me ? c.opponent : c.challenger;
                     if (!c._oppName && Cloud.enabled) {
@@ -296,6 +455,18 @@
                             c._oppName = data ? data.name : 'Hunter';
                         } catch (e) { c._oppName = 'Hunter'; }
                     }
+                }
+                // Réclame la mise des duels gagnés (le gagnant rafle le pot, une seule fois)
+                if (window.Hunter) {
+                    const claimed = JSON.parse(localStorage.getItem('pvpClaimed') || '[]');
+                    let changed = false;
+                    res.rows.forEach(c => {
+                        if (c.status === 'completed' && c.winner === me && c.wager > 0 && claimed.indexOf(c.id) < 0) {
+                            Hunter.addGold(c.wager * 2); claimed.push(c.id); changed = true;
+                            GymUI.toast('<i class="fas fa-coins"></i> +' + (c.wager * 2) + ' ' + tr('inv.gold'), 'xp');
+                        }
+                    });
+                    if (changed) localStorage.setItem('pvpClaimed', JSON.stringify(claimed));
                 }
                 list.innerHTML = res.rows.map(challengeHTML).join('');
             } catch (e) {
@@ -307,7 +478,13 @@
         document.getElementById('challengesList').addEventListener('click', async (e) => {
             const acc = e.target.closest('[data-accept]');
             const dec = e.target.closest('[data-decline]');
-            if (acc) { await Cloud.respondChallenge(acc.dataset.accept, true); GymUI.toast(tr('ar.accepted'), 'xp'); loadChallenges(); }
+            if (acc) {
+                const c = CHALLENGES.find(x => x.id === acc.dataset.accept);
+                if (c && c.wager > 0 && window.Hunter && Hunter.get('gold') < c.wager) { GymUI.toast(tr('inv.need_gold'), 'stat'); return; }
+                await Cloud.respondChallenge(acc.dataset.accept, true);
+                if (c && c.wager > 0 && window.Hunter) Hunter.spendGold(c.wager);   // l'adversaire mise aussi
+                GymUI.toast(tr('ar.accepted'), 'xp'); loadChallenges();
+            }
             if (dec) { await Cloud.respondChallenge(dec.dataset.decline, false); loadChallenges(); }
         });
 
@@ -315,6 +492,10 @@
         (async () => {
             await Cloud.init();
             if (window.AuthUI) AuthUI.mountChip('#navProfile');
+
+            // Boutons combat (le duel d'entraînement marche même hors-ligne)
+            document.getElementById('practiceBtn').addEventListener('click', practiceDuel);
+            document.getElementById('quickBtn').addEventListener('click', quickMatch);
 
             function refresh() {
                 const online = Cloud.enabled && Cloud.isLoggedIn();

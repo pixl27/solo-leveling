@@ -10,6 +10,7 @@
     <link href="css/gym.css" rel="stylesheet">
     <script src="js/config.js"></script>
     <script src="js/store.js"></script>
+    <script src="js/equipment.js"></script>
     <script src="js/i18n.js"></script>
     <script src="js/quests.js"></script>
     <script src="js/weekly.js"></script>
@@ -438,6 +439,7 @@
             <a href="gym-leaderboard.html" class="nav-link">CLASSEMENT</a>
             <a href="gym-challenges.html" class="nav-link">ARÈNE</a>
             <a href="gym-guilds.html" class="nav-link">GUILDES</a>
+            <a href="gym-inventory.html" class="nav-link">FORGE</a>
             <a href="gym-profile.html" class="nav-link">PROFIL</a>
         </div>
         <div class="nav-profile">
@@ -452,599 +454,197 @@
         <div class="gym-main">
             <div class="skills-container">
                 <div class="page-header">
-                    <h1 class="page-title">SKILL LIBRARY</h1>
-                    <p class="page-subtitle">MASTER YOUR ABILITIES</p>
+                    <h1 class="page-title" data-i18n="tal.title">SKILL LIBRARY</h1>
+                    <p class="page-subtitle" data-i18n="tal.subtitle">MASTER YOUR ABILITIES</p>
                 </div>
 
                 <div class="muscle-filters">
-                    <button class="muscle-filter active" data-filter="all">ALL</button>
-                    <button class="muscle-filter" data-filter="chest">CHEST</button>
-                    <button class="muscle-filter" data-filter="back">BACK</button>
-                    <button class="muscle-filter" data-filter="shoulders">SHOULDERS</button>
-                    <button class="muscle-filter" data-filter="arms">ARMS</button>
-                    <button class="muscle-filter" data-filter="legs">LEGS</button>
-                    <button class="muscle-filter" data-filter="core">CORE</button>
-                    <button class="muscle-filter" data-filter="cardio">CARDIO</button>
+                    <button class="muscle-filter active" data-filter="all" data-i18n="tal.all">ALL</button>
+                    <button class="muscle-filter" data-filter="chest" data-i18n="tal.chest">CHEST</button>
+                    <button class="muscle-filter" data-filter="back" data-i18n="tal.back">BACK</button>
+                    <button class="muscle-filter" data-filter="shoulders" data-i18n="tal.shoulders">SHOULDERS</button>
+                    <button class="muscle-filter" data-filter="arms" data-i18n="tal.arms">ARMS</button>
+                    <button class="muscle-filter" data-filter="legs" data-i18n="tal.legs">LEGS</button>
+                    <button class="muscle-filter" data-filter="core" data-i18n="tal.core">CORE</button>
+                    <button class="muscle-filter" data-filter="cardio" data-i18n="tal.cardio">CARDIO</button>
                 </div>
 
-                <div class="skills-grid">
-                    <!-- Push-ups -->
-                    <div class="skill-card" data-muscle="chest" data-skill="pushups">
-                        <span class="skill-level-badge level-beginner">BEGINNER</span>
-                        <div class="skill-icon"><i class="fas fa-hands"></i></div>
-                        <div class="skill-name">PUSH-UPS</div>
-                        <div class="skill-muscle">CHEST • SHOULDERS • TRICEPS</div>
-                        <div class="skill-description">The foundation of upper body strength. Master this skill to unlock advanced variations.</div>
-                        <div class="skill-stats">
-                            <div class="skill-stat">
-                                <div class="skill-stat-label">STR BOOST</div>
-                                <div class="skill-stat-value str">+2</div>
-                            </div>
-                            <div class="skill-stat">
-                                <div class="skill-stat-label">END BOOST</div>
-                                <div class="skill-stat-value end">+1</div>
-                            </div>
-                            <div class="skill-stat">
-                                <div class="skill-stat-label">XP/SET</div>
-                                <div class="skill-stat-value" style="color: #85acb9;">+5</div>
-                            </div>
-                        </div>
-                        <div class="skill-xp-bar">
-                            <div class="skill-xp-fill" style="width: 65%"></div>
-                        </div>
-                        <div class="skill-mastery">
-                            <span class="skill-mastery-label">MASTERY</span>
-                            <span class="skill-mastery-level">LV. 3 / 10</span>
-                        </div>
-                    </div>
-
-                    <!-- Pull-ups -->
-                    <div class="skill-card" data-muscle="back" data-skill="pullups">
-                        <span class="skill-level-badge level-intermediate">INTERMEDIATE</span>
-                        <div class="skill-icon"><i class="fas fa-arrow-up"></i></div>
-                        <div class="skill-name">PULL-UPS</div>
-                        <div class="skill-muscle">BACK • BICEPS • FOREARMS</div>
-                        <div class="skill-description">The ultimate test of pulling strength. Essential for developing a powerful back.</div>
-                        <div class="skill-stats">
-                            <div class="skill-stat">
-                                <div class="skill-stat-label">STR BOOST</div>
-                                <div class="skill-stat-value str">+3</div>
-                            </div>
-                            <div class="skill-stat">
-                                <div class="skill-stat-label">AGI BOOST</div>
-                                <div class="skill-stat-value agi">+1</div>
-                            </div>
-                            <div class="skill-stat">
-                                <div class="skill-stat-label">XP/SET</div>
-                                <div class="skill-stat-value" style="color: #85acb9;">+8</div>
-                            </div>
-                        </div>
-                        <div class="skill-xp-bar">
-                            <div class="skill-xp-fill" style="width: 40%"></div>
-                        </div>
-                        <div class="skill-mastery">
-                            <span class="skill-mastery-label">MASTERY</span>
-                            <span class="skill-mastery-level">LV. 2 / 10</span>
-                        </div>
-                    </div>
-
-                    <!-- Squats -->
-                    <div class="skill-card" data-muscle="legs" data-skill="squats">
-                        <span class="skill-level-badge level-beginner">BEGINNER</span>
-                        <div class="skill-icon"><i class="fas fa-arrow-down"></i></div>
-                        <div class="skill-name">SQUATS</div>
-                        <div class="skill-muscle">QUADRICEPS • GLUTES • HAMSTRINGS</div>
-                        <div class="skill-description">Build the foundation of lower body power. Strong legs are essential for any hunter.</div>
-                        <div class="skill-stats">
-                            <div class="skill-stat">
-                                <div class="skill-stat-label">STR BOOST</div>
-                                <div class="skill-stat-value str">+2</div>
-                            </div>
-                            <div class="skill-stat">
-                                <div class="skill-stat-label">AGI BOOST</div>
-                                <div class="skill-stat-value agi">+2</div>
-                            </div>
-                            <div class="skill-stat">
-                                <div class="skill-stat-label">XP/SET</div>
-                                <div class="skill-stat-value" style="color: #85acb9;">+5</div>
-                            </div>
-                        </div>
-                        <div class="skill-xp-bar">
-                            <div class="skill-xp-fill" style="width: 80%"></div>
-                        </div>
-                        <div class="skill-mastery">
-                            <span class="skill-mastery-label">MASTERY</span>
-                            <span class="skill-mastery-level">LV. 4 / 10</span>
-                        </div>
-                    </div>
-
-                    <!-- Plank -->
-                    <div class="skill-card" data-muscle="core" data-skill="plank">
-                        <span class="skill-level-badge level-beginner">BEGINNER</span>
-                        <div class="skill-icon"><i class="fas fa-minus"></i></div>
-                        <div class="skill-name">PLANK</div>
-                        <div class="skill-muscle">CORE • SHOULDERS • BACK</div>
-                        <div class="skill-description">Forge an unbreakable core. This isometric hold builds endurance and stability.</div>
-                        <div class="skill-stats">
-                            <div class="skill-stat">
-                                <div class="skill-stat-label">END BOOST</div>
-                                <div class="skill-stat-value end">+3</div>
-                            </div>
-                            <div class="skill-stat">
-                                <div class="skill-stat-label">STR BOOST</div>
-                                <div class="skill-stat-value str">+1</div>
-                            </div>
-                            <div class="skill-stat">
-                                <div class="skill-stat-label">XP/MIN</div>
-                                <div class="skill-stat-value" style="color: #85acb9;">+3</div>
-                            </div>
-                        </div>
-                        <div class="skill-xp-bar">
-                            <div class="skill-xp-fill" style="width: 55%"></div>
-                        </div>
-                        <div class="skill-mastery">
-                            <span class="skill-mastery-label">MASTERY</span>
-                            <span class="skill-mastery-level">LV. 2 / 10</span>
-                        </div>
-                    </div>
-
-                    <!-- Burpees -->
-                    <div class="skill-card" data-muscle="cardio" data-skill="burpees">
-                        <span class="skill-level-badge level-advanced">ADVANCED</span>
-                        <div class="skill-icon"><i class="fas fa-fire"></i></div>
-                        <div class="skill-name">BURPEES</div>
-                        <div class="skill-muscle">FULL BODY • CARDIO</div>
-                        <div class="skill-description">The ultimate full-body conditioning exercise. Burns fat and builds explosive power.</div>
-                        <div class="skill-stats">
-                            <div class="skill-stat">
-                                <div class="skill-stat-label">STR BOOST</div>
-                                <div class="skill-stat-value str">+2</div>
-                            </div>
-                            <div class="skill-stat">
-                                <div class="skill-stat-label">AGI BOOST</div>
-                                <div class="skill-stat-value agi">+3</div>
-                            </div>
-                            <div class="skill-stat">
-                                <div class="skill-stat-label">XP/SET</div>
-                                <div class="skill-stat-value" style="color: #85acb9;">+10</div>
-                            </div>
-                        </div>
-                        <div class="skill-xp-bar">
-                            <div class="skill-xp-fill" style="width: 25%"></div>
-                        </div>
-                        <div class="skill-mastery">
-                            <span class="skill-mastery-label">MASTERY</span>
-                            <span class="skill-mastery-level">LV. 1 / 10</span>
-                        </div>
-                    </div>
-
-                    <!-- Dips -->
-                    <div class="skill-card" data-muscle="arms" data-skill="dips">
-                        <span class="skill-level-badge level-intermediate">INTERMEDIATE</span>
-                        <div class="skill-icon"><i class="fas fa-arrows-alt-v"></i></div>
-                        <div class="skill-name">DIPS</div>
-                        <div class="skill-muscle">TRICEPS • CHEST • SHOULDERS</div>
-                        <div class="skill-description">Develop powerful pushing strength with this compound movement.</div>
-                        <div class="skill-stats">
-                            <div class="skill-stat">
-                                <div class="skill-stat-label">STR BOOST</div>
-                                <div class="skill-stat-value str">+3</div>
-                            </div>
-                            <div class="skill-stat">
-                                <div class="skill-stat-label">END BOOST</div>
-                                <div class="skill-stat-value end">+1</div>
-                            </div>
-                            <div class="skill-stat">
-                                <div class="skill-stat-label">XP/SET</div>
-                                <div class="skill-stat-value" style="color: #85acb9;">+7</div>
-                            </div>
-                        </div>
-                        <div class="skill-xp-bar">
-                            <div class="skill-xp-fill" style="width: 35%"></div>
-                        </div>
-                        <div class="skill-mastery">
-                            <span class="skill-mastery-label">MASTERY</span>
-                            <span class="skill-mastery-level">LV. 1 / 10</span>
-                        </div>
-                    </div>
-
-                    <!-- Lunges -->
-                    <div class="skill-card" data-muscle="legs" data-skill="lunges">
-                        <span class="skill-level-badge level-beginner">BEGINNER</span>
-                        <div class="skill-icon"><i class="fas fa-walking"></i></div>
-                        <div class="skill-name">LUNGES</div>
-                        <div class="skill-muscle">QUADRICEPS • GLUTES • BALANCE</div>
-                        <div class="skill-description">Improve single-leg strength and balance. Essential for functional movement.</div>
-                        <div class="skill-stats">
-                            <div class="skill-stat">
-                                <div class="skill-stat-label">STR BOOST</div>
-                                <div class="skill-stat-value str">+2</div>
-                            </div>
-                            <div class="skill-stat">
-                                <div class="skill-stat-label">AGI BOOST</div>
-                                <div class="skill-stat-value agi">+2</div>
-                            </div>
-                            <div class="skill-stat">
-                                <div class="skill-stat-label">XP/SET</div>
-                                <div class="skill-stat-value" style="color: #85acb9;">+5</div>
-                            </div>
-                        </div>
-                        <div class="skill-xp-bar">
-                            <div class="skill-xp-fill" style="width: 50%"></div>
-                        </div>
-                        <div class="skill-mastery">
-                            <span class="skill-mastery-label">MASTERY</span>
-                            <span class="skill-mastery-level">LV. 2 / 10</span>
-                        </div>
-                    </div>
-
-                    <!-- Pike Push-ups -->
-                    <div class="skill-card" data-muscle="shoulders" data-skill="pikepushups">
-                        <span class="skill-level-badge level-intermediate">INTERMEDIATE</span>
-                        <div class="skill-icon"><i class="fas fa-mountain"></i></div>
-                        <div class="skill-name">PIKE PUSH-UPS</div>
-                        <div class="skill-muscle">SHOULDERS • TRICEPS • UPPER CHEST</div>
-                        <div class="skill-description">Target your shoulders with this vertical pressing movement. Progression to handstand push-ups.</div>
-                        <div class="skill-stats">
-                            <div class="skill-stat">
-                                <div class="skill-stat-label">STR BOOST</div>
-                                <div class="skill-stat-value str">+2</div>
-                            </div>
-                            <div class="skill-stat">
-                                <div class="skill-stat-label">END BOOST</div>
-                                <div class="skill-stat-value end">+1</div>
-                            </div>
-                            <div class="skill-stat">
-                                <div class="skill-stat-label">XP/SET</div>
-                                <div class="skill-stat-value" style="color: #85acb9;">+6</div>
-                            </div>
-                        </div>
-                        <div class="skill-xp-bar">
-                            <div class="skill-xp-fill" style="width: 20%"></div>
-                        </div>
-                        <div class="skill-mastery">
-                            <span class="skill-mastery-label">MASTERY</span>
-                            <span class="skill-mastery-level">LV. 1 / 10</span>
-                        </div>
-                    </div>
-
-                    <!-- Muscle Up (Locked) -->
-                    <div class="skill-card locked" data-muscle="back" data-skill="muscleup">
-                        <span class="skill-level-badge level-master">MASTER</span>
-                        <div class="skill-icon"><i class="fas fa-lock"></i></div>
-                        <div class="skill-name">MUSCLE UP</div>
-                        <div class="skill-muscle">BACK • CHEST • ARMS</div>
-                        <div class="skill-description">🔒 REQUIRES: Pull-ups LV.8 & Dips LV.8</div>
-                        <div class="skill-stats">
-                            <div class="skill-stat">
-                                <div class="skill-stat-label">STR BOOST</div>
-                                <div class="skill-stat-value str">+5</div>
-                            </div>
-                            <div class="skill-stat">
-                                <div class="skill-stat-label">AGI BOOST</div>
-                                <div class="skill-stat-value agi">+3</div>
-                            </div>
-                            <div class="skill-stat">
-                                <div class="skill-stat-label">XP/SET</div>
-                                <div class="skill-stat-value" style="color: #85acb9;">+15</div>
-                            </div>
-                        </div>
-                        <div class="skill-xp-bar">
-                            <div class="skill-xp-fill" style="width: 0%"></div>
-                        </div>
-                        <div class="skill-mastery">
-                            <span class="skill-mastery-label">MASTERY</span>
-                            <span class="skill-mastery-level">LOCKED</span>
-                        </div>
-                    </div>
-
-                    <!-- Running -->
-                    <div class="skill-card" data-muscle="cardio" data-skill="running">
-                        <span class="skill-level-badge level-beginner">BEGINNER</span>
-                        <div class="skill-icon"><i class="fas fa-running"></i></div>
-                        <div class="skill-name">RUNNING</div>
-                        <div class="skill-muscle">CARDIO • LEGS • ENDURANCE</div>
-                        <div class="skill-description">The fundamental cardio skill. Build your stamina and become a tireless hunter.</div>
-                        <div class="skill-stats">
-                            <div class="skill-stat">
-                                <div class="skill-stat-label">AGI BOOST</div>
-                                <div class="skill-stat-value agi">+3</div>
-                            </div>
-                            <div class="skill-stat">
-                                <div class="skill-stat-label">END BOOST</div>
-                                <div class="skill-stat-value end">+3</div>
-                            </div>
-                            <div class="skill-stat">
-                                <div class="skill-stat-label">XP/KM</div>
-                                <div class="skill-stat-value" style="color: #85acb9;">+3</div>
-                            </div>
-                        </div>
-                        <div class="skill-xp-bar">
-                            <div class="skill-xp-fill" style="width: 70%"></div>
-                        </div>
-                        <div class="skill-mastery">
-                            <span class="skill-mastery-label">MASTERY</span>
-                            <span class="skill-mastery-level">LV. 3 / 10</span>
-                        </div>
-                    </div>
-
-                    <!-- Mountain Climbers -->
-                    <div class="skill-card" data-muscle="core" data-skill="mountainclimbers">
-                        <span class="skill-level-badge level-beginner">BEGINNER</span>
-                        <div class="skill-icon"><i class="fas fa-heartbeat"></i></div>
-                        <div class="skill-name">MOUNTAIN CLIMBERS</div>
-                        <div class="skill-muscle">CORE • CARDIO • SHOULDERS</div>
-                        <div class="skill-description">High-intensity core exercise that doubles as cardio. Perfect for conditioning.</div>
-                        <div class="skill-stats">
-                            <div class="skill-stat">
-                                <div class="skill-stat-label">END BOOST</div>
-                                <div class="skill-stat-value end">+2</div>
-                            </div>
-                            <div class="skill-stat">
-                                <div class="skill-stat-label">AGI BOOST</div>
-                                <div class="skill-stat-value agi">+2</div>
-                            </div>
-                            <div class="skill-stat">
-                                <div class="skill-stat-label">XP/SET</div>
-                                <div class="skill-stat-value" style="color: #85acb9;">+4</div>
-                            </div>
-                        </div>
-                        <div class="skill-xp-bar">
-                            <div class="skill-xp-fill" style="width: 45%"></div>
-                        </div>
-                        <div class="skill-mastery">
-                            <span class="skill-mastery-label">MASTERY</span>
-                            <span class="skill-mastery-level">LV. 2 / 10</span>
-                        </div>
-                    </div>
-
-                    <!-- Handstand Push-ups (Locked) -->
-                    <div class="skill-card locked" data-muscle="shoulders" data-skill="handstandpushups">
-                        <span class="skill-level-badge level-master">MASTER</span>
-                        <div class="skill-icon"><i class="fas fa-lock"></i></div>
-                        <div class="skill-name">HANDSTAND PUSH-UPS</div>
-                        <div class="skill-muscle">SHOULDERS • TRICEPS • CORE</div>
-                        <div class="skill-description">🔒 REQUIRES: Pike Push-ups LV.8</div>
-                        <div class="skill-stats">
-                            <div class="skill-stat">
-                                <div class="skill-stat-label">STR BOOST</div>
-                                <div class="skill-stat-value str">+5</div>
-                            </div>
-                            <div class="skill-stat">
-                                <div class="skill-stat-label">END BOOST</div>
-                                <div class="skill-stat-value end">+2</div>
-                            </div>
-                            <div class="skill-stat">
-                                <div class="skill-stat-label">XP/SET</div>
-                                <div class="skill-stat-value" style="color: #85acb9;">+12</div>
-                            </div>
-                        </div>
-                        <div class="skill-xp-bar">
-                            <div class="skill-xp-fill" style="width: 0%"></div>
-                        </div>
-                        <div class="skill-mastery">
-                            <span class="skill-mastery-label">MASTERY</span>
-                            <span class="skill-mastery-level">LOCKED</span>
-                        </div>
-                    </div>
-                </div>
+                <div class="skills-grid" id="skillsGrid"></div>
             </div>
         </div>
     </div>
 
-    <!-- Skill Detail Modal -->
-    <div class="skill-modal" id="skillModal">
-        <div class="skill-modal-content">
-            <button class="close-modal" onclick="closeSkillModal()"><i class="fas fa-times"></i></button>
-            
-            <div class="modal-header">
-                <div class="modal-icon"><i class="fas fa-hands" id="modalIcon"></i></div>
-                <div>
-                    <div class="modal-title" id="modalTitle">PUSH-UPS</div>
-                    <div class="modal-muscle" id="modalMuscle">CHEST • SHOULDERS • TRICEPS</div>
-                </div>
-            </div>
-
-            <div class="modal-section">
-                <div class="modal-section-title"><i class="fas fa-info-circle"></i> HOW TO PERFORM</div>
-                <ol class="instruction-list" id="modalInstructions">
-                    <li>Start in a high plank position with hands shoulder-width apart</li>
-                    <li>Keep your body in a straight line from head to heels</li>
-                    <li>Lower your chest to the ground by bending your elbows</li>
-                    <li>Push back up to the starting position</li>
-                    <li>Repeat for the desired number of repetitions</li>
-                </ol>
-            </div>
-
-            <div class="modal-section">
-                <div class="modal-section-title"><i class="fas fa-layer-group"></i> VARIATIONS</div>
-                <div class="variation-grid" id="modalVariations">
-                    <div class="variation-item">Wide Push-ups</div>
-                    <div class="variation-item">Diamond Push-ups</div>
-                    <div class="variation-item">Decline Push-ups</div>
-                    <div class="variation-item">Incline Push-ups</div>
-                    <div class="variation-item">Archer Push-ups</div>
-                    <div class="variation-item">One-Arm Push-ups</div>
-                </div>
-            </div>
-
-            <div class="modal-section">
-                <div class="modal-section-title"><i class="fas fa-bullseye"></i> TRAINING TIPS</div>
-                <ul class="instruction-list" id="modalTips">
-                    <li>Focus on controlled movements rather than speed</li>
-                    <li>Breathe out when pushing up, breathe in when lowering</li>
-                    <li>Keep your core engaged throughout the movement</li>
-                    <li>Rest 60-90 seconds between sets for strength gains</li>
-                </ul>
-            </div>
-
-            <button class="btn-custom" style="width: 100%; margin-top: 20px;" onclick="closeSkillModal()">
-                <span class="btn-glow"></span>
-                CLOSE
-            </button>
-        </div>
-    </div>
+    <style>
+        /* Talents — ajouts (système de maîtrise + entraînement) */
+        .skill-boosts { display:flex; gap:8px; flex-wrap:wrap; margin:8px 0; }
+        .skill-boost { font-size:.66em; padding:2px 7px; border:1px solid; border-radius:3px; letter-spacing:1px; }
+        .sk-str{color:#ff4757;border-color:#ff4757;} .sk-agi{color:#00ff62;border-color:#00ff62;} .sk-end{color:#ffd700;border-color:#ffd700;}
+        .skill-bonus { font-size:.74em; letter-spacing:1px; color:#9c27b0; margin:6px 0; }
+        .skill-train-btn { width:100%; margin-top:14px; background:rgba(133,172,185,.15); border:1px solid #85acb9; color:#fff; padding:11px; letter-spacing:2px; cursor:pointer; font-family:inherit; font-size:.82em; transition:all .2s; }
+        .skill-train-btn:hover { background:rgba(133,172,185,.3); box-shadow:0 0 16px rgba(133,172,185,.4); }
+        .skill-train-btn:disabled { cursor:default; }
+        .skill-locked-note { margin-top:14px; text-align:center; color:#ff9800; font-size:.76em; letter-spacing:1px; border:1px dashed rgba(255,152,0,.5); padding:9px; }
+        /* Overlay d'entraînement (chrono inversé) */
+        .tr-ov { position:fixed; inset:0; background:rgba(0,0,0,.94); z-index:10050; display:flex; align-items:center; justify-content:center; animation: fadeIn .3s ease-out; padding:20px; }
+        .tr-box { text-align:center; max-width:440px; width:100%; }
+        .tr-name { font-size:1.6em; color:#fff; letter-spacing:3px; text-shadow:0 0 16px #85acb9; margin-bottom:6px; }
+        .tr-sub { color:rgba(255,255,255,.5); letter-spacing:2px; font-size:.8em; margin-bottom:18px; }
+        .tr-clock { font-size:5em; font-weight:300; color:#85acb9; text-shadow:0 0 30px #85acb9; line-height:1; }
+        .tr-clock.low { color:#ff9800; text-shadow:0 0 30px #ff9800; } .tr-clock.up { color:#ff4757; text-shadow:0 0 30px #ff4757; }
+        .tr-count { font-size:3em; color:#fff; margin:8px 0; }
+        .tr-controls { display:flex; gap:12px; justify-content:center; margin-top:22px; flex-wrap:wrap; }
+        .tr-btn { background:transparent; border:1px solid #85acb9; color:#fff; padding:12px 24px; letter-spacing:2px; cursor:pointer; font-family:inherit; font-size:.9em; transition:all .2s; }
+        .tr-btn.primary { background:rgba(133,172,185,.2); }
+        .tr-btn:hover { box-shadow:0 0 16px rgba(133,172,185,.4); }
+        .tr-result { font-size:1.1em; letter-spacing:2px; margin-top:14px; min-height:1.2em; }
+    </style>
 
     <script>
-        // Initialize particles
-        function createBackgroundParticles() {
-            const container = document.querySelector('.bg-particles');
-            if (!container) return;
-            
-            const particleCount = 80;
-            
-            function createParticle() {
-                const particle = document.createElement('div');
-                particle.className = 'bg-particle';
-                particle.style.left = Math.random() * 100 + '%';
-                const size = Math.random() * 4 + 1;
-                particle.style.width = size + 'px';
-                particle.style.height = size + 'px';
-                particle.style.opacity = Math.random() * 0.5 + 0.2;
-                const duration = Math.random() * 3 + 2;
-                const delay = Math.random() * 2;
-                particle.style.animation = `floatUpDiagonal ${duration}s ${delay}s linear infinite`;
-                container.appendChild(particle);
-            }
+    (function () {
+        const H = window.Hunter;
+        const t = (k) => (window.I18n ? I18n.t(k) : k);
+        const lang = () => (window.I18n && I18n.lang === 'fr') ? 'fr' : 'en';
 
-            for (let i = 0; i < particleCount; i++) {
-                createParticle();
+        // Catalogue de talents (bilingue). statBoost = bonus permanent PAR palier de maîtrise.
+        const SKILLS = [
+            { id:'pushups', muscle:'chest', icon:'fa-hands', badge:'beginner', type:'reps', target:20, xp:12, statBoost:{STR:1,END:1},
+              fr:{name:'POMPES', muscle:'PECTORAUX • ÉPAULES • TRICEPS', desc:'La base de la force du haut du corps.'},
+              en:{name:'PUSH-UPS', muscle:'CHEST • SHOULDERS • TRICEPS', desc:'The foundation of upper body strength.'} },
+            { id:'pullups', muscle:'back', icon:'fa-arrow-up', badge:'intermediate', type:'reps', target:10, xp:18, statBoost:{STR:2,AGI:1},
+              fr:{name:'TRACTIONS', muscle:'DOS • BICEPS • AVANT-BRAS', desc:'Le test ultime de la force de traction.'},
+              en:{name:'PULL-UPS', muscle:'BACK • BICEPS • FOREARMS', desc:'The ultimate test of pulling strength.'} },
+            { id:'squats', muscle:'legs', icon:'fa-arrow-down', badge:'beginner', type:'reps', target:25, xp:12, statBoost:{STR:1,AGI:2},
+              fr:{name:'SQUATS', muscle:'QUADRICEPS • FESSIERS', desc:'Construis la base de la puissance des jambes.'},
+              en:{name:'SQUATS', muscle:'QUADRICEPS • GLUTES', desc:'Build the foundation of lower body power.'} },
+            { id:'plank', muscle:'core', icon:'fa-minus', badge:'beginner', type:'time', target:30, xp:10, statBoost:{END:2,STR:1},
+              fr:{name:'GAINAGE', muscle:'GAINAGE • ÉPAULES • DOS', desc:'Forge un tronc incassable.'},
+              en:{name:'PLANK', muscle:'CORE • SHOULDERS • BACK', desc:'Forge an unbreakable core.'} },
+            { id:'burpees', muscle:'cardio', icon:'fa-fire', badge:'advanced', type:'reps', target:15, xp:22, statBoost:{STR:1,AGI:3},
+              fr:{name:'BURPEES', muscle:'CORPS ENTIER • CARDIO', desc:"L'exercice de conditionnement ultime."},
+              en:{name:'BURPEES', muscle:'FULL BODY • CARDIO', desc:'The ultimate full-body conditioning exercise.'} },
+            { id:'dips', muscle:'arms', icon:'fa-arrows-alt-v', badge:'intermediate', type:'reps', target:12, xp:16, statBoost:{STR:2,END:1},
+              fr:{name:'DIPS', muscle:'TRICEPS • PECTORAUX • ÉPAULES', desc:'Développe une force de poussée puissante.'},
+              en:{name:'DIPS', muscle:'TRICEPS • CHEST • SHOULDERS', desc:'Develop powerful pushing strength.'} },
+            { id:'lunges', muscle:'legs', icon:'fa-walking', badge:'beginner', type:'reps', target:20, xp:12, statBoost:{STR:1,AGI:2},
+              fr:{name:'FENTES', muscle:'QUADRICEPS • FESSIERS • ÉQUILIBRE', desc:"Force et équilibre sur une jambe."},
+              en:{name:'LUNGES', muscle:'QUADRICEPS • GLUTES • BALANCE', desc:'Single-leg strength and balance.'} },
+            { id:'pikepushups', muscle:'shoulders', icon:'fa-mountain', badge:'intermediate', type:'reps', target:12, xp:16, statBoost:{STR:2,END:1},
+              fr:{name:'POMPES PIQUÉES', muscle:'ÉPAULES • TRICEPS', desc:"Cible les épaules. Voie vers l'ATR."},
+              en:{name:'PIKE PUSH-UPS', muscle:'SHOULDERS • TRICEPS', desc:'Target shoulders. Path to handstand.'} },
+            { id:'running', muscle:'cardio', icon:'fa-running', badge:'beginner', type:'time', target:40, xp:14, statBoost:{AGI:2,END:2},
+              fr:{name:'COURSE', muscle:'CARDIO • JAMBES • ENDURANCE', desc:'La compétence cardio fondamentale.'},
+              en:{name:'RUNNING', muscle:'CARDIO • LEGS • ENDURANCE', desc:'The fundamental cardio skill.'} },
+            { id:'mountainclimbers', muscle:'core', icon:'fa-heartbeat', badge:'beginner', type:'time', target:30, xp:12, statBoost:{END:2,AGI:2},
+              fr:{name:'MOUNTAIN CLIMBERS', muscle:'GAINAGE • CARDIO • ÉPAULES', desc:'Gainage haute intensité.'},
+              en:{name:'MOUNTAIN CLIMBERS', muscle:'CORE • CARDIO • SHOULDERS', desc:'High-intensity core exercise.'} },
+            { id:'muscleup', muscle:'back', icon:'fa-crown', badge:'master', type:'reps', target:5, xp:35, statBoost:{STR:3,AGI:2}, prereq:{pullups:5, dips:5},
+              fr:{name:'MUSCLE-UP', muscle:'DOS • PECTORAUX • BRAS', desc:"Le mouvement signature du Hunter d'élite."},
+              en:{name:'MUSCLE UP', muscle:'BACK • CHEST • ARMS', desc:'The signature move of an elite Hunter.'} },
+            { id:'handstandpushups', muscle:'shoulders', icon:'fa-street-view', badge:'master', type:'reps', target:6, xp:30, statBoost:{STR:3,END:2}, prereq:{pikepushups:5},
+              fr:{name:'POMPES ATR', muscle:'ÉPAULES • TRICEPS • GAINAGE', desc:'Maîtrise totale de la poussée verticale.'},
+              en:{name:'HANDSTAND PUSH-UPS', muscle:'SHOULDERS • TRICEPS • CORE', desc:'Total mastery of vertical pressing.'} }
+        ];
+        const byId = (id) => SKILLS.find(s => s.id === id);
+        const prereqMet = (s) => !s.prereq || Object.keys(s.prereq).every(k => H.getTalentLevel(k) >= s.prereq[k]);
+        const boostsHTML = (map) => Object.keys(map).map(k => `<span class="skill-boost sk-${k.toLowerCase()}">+${map[k]} ${k}</span>`).join('');
+
+        function cardHTML(s) {
+            const L = s[lang()];
+            const td = H.getTalent(s.id), level = td.level, maxed = level >= 10, locked = !prereqMet(s);
+            const need = maxed ? 1 : H.talentXpForLevel(level);
+            const pct = maxed ? 100 : Math.min(100, td.xp / need * 100);
+            const cur = {}; for (const k in s.statBoost) cur[k] = s.statBoost[k] * level;
+            let action;
+            if (locked) {
+                const req = Object.keys(s.prereq).map(k => `${byId(k)[lang()].name} ${t('lvl.lv')}${s.prereq[k]}`).join(' & ');
+                action = `<div class="skill-locked-note"><i class="fas fa-lock"></i> ${t('tal.requires')}: ${req}</div>`;
+            } else if (maxed) {
+                action = `<button class="skill-train-btn" disabled style="opacity:.6;border-color:#ffd700;color:#ffd700;"><i class="fas fa-crown"></i> ${t('tal.max')}</button>`;
+            } else {
+                action = `<button class="skill-train-btn" data-train="${s.id}"><i class="fas fa-dumbbell"></i> ${t('tal.train')}</button>`;
             }
+            return `<div class="skill-card${locked ? ' locked' : ''}" data-muscle="${s.muscle}" data-skill="${s.id}">
+                <span class="skill-level-badge level-${s.badge}">${s.badge.toUpperCase()}</span>
+                <div class="skill-icon"><i class="fas ${locked ? 'fa-lock' : s.icon}"></i></div>
+                <div class="skill-name">${L.name}</div>
+                <div class="skill-muscle">${L.muscle}</div>
+                <div class="skill-description">${L.desc}</div>
+                <div class="skill-boosts">${boostsHTML(s.statBoost)}<span class="skill-boost" style="color:#85acb9;border-color:#85acb9;">+${s.xp} XP</span></div>
+                ${level > 0 ? `<div class="skill-bonus"><i class="fas fa-star"></i> ${t('tal.bonus')}: ${Object.keys(cur).map(k => '+' + cur[k] + ' ' + k).join(' · ')}</div>` : ''}
+                <div class="skill-xp-bar"><div class="skill-xp-fill" style="width:${pct}%"></div></div>
+                <div class="skill-mastery"><span class="skill-mastery-label">${t('tal.mastery')}</span><span class="skill-mastery-level">${t('lvl.lv')} ${level} / 10</span></div>
+                ${action}
+            </div>`;
         }
 
-        createBackgroundParticles();
-
-        // Load hunter data for nav
-        function loadNavData() {
-            const level = localStorage.getItem('hunterLevel') || '1';
-            const xp = parseInt(localStorage.getItem('hunterXP') || '0');
-            const xpForNextLevel = parseInt(level) * 100;
-            const xpPercent = (xp / xpForNextLevel) * 100;
-            
-            document.getElementById('navLevel').textContent = level;
-            document.getElementById('navXpFill').style.width = xpPercent + '%';
+        function render() {
+            const grid = document.getElementById('skillsGrid');
+            const active = document.querySelector('.muscle-filter.active');
+            const filter = active ? active.dataset.filter : 'all';
+            grid.innerHTML = SKILLS.filter(s => filter === 'all' || s.muscle === filter).map(cardHTML).join('');
+            grid.querySelectorAll('[data-train]').forEach(b => b.onclick = () => trainSkill(b.dataset.train));
         }
 
-        loadNavData();
+        document.querySelectorAll('.muscle-filter').forEach(btn => btn.addEventListener('click', function () {
+            document.querySelectorAll('.muscle-filter').forEach(b => b.classList.remove('active'));
+            this.classList.add('active'); render();
+        }));
 
-        // Filter functionality
-        document.querySelectorAll('.muscle-filter').forEach(btn => {
-            btn.addEventListener('click', function() {
-                document.querySelectorAll('.muscle-filter').forEach(b => b.classList.remove('active'));
-                this.classList.add('active');
-                
-                const filter = this.dataset.filter;
-                document.querySelectorAll('.skill-card').forEach(card => {
-                    if (filter === 'all' || card.dataset.muscle === filter) {
-                        card.style.display = 'block';
-                        card.style.animation = 'fadeIn 0.3s ease-out';
-                    } else {
-                        card.style.display = 'none';
-                    }
-                });
-            });
-        });
+        // ---- Entraînement chronométré (chrono inversé) ----
+        function trainSkill(id) {
+            const s = byId(id); if (!s) return;
+            const isTime = s.type === 'time';
+            const limit = isTime ? s.target : 30;
+            const ov = document.createElement('div'); ov.className = 'tr-ov';
+            ov.innerHTML = `<div class="tr-box">
+                <div class="tr-name">${s[lang()].name}</div>
+                <div class="tr-sub"><i class="fas fa-hourglass-half"></i> ${isTime ? t('tal.hold') : t('tal.reps')}</div>
+                <div class="tr-clock" id="trClock">${limit}</div>
+                ${isTime ? '' : '<div class="tr-count" id="trCount">0</div>'}
+                <div class="tr-controls" id="trControls"></div>
+                <div class="tr-result" id="trResult"></div>
+            </div>`;
+            document.body.appendChild(ov);
+            let reps = 0, left = limit, done = false, timer = null;
+            const clock = ov.querySelector('#trClock'), controls = ov.querySelector('#trControls');
 
-        // Skill modal data
-        const skillData = {
-            pushups: {
-                icon: 'fa-hands',
-                title: 'PUSH-UPS',
-                muscle: 'CHEST • SHOULDERS • TRICEPS',
-                instructions: [
-                    'Start in a high plank position with hands shoulder-width apart',
-                    'Keep your body in a straight line from head to heels',
-                    'Lower your chest to the ground by bending your elbows',
-                    'Push back up to the starting position',
-                    'Repeat for the desired number of repetitions'
-                ],
-                variations: ['Wide Push-ups', 'Diamond Push-ups', 'Decline Push-ups', 'Incline Push-ups', 'Archer Push-ups', 'One-Arm Push-ups'],
-                tips: [
-                    'Focus on controlled movements rather than speed',
-                    'Breathe out when pushing up, breathe in when lowering',
-                    'Keep your core engaged throughout the movement',
-                    'Rest 60-90 seconds between sets for strength gains'
-                ]
-            },
-            pullups: {
-                icon: 'fa-arrow-up',
-                title: 'PULL-UPS',
-                muscle: 'BACK • BICEPS • FOREARMS',
-                instructions: [
-                    'Hang from a bar with palms facing away, hands shoulder-width apart',
-                    'Engage your back muscles and pull your chest towards the bar',
-                    'Pull until your chin is above the bar',
-                    'Lower yourself with control back to the starting position',
-                    'Avoid swinging or using momentum'
-                ],
-                variations: ['Chin-ups', 'Wide Grip Pull-ups', 'Neutral Grip Pull-ups', 'Commando Pull-ups', 'Archer Pull-ups', 'Weighted Pull-ups'],
-                tips: [
-                    'Start with assisted variations if needed',
-                    'Focus on squeezing your shoulder blades together',
-                    'Keep your core tight to prevent swinging',
-                    'Use a full range of motion for best results'
-                ]
-            },
-            squats: {
-                icon: 'fa-arrow-down',
-                title: 'SQUATS',
-                muscle: 'QUADRICEPS • GLUTES • HAMSTRINGS',
-                instructions: [
-                    'Stand with feet shoulder-width apart, toes slightly pointed out',
-                    'Keep your chest up and back straight',
-                    'Push your hips back and bend your knees to lower down',
-                    'Go as low as your mobility allows while keeping heels on the ground',
-                    'Drive through your heels to stand back up'
-                ],
-                variations: ['Goblet Squats', 'Jump Squats', 'Pistol Squats', 'Sumo Squats', 'Bulgarian Split Squats', 'Sissy Squats'],
-                tips: [
-                    'Keep your knees tracking over your toes',
-                    'Maintain a neutral spine throughout',
-                    'Breathe in on the way down, out on the way up',
-                    'Work on ankle mobility for deeper squats'
-                ]
+            const finish = () => {
+                if (done) return; done = true; clearInterval(timer);
+                const perf = isTime ? Math.max(1, Math.round(limit - left) || limit) * 2 : reps * 3;
+                const res = ov.querySelector('#trResult');
+                res.style.color = '#4caf50';
+                res.innerHTML = `<i class="fas fa-check"></i> ${t('tal.train_done')} <span style="color:#85acb9;">+${s.xp} XP</span>`;
+                controls.innerHTML = `<button class="tr-btn primary" id="trClose">${t('lvl.continue')}</button>`;
+                ov.querySelector('#trClose').onclick = () => {
+                    ov.remove();
+                    // Récompenses APRÈS fermeture → les overlays/toasts (level-up, maîtrise) restent visibles
+                    H.completeTalentTraining(id, { name: s[lang()].name, xp: s.xp, statBoost: s.statBoost }, perf);
+                    render();
+                };
+                if (window.GymUI) GymUI.sound('xp');
+            };
+
+            if (isTime) {
+                controls.innerHTML = `<button class="tr-btn" id="trStop">${t('wk.skip')}</button>`;
+                ov.querySelector('#trStop').onclick = finish;
+            } else {
+                controls.innerHTML = `<button class="tr-btn primary" id="trRep">+1 ${t('tal.reps')}</button><button class="tr-btn" id="trStop">${t('wk.skip')}</button>`;
+                ov.querySelector('#trRep').onclick = () => { if (done) return; reps++; ov.querySelector('#trCount').textContent = reps; if (window.GymUI) GymUI.sound('xp'); };
+                ov.querySelector('#trStop').onclick = finish;
             }
-        };
-
-        // Skill card click handler
-        document.querySelectorAll('.skill-card:not(.locked)').forEach(card => {
-            card.addEventListener('click', function() {
-                const skill = this.dataset.skill;
-                openSkillModal(skill);
-            });
-        });
-
-        function openSkillModal(skillId) {
-            const data = skillData[skillId];
-            if (!data) return;
-
-            document.getElementById('modalIcon').className = 'fas ' + data.icon;
-            document.getElementById('modalTitle').textContent = data.title;
-            document.getElementById('modalMuscle').textContent = data.muscle;
-
-            const instructionsList = document.getElementById('modalInstructions');
-            instructionsList.innerHTML = data.instructions.map(i => `<li>${i}</li>`).join('');
-
-            const variationsGrid = document.getElementById('modalVariations');
-            variationsGrid.innerHTML = data.variations.map(v => `<div class="variation-item">${v}</div>`).join('');
-
-            const tipsList = document.getElementById('modalTips');
-            tipsList.innerHTML = data.tips.map(t => `<li>${t}</li>`).join('');
-
-            document.getElementById('skillModal').classList.add('show');
+            if (window.GymUI) GymUI.sound('click');
+            timer = setInterval(() => {
+                left--; clock.textContent = Math.max(0, left);
+                clock.classList.toggle('low', left <= limit * 0.3 && left > 0);
+                if (left <= 0) { clock.classList.add('up'); finish(); }
+            }, 1000);
         }
 
-        function closeSkillModal() {
-            document.getElementById('skillModal').classList.remove('show');
-        }
-
-        // Close modal on outside click
-        document.getElementById('skillModal').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeSkillModal();
-            }
-        });
+        render();
+        if (window.I18n) I18n.onChange(render);
+    })();
     </script>
+
     <script src="js/solo-leveling.js"></script>
 </body>
 </html>

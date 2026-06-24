@@ -192,7 +192,140 @@ left join public.guild_members gm on gm.guild_id = g.id
 left join public.profiles p       on p.id = gm.user_id
 group by g.id;
 
+-- ---------------------------------------------------------------------
+-- 7. RECRUTEMENT : candidatures (apply) & invitations (invite)
+--    kind = 'apply'  → un Hunter postule pour rejoindre une guilde
+--    kind = 'invite' → un officier/maître recrute un Hunter
+-- ---------------------------------------------------------------------
+create table if not exists public.guild_applications (
+    id          uuid primary key default gen_random_uuid(),
+    guild_id    uuid references public.guilds(id) on delete cascade,
+    user_id     uuid references public.profiles(id) on delete cascade,
+    kind        text default 'apply',     -- apply | invite
+    status      text default 'pending',   -- pending | accepted | rejected
+    inviter     uuid,                     -- auteur de l'invitation (kind=invite)
+    message     text,
+    created_at  timestamptz default now(),
+    unique (guild_id, user_id, kind)
+);
+create index if not exists ga_guild_idx on public.guild_applications (guild_id);
+create index if not exists ga_user_idx  on public.guild_applications (user_id);
+
+alter table public.guild_applications enable row level security;
+
+-- Visible par le candidat/invité OU par un membre de la guilde concernée.
+drop policy if exists "ga_select" on public.guild_applications;
+create policy "ga_select" on public.guild_applications for select using (
+    auth.uid() = user_id
+    or exists (select 1 from public.guild_members gm where gm.guild_id = guild_applications.guild_id and gm.user_id = auth.uid())
+);
+-- Le Hunter crée sa candidature ; un officier/maître crée une invitation.
+drop policy if exists "ga_insert" on public.guild_applications;
+create policy "ga_insert" on public.guild_applications for insert with check (
+    (kind = 'apply' and auth.uid() = user_id)
+    or (kind = 'invite' and exists (
+        select 1 from public.guild_members gm
+        where gm.guild_id = guild_applications.guild_id and gm.user_id = auth.uid() and gm.role in ('owner','officer')))
+);
+-- Le candidat/invité ou un officier/maître peut mettre à jour (accepter/refuser).
+drop policy if exists "ga_update" on public.guild_applications;
+create policy "ga_update" on public.guild_applications for update using (
+    auth.uid() = user_id
+    or exists (select 1 from public.guild_members gm where gm.guild_id = guild_applications.guild_id and gm.user_id = auth.uid() and gm.role in ('owner','officer'))
+);
+drop policy if exists "ga_delete" on public.guild_applications;
+create policy "ga_delete" on public.guild_applications for delete using (
+    auth.uid() = user_id
+    or exists (select 1 from public.guild_members gm where gm.guild_id = guild_applications.guild_id and gm.user_id = auth.uid() and gm.role in ('owner','officer'))
+);
+
+-- ---------------------------------------------------------------------
+-- 8. CHAT DE GUILDE (messages temps réel entre membres)
+-- ---------------------------------------------------------------------
+create table if not exists public.guild_messages (
+    id          uuid primary key default gen_random_uuid(),
+    guild_id    uuid references public.guilds(id) on delete cascade,
+    user_id     uuid references public.profiles(id) on delete set null,
+    name        text,
+    avatar      text,
+    color       text,
+    message     text not null,
+    created_at  timestamptz default now()
+);
+create index if not exists gmsg_guild_idx on public.guild_messages (guild_id, created_at desc);
+
+alter table public.guild_messages enable row level security;
+
+-- Lecture/écriture réservées aux membres de la guilde.
+drop policy if exists "gmsg_select" on public.guild_messages;
+create policy "gmsg_select" on public.guild_messages for select using (
+    exists (select 1 from public.guild_members gm where gm.guild_id = guild_messages.guild_id and gm.user_id = auth.uid())
+);
+drop policy if exists "gmsg_insert" on public.guild_messages;
+create policy "gmsg_insert" on public.guild_messages for insert with check (
+    auth.uid() = user_id
+    and exists (select 1 from public.guild_members gm where gm.guild_id = guild_messages.guild_id and gm.user_id = auth.uid())
+);
+
+-- ---------------------------------------------------------------------
+-- 9. RÔLES & MODÉRATION : un officier/maître ajoute, promeut, exclut
+--    (s'ajoute aux policies "self" existantes : insertion auto-join,
+--     suppression = quitter soi-même)
+-- ---------------------------------------------------------------------
+-- Un officier/maître peut ajouter un membre (acceptation de candidature).
+-- NB : la policy SELECT de guild_members est triviale (using true) → pas de récursion.
+drop policy if exists "gm_insert_officer" on public.guild_members;
+create policy "gm_insert_officer" on public.guild_members for insert with check (
+    exists (select 1 from public.guild_members me where me.guild_id = guild_members.guild_id and me.user_id = auth.uid() and me.role in ('owner','officer'))
+    or exists (select 1 from public.guilds g where g.id = guild_members.guild_id and g.owner = auth.uid())
+);
+drop policy if exists "gm_update_owner" on public.guild_members;
+create policy "gm_update_owner" on public.guild_members for update using (
+    exists (select 1 from public.guilds g where g.id = guild_members.guild_id and g.owner = auth.uid())
+);
+drop policy if exists "gm_delete_owner" on public.guild_members;
+create policy "gm_delete_owner" on public.guild_members for delete using (
+    exists (select 1 from public.guilds g where g.id = guild_members.guild_id and g.owner = auth.uid())
+);
+
+-- ---------------------------------------------------------------------
+-- 10. ARÈNE : mise (or) sur les duels — colonne ajoutée si absente
+-- ---------------------------------------------------------------------
+alter table public.challenges add column if not exists wager int default 0;
+
+-- ---------------------------------------------------------------------
+-- 11. PERSISTANCE ÉTENDUE : équipement, inventaire, talents, or
+--     (synchro multi-appareils du Hunter)
+-- ---------------------------------------------------------------------
+alter table public.profiles add column if not exists gold      int   default 0;
+alter table public.profiles add column if not exists equipment jsonb default '{}'::jsonb;
+alter table public.profiles add column if not exists inventory jsonb default '[]'::jsonb;
+alter table public.profiles add column if not exists talents   jsonb default '{}'::jsonb;
+
+-- ---------------------------------------------------------------------
+-- 12. PRÉSENCE EN LIGNE (heartbeat séparé → n'impacte pas le classement)
+--     Le client met à jour last_seen toutes les ~60 s ; un Hunter est
+--     "en ligne" si last_seen < 2 min.
+-- ---------------------------------------------------------------------
+create table if not exists public.presence (
+    user_id   uuid primary key references public.profiles(id) on delete cascade,
+    last_seen timestamptz default now()
+);
+create index if not exists presence_last_seen_idx on public.presence (last_seen desc);
+
+alter table public.presence enable row level security;
+
+drop policy if exists "presence_select_all" on public.presence;
+create policy "presence_select_all" on public.presence for select using (true);
+drop policy if exists "presence_insert_own" on public.presence;
+create policy "presence_insert_own" on public.presence for insert with check (auth.uid() = user_id);
+drop policy if exists "presence_update_own" on public.presence;
+create policy "presence_update_own" on public.presence for update using (auth.uid() = user_id);
+drop policy if exists "presence_delete_own" on public.presence;
+create policy "presence_delete_own" on public.presence for delete using (auth.uid() = user_id);
+
 -- =====================================================================
 -- FIN — Active "Realtime" sur les tables `profiles`, `challenges`,
--- `guilds` et `guild_members` (Database → Replication) pour le live.
+-- `guilds`, `guild_members`, `guild_applications` et `guild_messages`
+-- (Database → Replication) pour le live. (`presence` : Realtime optionnel.)
 -- =====================================================================

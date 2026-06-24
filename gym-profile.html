@@ -10,6 +10,7 @@
     <link href="css/gym.css" rel="stylesheet">
     <script src="js/config.js"></script>
     <script src="js/store.js"></script>
+    <script src="js/equipment.js"></script>
     <script src="js/i18n.js"></script>
     <script src="js/quests.js"></script>
     <script src="js/weekly.js"></script>
@@ -543,6 +544,7 @@
             <a href="gym-leaderboard.html" class="nav-link">CLASSEMENT</a>
             <a href="gym-challenges.html" class="nav-link">ARÈNE</a>
             <a href="gym-guilds.html" class="nav-link">GUILDES</a>
+            <a href="gym-inventory.html" class="nav-link">FORGE</a>
             <a href="gym-profile.html" class="nav-link active">PROFIL</a>
         </div>
         <div class="nav-profile">
@@ -562,7 +564,7 @@
                         <div class="profile-avatar" id="avatarDisplay">
                             <i class="fas fa-user"></i>
                         </div>
-                        <button class="avatar-edit-btn" onclick="changeAvatar()">CHANGE</button>
+                        <button class="avatar-edit-btn" onclick="changeAvatar()" data-i18n="prof.change">CHANGE</button>
                     </div>
                     <div class="profile-info">
                         <div class="hunter-name" id="hunterName">SHADOW HUNTER</div>
@@ -570,34 +572,40 @@
                         <div class="profile-stats-row">
                             <div class="profile-stat-box">
                                 <div class="profile-stat-value" id="totalWorkouts">0</div>
-                                <div class="profile-stat-label">WORKOUTS</div>
+                                <div class="profile-stat-label" data-i18n="prof.workouts">WORKOUTS</div>
                             </div>
                             <div class="profile-stat-box">
                                 <div class="profile-stat-value" id="totalXPEarned">0</div>
-                                <div class="profile-stat-label">TOTAL XP</div>
+                                <div class="profile-stat-label" data-i18n="prof.total_xp">TOTAL XP</div>
                             </div>
                             <div class="profile-stat-box">
                                 <div class="profile-stat-value" id="daysActive">0</div>
-                                <div class="profile-stat-label">DAYS ACTIVE</div>
+                                <div class="profile-stat-label" data-i18n="prof.days_active">DAYS ACTIVE</div>
                             </div>
                         </div>
                         <div class="rank-badge-large rank-e" id="rankBadge" style="color: #888; border-color: #888;">E-RANK HUNTER</div>
                     </div>
                 </div>
 
+                <!-- Rank Perks -->
+                <div class="profile-section">
+                    <div class="section-title"><i class="fas fa-medal"></i> <span data-i18n="perk.title">RANK PERKS</span></div>
+                    <div id="rankPerks"></div>
+                </div>
+
                 <!-- Stats Allocation -->
                 <div class="profile-section">
-                    <div class="section-title"><i class="fas fa-chart-pie"></i> STAT ALLOCATION</div>
+                    <div class="section-title"><i class="fas fa-chart-pie"></i> <span data-i18n="prof.stat_allocation">STAT ALLOCATION</span></div>
                     
                     <div class="available-points" id="pointsContainer" style="display: none;">
-                        AVAILABLE STAT POINTS: <span id="availablePoints">0</span>
+                        <span data-i18n="prof.available_points">AVAILABLE STAT POINTS</span>: <span id="availablePoints">0</span>
                     </div>
                     
                     <div class="stat-distribution">
                         <div class="stat-card str">
                             <div class="stat-card-icon"><i class="fas fa-fist-raised"></i></div>
                             <div class="stat-card-value" id="strValue">10</div>
-                            <div class="stat-card-name">STRENGTH</div>
+                            <div class="stat-card-name" data-i18n="dash.str">STRENGTH</div>
                             <div class="stat-allocate-btns">
                                 <button class="stat-btn" onclick="allocateStat('STR', -1)" disabled>-</button>
                                 <button class="stat-btn" onclick="allocateStat('STR', 1)" disabled>+</button>
@@ -606,7 +614,7 @@
                         <div class="stat-card agi">
                             <div class="stat-card-icon"><i class="fas fa-bolt"></i></div>
                             <div class="stat-card-value" id="agiValue">10</div>
-                            <div class="stat-card-name">AGILITY</div>
+                            <div class="stat-card-name" data-i18n="dash.agi">AGILITY</div>
                             <div class="stat-allocate-btns">
                                 <button class="stat-btn" onclick="allocateStat('AGI', -1)" disabled>-</button>
                                 <button class="stat-btn" onclick="allocateStat('AGI', 1)" disabled>+</button>
@@ -615,7 +623,7 @@
                         <div class="stat-card end">
                             <div class="stat-card-icon"><i class="fas fa-shield-alt"></i></div>
                             <div class="stat-card-value" id="endValue">10</div>
-                            <div class="stat-card-name">ENDURANCE</div>
+                            <div class="stat-card-name" data-i18n="dash.end">ENDURANCE</div>
                             <div class="stat-allocate-btns">
                                 <button class="stat-btn" onclick="allocateStat('END', -1)" disabled>-</button>
                                 <button class="stat-btn" onclick="allocateStat('END', 1)" disabled>+</button>
@@ -624,7 +632,7 @@
                         <div class="stat-card vit">
                             <div class="stat-card-icon"><i class="fas fa-heart"></i></div>
                             <div class="stat-card-value" id="vitValue">100</div>
-                            <div class="stat-card-name">VITALITY</div>
+                            <div class="stat-card-name" data-i18n="dash.vit">VITALITY</div>
                             <div class="stat-allocate-btns">
                                 <button class="stat-btn" onclick="allocateStat('VIT', -1)" disabled>-</button>
                                 <button class="stat-btn" onclick="allocateStat('VIT', 1)" disabled>+</button>
@@ -635,7 +643,7 @@
 
                 <!-- Title Selection -->
                 <div class="profile-section">
-                    <div class="section-title"><i class="fas fa-tag"></i> HUNTER TITLE</div>
+                    <div class="section-title"><i class="fas fa-tag"></i> <span data-i18n="prof.hunter_title">HUNTER TITLE</span></div>
                     <div class="title-grid">
                         <div class="title-option selected" data-title="★ RISING HUNTER ★" onclick="selectTitle(this)">★ RISING HUNTER ★</div>
                         <div class="title-option" data-title="THE AWAKENED" onclick="selectTitle(this)">THE AWAKENED</div>
@@ -650,47 +658,14 @@
 
                 <!-- Equipment -->
                 <div class="profile-section">
-                    <div class="section-title"><i class="fas fa-tshirt"></i> EQUIPPED GEAR</div>
-                    <div class="gear-grid">
-                        <div class="gear-slot equipped">
-                            <div class="gear-icon"><i class="fas fa-dumbbell"></i></div>
-                            <div class="gear-slot-name">WEAPON</div>
-                            <div class="gear-slot-item">Iron Dumbbells</div>
-                            <div class="gear-bonus">+5% STR XP</div>
-                        </div>
-                        <div class="gear-slot">
-                            <div class="gear-icon"><i class="fas fa-hard-hat"></i></div>
-                            <div class="gear-slot-name">HEAD</div>
-                            <div class="gear-slot-item">None</div>
-                        </div>
-                        <div class="gear-slot">
-                            <div class="gear-icon"><i class="fas fa-vest"></i></div>
-                            <div class="gear-slot-name">CHEST</div>
-                            <div class="gear-slot-item">None</div>
-                        </div>
-                        <div class="gear-slot equipped">
-                            <div class="gear-icon"><i class="fas fa-mitten"></i></div>
-                            <div class="gear-slot-name">HANDS</div>
-                            <div class="gear-slot-item">Training Gloves</div>
-                            <div class="gear-bonus">+3% All XP</div>
-                        </div>
-                        <div class="gear-slot">
-                            <div class="gear-icon"><i class="fas fa-ring"></i></div>
-                            <div class="gear-slot-name">ACCESSORY</div>
-                            <div class="gear-slot-item">None</div>
-                        </div>
-                        <div class="gear-slot equipped">
-                            <div class="gear-icon"><i class="fas fa-shoe-prints"></i></div>
-                            <div class="gear-slot-name">BOOTS</div>
-                            <div class="gear-slot-item">Running Shoes</div>
-                            <div class="gear-bonus">+5% AGI XP</div>
-                        </div>
-                    </div>
+                    <div class="section-title"><i class="fas fa-tshirt"></i> <span data-i18n="prof.equipped_gear">EQUIPPED GEAR</span></div>
+                    <div class="gear-grid" id="gearGrid"></div>
+                    <a href="gym-inventory.html" class="profile-btn" style="display:inline-block; text-decoration:none; margin-top:16px;" data-i18n="prof.open_forge">OPEN THE FORGE</a>
                 </div>
 
                 <!-- Settings -->
                 <div class="profile-section">
-                    <div class="section-title"><i class="fas fa-cog"></i> SETTINGS</div>
+                    <div class="section-title"><i class="fas fa-cog"></i> <span data-i18n="prof.settings">SETTINGS</span></div>
                     <div class="settings-grid">
                         <div class="setting-row">
                             <div class="setting-info">
@@ -732,9 +707,9 @@
 
                 <!-- Action Buttons -->
                 <div class="profile-actions">
-                    <button class="profile-btn" onclick="saveProfile()">SAVE CHANGES</button>
-                    <button class="profile-btn" onclick="exportData()">EXPORT DATA</button>
-                    <button class="profile-btn danger" onclick="resetProgress()">RESET PROGRESS</button>
+                    <button class="profile-btn" onclick="saveProfile()" data-i18n="prof.save">SAVE CHANGES</button>
+                    <button class="profile-btn" onclick="exportData()" data-i18n="prof.export">EXPORT DATA</button>
+                    <button class="profile-btn danger" onclick="resetProgress()" data-i18n="prof.reset">RESET PROGRESS</button>
                 </div>
             </div>
         </div>
@@ -768,6 +743,46 @@
         }
 
         createBackgroundParticles();
+
+        // Équipement réel porté (depuis la Forge) — remplace l'ancien affichage statique
+        function renderProfileGear() {
+            const grid = document.getElementById('gearGrid');
+            if (!grid || !window.Hunter || !window.Equipment) return;
+            const T = (k) => (window.I18n ? I18n.t(k) : k);
+            const eq = Hunter.get('equipment') || {};
+            grid.innerHTML = Equipment.SLOT_ORDER.map(slot => {
+                const it = eq[slot], si = Equipment.slotInfo(slot), name = Equipment.slotName(slot);
+                if (!it) return `<div class="gear-slot"><div class="gear-icon"><i class="fas ${si.icon}"></i></div><div class="gear-slot-name">${name}</div><div class="gear-slot-item">${T('inv.empty_slot')}</div></div>`;
+                const col = Equipment.rarityColor(it.rarity);
+                const bonus = [];
+                ['STR', 'AGI', 'END', 'VIT'].forEach(s => { if (it.stats && it.stats[s]) bonus.push('+' + it.stats[s] + ' ' + s); });
+                if (it.xpBonus) bonus.push('+' + it.xpBonus + '% XP');
+                return `<div class="gear-slot equipped" style="border-color:${col};"><div class="gear-icon" style="color:${col};"><i class="fas ${it.icon}"></i></div><div class="gear-slot-name">${name}</div><div class="gear-slot-item" style="color:${col};">${Equipment.itemName(it)}</div><div class="gear-bonus">${bonus.join(' · ')}</div></div>`;
+            }).join('');
+        }
+        renderProfileGear();
+        if (window.Hunter) Hunter.on('change', renderProfileGear);
+
+        // Perks de rang (avantages permanents selon le rang)
+        function renderRankPerks() {
+            const box = document.getElementById('rankPerks');
+            if (!box || !window.Hunter) return;
+            const T = (k) => (window.I18n ? I18n.t(k) : k);
+            const rank = Hunter.get('rank');
+            const p = Hunter.getRankPerks(rank);
+            const col = Hunter.getRankColor ? Hunter.getRankColor(rank) : '#85acb9';
+            const chips = [];
+            if (p.xpPct) chips.push('+' + p.xpPct + '% ' + T('perk.xp'));
+            if (p.luck) chips.push('+' + Math.round(p.luck * 100) + '% ' + T('perk.luck'));
+            if (p.goldPct) chips.push('+' + p.goldPct + '% ' + T('perk.gold'));
+            if (p.power) chips.push('+' + p.power + ' ' + T('perk.power'));
+            if (p.minRarity && window.Equipment) chips.push(T('perk.minloot') + ' ' + Equipment.rarityName(p.minRarity));
+            box.innerHTML = chips.length
+                ? chips.map(c => `<span style="display:inline-block;margin:4px 8px 0 0;padding:7px 13px;border:1px solid ${col};color:${col};border-radius:4px;font-size:.82em;letter-spacing:1px;box-shadow:0 0 10px ${col}33;">${c}</span>`).join('')
+                : `<span style="color:rgba(255,255,255,.4);font-size:.85em;">${T('perk.none')}</span>`;
+        }
+        renderRankPerks();
+        if (window.Hunter) Hunter.on('change', renderRankPerks);
 
         // Load profile data
         function loadProfile() {
@@ -920,9 +935,15 @@
         }
 
         function resetProgress() {
-            if (confirm('WARNING: This will reset ALL progress. Are you sure?')) {
-                if (confirm('This action is PERMANENT. Type "RESET" to confirm.')) {
-                    localStorage.clear();
+            const T = (k) => (window.I18n ? I18n.t(k) : k);
+            if (confirm(T('prof.reset_warn'))) {
+                if (confirm(T('prof.reset_perm'))) {
+                    // Réinitialisation propre via le moteur (préserve la langue choisie)
+                    const lang = (window.Hunter && Hunter.get('settings') && Hunter.get('settings').language) || 'en';
+                    if (window.Hunter) Hunter.reset();
+                    // Nettoie aussi les clés de quêtes hors-store
+                    ['dailyQuests', 'weeklyQuest', 'weeklySchedule', 'nutritionTips', 'protocolMeta', 'protocolGenerated', 'completedDailyQuests', 'pvpClaimed'].forEach(k => localStorage.removeItem(k));
+                    if (window.Hunter) Hunter.setSetting('language', lang);
                     location.reload();
                 }
             }

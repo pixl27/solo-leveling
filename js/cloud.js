@@ -22,7 +22,9 @@
         client: null,
         user: null,
         _listeners: {},
-        _initPromise: null
+        _initPromise: null,
+        _hbTimer: null,
+        _ONLINE_MS: 120000   // "en ligne" = vu il y a moins de 2 min
     };
 
     // ==================== ÉVÉNEMENTS ====================
@@ -100,9 +102,44 @@
 
     Cloud.signOut = async function () {
         if (!this.enabled || !this.client) return;
+        this.stopHeartbeat();
+        try { if (this.user) await this.client.from('presence').delete().eq('user_id', this.user.id); } catch (e) { /* présence absente : on ignore */ }
         await this.client.auth.signOut();
         this.user = null;
         this._emit('auth', { event: 'SIGNED_OUT', user: null });
+    };
+
+    // ==================== PRÉSENCE EN LIGNE ====================
+    Cloud.heartbeat = async function () {
+        if (!this.enabled || !this.user) return;
+        try {
+            await this.client.from('presence').upsert({ user_id: this.user.id, last_seen: new Date().toISOString() }, { onConflict: 'user_id' });
+        } catch (e) { /* table presence absente (schéma non à jour) : on ignore */ }
+    };
+    Cloud.startHeartbeat = function () {
+        this.stopHeartbeat();
+        this.heartbeat();
+        this._hbTimer = setInterval(() => this.heartbeat(), 60000);
+    };
+    Cloud.stopHeartbeat = function () {
+        if (this._hbTimer) { clearInterval(this._hbTimer); this._hbTimer = null; }
+    };
+    // Ensemble des id de Hunters en ligne (vus < 2 min)
+    Cloud.getOnlineIds = async function () {
+        if (!this.enabled) return new Set();
+        try {
+            const since = new Date(Date.now() - this._ONLINE_MS).toISOString();
+            const { data } = await this.client.from('presence').select('user_id').gt('last_seen', since);
+            return new Set((data || []).map(r => r.user_id));
+        } catch (e) { return new Set(); }
+    };
+    Cloud.getOnlineCount = async function () {
+        if (!this.enabled) return 0;
+        try {
+            const since = new Date(Date.now() - this._ONLINE_MS).toISOString();
+            const { count } = await this.client.from('presence').select('user_id', { count: 'exact', head: true }).gt('last_seen', since);
+            return count || 0;
+        } catch (e) { return 0; }
     };
 
     Cloud.isLoggedIn = function () { return !!this.user; };
@@ -115,6 +152,7 @@
         // Le cloud fait autorité s'il est plus avancé, sinon on pousse l'état local
         await global.Hunter.pullFromCloud();
         await global.Hunter.syncToCloud();
+        this.startHeartbeat();   // présence en ligne
         this._emit('synced', { user: this.user });
     };
 
@@ -131,7 +169,9 @@
                     str: p.str, agi: p.agi, endurance: p.end, vit: p.vit,
                     total_workouts: p.total_workouts, current_streak: p.current_streak,
                     longest_streak: p.longest_streak, combat_power: p.combat_power,
-                    achievements: p.achievements, guild: p.guild, updated_at: p.updated_at
+                    achievements: p.achievements, guild: p.guild,
+                    gold: p.gold, equipment: p.equipment, inventory: p.inventory, talents: p.talents,
+                    updated_at: p.updated_at
                 };
                 const { error } = await self.client.from('profiles').upsert(row, { onConflict: 'id' });
                 if (error) throw error;
@@ -193,16 +233,38 @@
         return (data || []).filter(h => !this.user || h.id !== this.user.id);
     };
 
-    Cloud.createChallenge = async function (opponentId, type, goal, message) {
+    Cloud.createChallenge = async function (opponentId, type, goal, message, wager) {
         if (!this.enabled || !this.user) throw new Error('Connecte-toi pour défier un Hunter');
         const start = challengeMetric(type);
         const { data, error } = await this.client.from('challenges').insert({
             challenger: this.user.id, opponent: opponentId,
             type: type || 'xp', goal: goal || 500, message: message || null,
-            challenger_start: start, status: 'pending'
+            challenger_start: start, status: 'pending', wager: wager || 0
         }).select().single();
         if (error) throw error;
         return data;
+    };
+
+    // Combat rapide : trouve un adversaire de puissance proche et lance le duel.
+    Cloud.findQuickMatch = async function (type, goal, wager) {
+        if (!this.enabled || !this.user) throw new Error('Connecte-toi');
+        const me = await this.client.from('profiles').select('combat_power').eq('id', this.user.id).single();
+        const power = (me.data && me.data.combat_power) || 600;
+        let res = await this.client.from('profiles')
+            .select('id, name, avatar, avatar_color, level, rank, combat_power')
+            .neq('id', this.user.id)
+            .gte('combat_power', Math.floor(power * 0.5))
+            .lte('combat_power', Math.ceil(power * 1.8))
+            .limit(20);
+        let pool = res.data || [];
+        if (!pool.length) {
+            const r = await this.client.from('profiles').select('id, name, avatar, avatar_color, level, rank, combat_power').neq('id', this.user.id).limit(20);
+            pool = r.data || [];
+        }
+        if (!pool.length) return null;
+        const opp = pool[Math.floor(Math.random() * pool.length)];
+        const ch = await this.createChallenge(opp.id, type || 'xp', goal || 300, null, wager || 0);
+        return { challenge: ch, opponent: opp };
     };
 
     Cloud.getChallenges = async function () {
@@ -264,7 +326,7 @@
         const members = await this.client.from('guild_members')
             .select('user_id, role, profiles(name, avatar, avatar_color, level, rank, combat_power)')
             .eq('guild_id', mem.data.guild_id);
-        const list = (members.data || []).map(m => Object.assign({ role: m.role }, m.profiles || {}));
+        const list = (members.data || []).map(m => Object.assign({ user_id: m.user_id, role: m.role }, m.profiles || {}));
         list.sort((a, b) => (b.combat_power || 0) - (a.combat_power || 0));
         return { guild: g.data, role: mem.data.role, members: list };
     };
@@ -294,6 +356,117 @@
         await this.client.from('guild_members').delete().eq('user_id', this.user.id);
         if (global.Hunter) { global.Hunter.getData().guild = null; global.Hunter.save(); }
         await this.client.from('profiles').update({ guild: null }).eq('id', this.user.id);
+    };
+
+    // ==================== RECRUTEMENT (candidatures & invitations) ====================
+    // Un Hunter postule pour rejoindre une guilde.
+    Cloud.applyToGuild = async function (guildId, message) {
+        if (!this.enabled || !this.user) throw new Error('Connecte-toi pour postuler');
+        const { error } = await this.client.from('guild_applications')
+            .upsert({ guild_id: guildId, user_id: this.user.id, kind: 'apply', status: 'pending', message: message || null },
+                    { onConflict: 'guild_id,user_id,kind' });
+        if (error) throw error;
+    };
+
+    Cloud.cancelApplication = async function (appId) {
+        if (!this.enabled || !this.user) return;
+        await this.client.from('guild_applications').delete().eq('id', appId);
+    };
+
+    // Mes candidatures / invitations en attente (avec infos de guilde).
+    Cloud.getMyApplications = async function () {
+        if (!this.enabled || !this.user) return [];
+        const { data } = await this.client.from('guild_applications')
+            .select('*, guilds(name, tag, emblem, color)')
+            .eq('user_id', this.user.id).eq('status', 'pending');
+        return data || [];
+    };
+
+    // Candidatures reçues par une guilde (pour les officiers).
+    Cloud.getGuildApplications = async function (guildId) {
+        if (!this.enabled || !this.user) return [];
+        const { data } = await this.client.from('guild_applications')
+            .select('*, profiles(name, avatar, avatar_color, level, rank, combat_power)')
+            .eq('guild_id', guildId).eq('kind', 'apply').eq('status', 'pending')
+            .order('created_at', { ascending: true });
+        return data || [];
+    };
+
+    // Un officier/maître recrute (invite) un Hunter.
+    Cloud.inviteHunter = async function (guildId, userId) {
+        if (!this.enabled || !this.user) throw new Error('Non connecté');
+        const { error } = await this.client.from('guild_applications')
+            .upsert({ guild_id: guildId, user_id: userId, kind: 'invite', inviter: this.user.id, status: 'pending' },
+                    { onConflict: 'guild_id,user_id,kind' });
+        if (error) throw error;
+    };
+
+    // Officier : accepte une candidature → ajoute le membre puis supprime la demande.
+    Cloud.acceptApplication = async function (app) {
+        if (!this.enabled || !this.user) throw new Error('Non connecté');
+        try {
+            await this.client.from('guild_members').insert({ guild_id: app.guild_id, user_id: app.user_id, role: 'member' });
+        } catch (e) { /* déjà membre : on poursuit */ }
+        await this.client.from('guild_applications').delete().eq('id', app.id);
+    };
+
+    Cloud.rejectApplication = async function (appId) {
+        if (!this.enabled || !this.user) return;
+        await this.client.from('guild_applications').delete().eq('id', appId);
+    };
+
+    // Invité : accepte l'invitation → rejoint la guilde.
+    Cloud.acceptInvite = async function (invite) {
+        if (!this.enabled || !this.user) throw new Error('Non connecté');
+        const gname = invite.guilds ? invite.guilds.name : null;
+        await this.joinGuild(invite.guild_id, gname);
+        await this.client.from('guild_applications').delete().eq('id', invite.id);
+    };
+
+    Cloud.declineInvite = async function (inviteId) {
+        if (!this.enabled || !this.user) return;
+        await this.client.from('guild_applications').delete().eq('id', inviteId);
+    };
+
+    // ==================== RÔLES & MODÉRATION ====================
+    Cloud.setMemberRole = async function (guildId, userId, role) {
+        if (!this.enabled || !this.user) return;
+        await this.client.from('guild_members').update({ role: role }).eq('guild_id', guildId).eq('user_id', userId);
+    };
+
+    Cloud.kickMember = async function (guildId, userId) {
+        if (!this.enabled || !this.user) return;
+        await this.client.from('guild_members').delete().eq('guild_id', guildId).eq('user_id', userId);
+    };
+
+    // ==================== CHAT DE GUILDE ====================
+    Cloud.getGuildMessages = async function (guildId, limit) {
+        if (!this.enabled || !this.user) return [];
+        const { data } = await this.client.from('guild_messages')
+            .select('*').eq('guild_id', guildId)
+            .order('created_at', { ascending: false }).limit(limit || 50);
+        return (data || []).reverse();
+    };
+
+    Cloud.sendGuildMessage = async function (guildId, text) {
+        if (!this.enabled || !this.user) throw new Error('Non connecté');
+        const H = global.Hunter;
+        const { error } = await this.client.from('guild_messages').insert({
+            guild_id: guildId, user_id: this.user.id,
+            name: H ? H.get('name') : 'Hunter',
+            avatar: H ? H.get('avatar') : 'fa-user-ninja',
+            color: H ? H.get('avatarColor') : '#85acb9',
+            message: String(text).slice(0, 500)
+        });
+        if (error) throw error;
+    };
+
+    Cloud.subscribeGuildChat = function (guildId, cb) {
+        if (!this.enabled || !this.client) return function () {};
+        const ch = this.client.channel('guild-chat-' + guildId)
+            .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'guild_messages', filter: 'guild_id=eq.' + guildId }, cb)
+            .subscribe();
+        return () => this.client.removeChannel(ch);
     };
 
     // ==================== DONNÉES DÉMO (mode hors-ligne) ====================

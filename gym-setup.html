@@ -10,6 +10,7 @@
     <link href="css/gym.css" rel="stylesheet">
     <script src="js/config.js"></script>
     <script src="js/store.js"></script>
+    <script src="js/equipment.js"></script>
     <script src="js/i18n.js"></script>
     <script src="js/cloud.js"></script>
     <script src="js/ui.js"></script>
@@ -278,56 +279,56 @@
         
         <div class="sl-title">
             <span class="sl-exclamation">!</span>
-            <span>HUNTER ASSESSMENT</span>
+            <span data-i18n="onb.assessment">HUNTER ASSESSMENT</span>
         </div>
 
-        <p class="hunter-name-display"><span class="glowing-blue">Hunter</span>: <span id="displayName">-</span> | <span class="glowing-purple">Rank</span>: <span id="displayRank" class="glowing-gold">-</span></p>
+        <p class="hunter-name-display"><span class="glowing-blue" data-i18n="onb.hunter_label">Hunter</span>: <span id="displayName">-</span> | <span class="glowing-purple" data-i18n="onb.rank_label">Rank</span>: <span id="displayRank" class="glowing-gold">-</span></p>
 
-        <p class="setup-subtitle">[SYSTEM] Analyzing <span class="glowing-green">physical parameters</span> for optimal <span class="glowing-orange">training protocol</span>...</p>
+        <p class="setup-subtitle" data-i18n="onb.analyzing">[SYSTEM] Analyzing physical parameters for optimal training protocol...</p>
 
         <div id="formContainer">
             <div class="input-row">
                 <div class="form-group">
-                    <label class="form-label">HEIGHT (cm)</label>
+                    <label class="form-label" data-i18n="onb.height">HEIGHT (cm)</label>
                     <input type="number" class="form-input" id="heightInput" placeholder="170" min="100" max="250">
                 </div>
                 <div class="form-group">
-                    <label class="form-label">WEIGHT (kg)</label>
+                    <label class="form-label" data-i18n="onb.weight">WEIGHT (kg)</label>
                     <input type="number" class="form-input" id="weightInput" placeholder="70" min="30" max="300">
                 </div>
             </div>
 
             <div class="form-group">
-                <label class="form-label">AGE</label>
+                <label class="form-label" data-i18n="onb.age">AGE</label>
                 <input type="number" class="form-input" id="ageInput" placeholder="25" min="10" max="100">
             </div>
 
             <div class="form-group">
-                <label class="form-label">YOUR OBJECTIVE</label>
+                <label class="form-label" data-i18n="onb.objective">YOUR OBJECTIVE</label>
                 <div class="objective-options">
                     <button type="button" class="objective-btn" data-objective="lose">
-                        <i class="fas fa-fire"></i> LOSE WEIGHT
+                        <i class="fas fa-fire"></i> <span data-i18n="onb.lose">LOSE WEIGHT</span>
                     </button>
                     <button type="button" class="objective-btn" data-objective="gain">
-                        <i class="fas fa-dumbbell"></i> GAIN MUSCLE
+                        <i class="fas fa-dumbbell"></i> <span data-i18n="onb.gain">GAIN MUSCLE</span>
                     </button>
                     <button type="button" class="objective-btn" data-objective="maintain">
-                        <i class="fas fa-balance-scale"></i> MAINTAIN
+                        <i class="fas fa-balance-scale"></i> <span data-i18n="onb.maintain">MAINTAIN</span>
                     </button>
                 </div>
             </div>
 
             <div class="form-group">
-                <label class="form-label">FITNESS LEVEL</label>
+                <label class="form-label" data-i18n="onb.fitness">FITNESS LEVEL</label>
                 <div class="objective-options">
                     <button type="button" class="fitness-btn" data-fitness="beginner">
-                        BEGINNER
+                        <span data-i18n="onb.beginner">BEGINNER</span>
                     </button>
                     <button type="button" class="fitness-btn" data-fitness="intermediate">
-                        INTERMEDIATE
+                        <span data-i18n="onb.intermediate">INTERMEDIATE</span>
                     </button>
                     <button type="button" class="fitness-btn" data-fitness="advanced">
-                        ADVANCED
+                        <span data-i18n="onb.advanced">ADVANCED</span>
                     </button>
                 </div>
             </div>
@@ -337,20 +338,20 @@
             <div class="buttons-container">
                 <button class="btn-custom generate-btn" id="generateBtn">
                     <span class="btn-glow"></span>
-                    <i class="fas fa-brain"></i> GENERATE TRAINING PROTOCOL
+                    <i class="fas fa-brain"></i> <span data-i18n="onb.generate">GENERATE TRAINING PROTOCOL</span>
                 </button>
             </div>
         </div>
 
         <div class="loading-container" id="loadingContainer">
             <div class="loading-spinner"></div>
-            <div class="loading-text">ANALYZING DATA...</div>
-            <div class="loading-status" id="loadingStatus">Connecting to System AI...</div>
+            <div class="loading-text" data-i18n="onb.analyzing_data">ANALYZING DATA...</div>
+            <div class="loading-status" id="loadingStatus" data-i18n="onb.connecting">Connecting to System AI...</div>
         </div>
 
         <div class="result-container" id="resultContainer">
-            <div class="result-title"><i class="fas fa-check-circle"></i> PROTOCOL GENERATED</div>
-            <p class="result-message">[SYSTEM] Your personalized training quests have been created!</p>
+            <div class="result-title"><i class="fas fa-check-circle"></i> <span data-i18n="onb.protocol_generated">PROTOCOL GENERATED</span></div>
+            <p class="result-message" data-i18n="onb.protocol_msg">[SYSTEM] Your personalized training quests have been created!</p>
             
             <div class="quest-preview" id="questPreview">
                 <!-- Quest previews will be inserted here -->
@@ -359,7 +360,7 @@
             <div class="buttons-container" style="margin-top: 20px;">
                 <button class="btn-custom" id="continueBtn">
                     <span class="btn-glow"></span>
-                    BEGIN TRAINING <i class="fas fa-arrow-right"></i>
+                    <span data-i18n="onb.begin">BEGIN TRAINING</span> <i class="fas fa-arrow-right"></i>
                 </button>
             </div>
         </div>
@@ -368,6 +369,7 @@
     <script src="js/quests.js"></script>
     <script src="js/weekly.js"></script>
     <script>
+        const TR = (k) => (window.I18n ? I18n.t(k) : k);
         // Get hunter data from localStorage
         const hunterName = localStorage.getItem('hunterName') || 'Hunter';
         const hunterRank = localStorage.getItem('hunterRank') || 'E';
@@ -409,19 +411,19 @@
 
             // Validation
             if (!height || !weight || !age) {
-                errorEl.textContent = '[ERROR] All physical parameters are required!';
+                errorEl.textContent = TR('onb.err_params');
                 errorEl.style.display = 'block';
                 return;
             }
 
             if (!selectedObjective) {
-                errorEl.textContent = '[ERROR] Select your training objective!';
+                errorEl.textContent = TR('onb.err_objective');
                 errorEl.style.display = 'block';
                 return;
             }
 
             if (!selectedFitness) {
-                errorEl.textContent = '[ERROR] Select your fitness level!';
+                errorEl.textContent = TR('onb.err_fitness');
                 errorEl.style.display = 'block';
                 return;
             }
@@ -450,7 +452,7 @@
                 console.error('Error:', error);
                 document.getElementById('loadingContainer').style.display = 'none';
                 document.getElementById('formContainer').style.display = 'block';
-                errorEl.textContent = '[ERROR] Failed to connect to System AI. Please try again.';
+                errorEl.textContent = (window.I18n && I18n.lang==='fr') ? '[ERREUR] Echec de connexion au Systeme. Reessaie.' : '[ERROR] Failed to connect. Please try again.';
                 errorEl.style.display = 'block';
             }
         });
@@ -458,12 +460,12 @@
         async function generateTrainingProtocol(height, weight, age, objective, fitness, bmi) {
             const statusEl = document.getElementById('loadingStatus');
             
-            statusEl.textContent = 'Analyse des paramètres physiques...';
+            statusEl.textContent = TR('onb.analyzing_params');
 
             // Génération 100% locale via la bibliothèque de quêtes.
             // Aucune clé API, aucun appel réseau : instantané, gratuit et hors-ligne.
             await new Promise(r => setTimeout(r, 700));
-            statusEl.textContent = 'Génération du protocole personnalisé...';
+            statusEl.textContent = TR('onb.generating');
             await new Promise(r => setTimeout(r, 600));
 
             try {
@@ -474,7 +476,7 @@
                     objective: objective,
                     fitness: fitness,
                     rank: hunterRank,
-                    lang: (window.Hunter && Hunter.get('settings') && Hunter.get('settings').language) || 'fr'
+                    lang: (window.Hunter && Hunter.get('settings') && Hunter.get('settings').language) || 'en'
                 });
                 
                 // Clear any previous quest completion data for fresh start
@@ -494,7 +496,7 @@
                 
                 // Display quest preview
                 const previewContainer = document.getElementById('questPreview');
-                let previewHTML = '<p style="color: #85acb9; margin-bottom: 10px; font-size: 0.85em;">QUÊTES DU JOUR :</p>';
+                let previewHTML = '<p style="color: #85acb9; margin-bottom: 10px; font-size: 0.85em;">' + TR('onb.daily_quests_label') + '</p>';
 
                 protocol.dailyQuests.forEach(quest => {
                     previewHTML += `
@@ -507,7 +509,7 @@
 
                 if (protocol.weeklyQuest) {
                     previewHTML += `
-                        <p style="color: #ffd700; margin: 15px 0 10px 0; font-size: 0.85em;">QUÊTE HEBDOMADAIRE :</p>
+                        <p style="color: #ffd700; margin: 15px 0 10px 0; font-size: 0.85em;">${TR('onb.weekly_quest_label')}</p>
                         <div class="quest-preview-item" style="border-color: rgba(255, 215, 0, 0.3); background: rgba(255, 215, 0, 0.05);">
                             <span class="quest-preview-name"><i class="fas fa-crown" style="color: #ffd700; margin-right: 8px;"></i>${protocol.weeklyQuest.name}</span>
                             <span class="quest-preview-xp">+${protocol.weeklyQuest.xp} XP</span>
@@ -531,7 +533,7 @@
 
                 document.getElementById('loadingContainer').style.display = 'none';
                 document.getElementById('resultContainer').style.display = 'block';
-                document.getElementById('questPreview').innerHTML = '<p style="color: rgba(255,255,255,0.7);">Protocole généré avec succès !</p>';
+                document.getElementById('questPreview').innerHTML = '<p style="color: rgba(255,255,255,0.7);">' + TR('onb.protocol_ok') + '</p>';
             }
         }
 
