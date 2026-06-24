@@ -550,14 +550,17 @@
         }
         document.getElementById('continueBtn').addEventListener('click', function() {
             const cfg = window.isCloudConfigured && window.isCloudConfigured();
-            if (cfg && window.Cloud && window.AuthUI) {
+            let guest = false;
+            try { guest = localStorage.getItem('sg_guest') === '1'; } catch (e) {}
+            if (cfg && window.Cloud && window.AuthUI && !guest) {
                 // Attend la fin de Cloud.init() (session restaurée) avant de décider.
                 Promise.resolve(Cloud.init && Cloud.init()).then(() => {
                     if (Cloud.isLoggedIn()) {
                         proceedToAccept();
                     } else {
                         // La progression du setup (nom, rang, profil) est migrée vers le compte à la connexion.
-                        AuthUI.open('login', { mandatory: true, onSuccess: proceedToAccept });
+                        // « Continuer sans compte » → on passe quand même (mode invité local).
+                        AuthUI.open('login', { mandatory: true, onSuccess: proceedToAccept, onSkip: proceedToAccept });
                     }
                 });
             } else {

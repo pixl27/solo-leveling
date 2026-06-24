@@ -23,9 +23,12 @@
 
         const check = function () {
             if (Cloud.isLoggedIn()) return;
+            // A déjà choisi « continuer sans compte » → on ne le redemande pas (le menu/puce reste dispo).
+            try { if (global.localStorage && localStorage.getItem('sg_guest') === '1') return; } catch (e) { /* ignore */ }
             AuthUI.open('login', {
                 mandatory: true,
                 onSuccess: function () { global.location.reload(); }
+                // onSkip non requis : « continuer sans compte » ferme la modale et la page (déjà rendue) reste visible.
             });
         };
 

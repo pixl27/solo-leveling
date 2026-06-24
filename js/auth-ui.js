@@ -65,6 +65,13 @@
             .sg-auth-support:hover { background: rgba(255,215,0,.16); box-shadow: 0 0 16px rgba(255,215,0,.32); color: #fff; }
             .sg-auth-support i { animation: sgSteam 2.6s ease-in-out infinite; }
             @keyframes sgSteam { 0%, 100% { transform: translateY(0); opacity: .85; } 50% { transform: translateY(-2px); opacity: 1; } }
+            .sg-auth-guest { margin-top: 18px; padding-top: 16px; border-top: 1px solid rgba(133,172,185,.2); }
+            .sg-auth-guest-or { text-align: center; color: rgba(255,255,255,.3); letter-spacing: 3px; font-size: .68em; margin-bottom: 12px; }
+            .sg-auth-guest-title { color: rgba(255,255,255,.62); font-size: .78em; letter-spacing: .5px; margin-bottom: 10px; text-align: center; }
+            .sg-auth-guest-list { list-style: none; margin: 0; padding: 0; }
+            .sg-auth-guest-list li { display: flex; align-items: center; gap: 10px; color: rgba(255,255,255,.5); font-size: .76em; padding: 4px 2px; letter-spacing: .3px; }
+            .sg-auth-guest-list li i { width: 18px; text-align: center; color: rgba(255,71,87,.65); font-size: .85em; }
+            .sg-auth-guest-note { color: rgba(255,255,255,.35); font-size: .72em; text-align: center; margin-top: 10px; letter-spacing: .5px; }
             .sg-chip { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; padding: 5px 12px;
                 border: 1px solid rgba(133,172,185,.4); color: #85acb9; font-size: .8em; letter-spacing: 1px; background: rgba(133,172,185,.08); }
             .sg-chip:hover { border-color: #85acb9; color: #fff; }
@@ -121,9 +128,33 @@
         const closeBtn = back.querySelector('.sg-auth-close');
         const skipBtn = back.querySelector('.sg-auth-skip');
         if (opts.mandatory) {
-            // Connexion obligatoire : aucune échappatoire (ni croix, ni « continuer hors-ligne », ni clic extérieur).
+            // Connexion fortement encouragée : pas de croix ni de fermeture par clic extérieur,
+            // MAIS une porte de sortie « continuer sans compte » qui détaille ce qui reste verrouillé.
             if (closeBtn) closeBtn.style.display = 'none';
-            if (skipBtn) skipBtn.style.display = 'none';
+            const guestProceed = function () {
+                try { if (global.localStorage) localStorage.setItem('sg_guest', '1'); } catch (e) { /* ignore */ }
+                close();
+                if (typeof opts.onSkip === 'function') opts.onSkip();
+            };
+            const guestBox = document.createElement('div');
+            guestBox.className = 'sg-auth-guest';
+            guestBox.innerHTML = `
+                <div class="sg-auth-guest-or" data-i18n="auth.guest_or">— or —</div>
+                <div class="sg-auth-guest-title" data-i18n="auth.guest_locked">Without an account you'll miss:</div>
+                <ul class="sg-auth-guest-list">
+                    <li><i class="fas fa-cloud"></i> <span data-i18n="auth.guest_sync">Cross-device sync (progress stays on this device)</span></li>
+                    <li><i class="fas fa-trophy"></i> <span data-i18n="auth.guest_lb">The world leaderboard</span></li>
+                    <li><i class="fas fa-khanda"></i> <span data-i18n="auth.guest_pvp">PvP duels in the Arena</span></li>
+                    <li><i class="fas fa-shield-halved"></i> <span data-i18n="auth.guest_guild">Guilds</span></li>
+                </ul>
+                <div class="sg-auth-guest-note" data-i18n="auth.guest_note">You can create an account anytime.</div>`;
+            if (skipBtn && skipBtn.parentNode) skipBtn.parentNode.insertBefore(guestBox, skipBtn);
+            if (global.I18n) I18n.apply(guestBox);
+            if (skipBtn) {
+                skipBtn.setAttribute('data-i18n', 'auth.guest_continue');
+                skipBtn.textContent = t('auth.guest_continue', 'Continue without an account →');
+                skipBtn.onclick = guestProceed;
+            }
         } else {
             closeBtn.onclick = close;
             skipBtn.onclick = close;
@@ -166,6 +197,7 @@
                     await Cloud.signIn(email, pass);
                 }
                 AuthUI._refreshChips();
+                try { if (global.localStorage) localStorage.removeItem('sg_guest'); } catch (e) { /* ignore */ }
                 const proceed = function () {
                     if (typeof opts.onSuccess === 'function') opts.onSuccess();
                     else close();
