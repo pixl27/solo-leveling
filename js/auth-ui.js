@@ -23,6 +23,13 @@
         return s;
     }
 
+    // Nom de Hunter saisi à l'éveil (gym-index) → sert à pré-remplir l'inscription / le message de bienvenue.
+    function storedName() {
+        try { const ls = global.localStorage && localStorage.getItem('hunterName'); if (ls) return ls; } catch (e) { /* localStorage indispo */ }
+        if (global.Hunter && global.Hunter.get) { const n = global.Hunter.get('name'); if (n && n !== 'SHADOW HUNTER') return n; }
+        return '';
+    }
+
     function injectStyles() {
         if (document.getElementById('sg-auth-styles')) return;
         const s = document.createElement('style');
@@ -54,6 +61,17 @@
             .sg-chip { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; padding: 5px 12px;
                 border: 1px solid rgba(133,172,185,.4); color: #85acb9; font-size: .8em; letter-spacing: 1px; background: rgba(133,172,185,.08); }
             .sg-chip:hover { border-color: #85acb9; color: #fff; }
+            .sg-auth-success { text-align: center; padding: 16px 0 8px; animation: sgScaleIn .3s ease-out; }
+            .sg-auth-check { width: 74px; height: 74px; margin: 0 auto 18px; border: 2px solid #85acb9; border-radius: 50%;
+                display: flex; align-items: center; justify-content: center; color: #85acb9; font-size: 2em;
+                text-shadow: 0 0 16px #85acb9; box-shadow: 0 0 26px rgba(133,172,185,.6), inset 0 0 18px rgba(133,172,185,.35);
+                animation: sgAuthPulse 1.1s ease-in-out infinite; }
+            .sg-auth-granted { color: #fff; letter-spacing: 4px; font-size: 1.05em; text-shadow: 0 0 14px #85acb9; margin-bottom: 8px; }
+            .sg-auth-welcome { color: rgba(255,255,255,.7); letter-spacing: 2px; font-size: .85em; }
+            @keyframes sgAuthPulse {
+                0%, 100% { transform: scale(1); box-shadow: 0 0 26px rgba(133,172,185,.55), inset 0 0 18px rgba(133,172,185,.3); }
+                50% { transform: scale(1.08); box-shadow: 0 0 40px rgba(133,172,185,.95), inset 0 0 22px rgba(133,172,185,.55); }
+            }
         `;
         document.head.appendChild(s);
     }
@@ -111,6 +129,8 @@
                 + `<input class="sg-auth-field" id="sgEmail" type="email" placeholder="${t('auth.email_ph', 'EMAIL')}" autocomplete="email">`
                 + `<input class="sg-auth-field" id="sgPass" type="password" placeholder="${t('auth.pass_ph', 'MOT DE PASSE')}" autocomplete="current-password">`
                 + `<button class="sg-auth-btn" id="sgSubmit">${tab === 'signup' ? t('auth.signup_btn', 'DEVENIR HUNTER') : t('auth.login_btn', 'ENTRER DANS LE DONJON')}</button>`;
+            // Pré-remplit le nom de Hunter avec celui saisi à l'éveil (gym-index).
+            if (tab === 'signup') { const ne = body.querySelector('#sgName'); if (ne && !ne.value) ne.value = storedName(); }
             body.querySelector('#sgSubmit').onclick = submit;
             body.querySelectorAll('.sg-auth-field').forEach(f => f.addEventListener('keydown', e => { if (e.key === 'Enter') submit(); }));
         }
@@ -137,10 +157,13 @@
                 } else {
                     await Cloud.signIn(email, pass);
                 }
-                global.GymUI && global.GymUI.toast && global.GymUI.toast(t('auth.welcome_toast', 'Bienvenue, Hunter. Progression synchronisée.'), 'xp');
                 AuthUI._refreshChips();
-                if (typeof opts.onSuccess === 'function') opts.onSuccess();
-                else close();
+                const proceed = function () {
+                    if (typeof opts.onSuccess === 'function') opts.onSuccess();
+                    else close();
+                };
+                // Effet « accès accordé » (flash + son + particules + bienvenue) puis on enchaîne.
+                AuthUI._successEffect(name || storedName(), proceed);
             } catch (e) {
                 err.style.color = '';
                 err.textContent = translateErr(e.message || 'Erreur');
@@ -158,6 +181,27 @@
         if (/rate limit/i.test(m)) return t('auth.err_rate', 'Trop de tentatives, réessaie plus tard.');
         return m;
     }
+
+    // Effet de réussite (connexion/inscription) : flash, son, particules et message de bienvenue,
+    // puis exécution de `done` (rechargement / navigation / fermeture selon le contexte d'appel).
+    AuthUI._successEffect = function (name, done) {
+        const modal = AuthUI._openBack && AuthUI._openBack.querySelector('.sg-auth-modal');
+        if (global.GymUI) {
+            if (GymUI.screenFlash) GymUI.screenFlash();
+            if (GymUI.sound) GymUI.sound('levelup');
+        }
+        if (modal) {
+            const who = (name || '').toString().trim();
+            modal.innerHTML = `
+                <div class="sg-auth-success">
+                    <div class="sg-auth-check"><i class="fas fa-bolt"></i></div>
+                    <div class="sg-auth-granted">${t('auth.granted', 'ACCÈS ACCORDÉ')}</div>
+                    <div class="sg-auth-welcome">${t('auth.welcome_name', 'Bienvenue, {name}', { name: who ? who.toUpperCase() : 'HUNTER' })}</div>
+                </div>`;
+            if (global.GymUI && GymUI.burst) GymUI.burst(modal, '#85acb9', 28);
+        }
+        setTimeout(function () { if (typeof done === 'function') done(); }, 1300);
+    };
 
     // ==================== PUCE DE COMPTE ====================
     AuthUI._chips = [];

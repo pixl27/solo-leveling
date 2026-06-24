@@ -173,6 +173,7 @@
             "auth.err_registered": "Cet email a déjà un compte.",
             "auth.err_rate": "Trop de tentatives, réessaie plus tard.",
             "auth.logout_confirm": "Se déconnecter ?",
+            "auth.granted": "ACCÈS ACCORDÉ", "auth.welcome_name": "Bienvenue, {name}",
             // ===== Commun : libellés de cartes de quête =====
             "common.daily": "QUOTIDIEN", "common.weekly": "HEBDO", "common.special": "SPÉCIAL",
             "common.easy": "FACILE", "common.medium": "MOYEN", "common.hard": "DIFFICILE", "common.extreme": "EXTRÊME",
@@ -365,6 +366,7 @@
             "auth.err_registered": "This email already has an account.",
             "auth.err_rate": "Too many attempts, try again later.",
             "auth.logout_confirm": "Sign out?",
+            "auth.granted": "ACCESS GRANTED", "auth.welcome_name": "Welcome, {name}",
             // ===== Common quest-card labels =====
             "common.daily": "DAILY", "common.weekly": "WEEKLY", "common.special": "SPECIAL",
             "common.easy": "EASY", "common.medium": "MEDIUM", "common.hard": "HARD", "common.extreme": "EXTREME",
