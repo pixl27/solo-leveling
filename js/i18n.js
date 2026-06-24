@@ -149,7 +149,68 @@
             'onb.generating': 'Génération du protocole personnalisé...', 'onb.protocol_ok': 'Protocole généré avec succès !',
             'onb.notification': 'NOTIFICATION', 'onb.heart_warning': "Si tu n'acceptes pas, ton cœur s'arrêtera dans",
             'onb.seconds': 'secondes', 'onb.accept_q': 'Veux-tu accepter ?', 'onb.yes': 'Oui', 'onb.no': 'Non',
-            'onb.quest_accepted': 'QUÊTE ACCEPTÉE', 'onb.you_died': 'TU ES MORT', 'onb.refused': "[SYSTÈME] Le joueur a refusé de s'éveiller...", 'onb.try_again': 'RÉESSAYER'
+            'onb.quest_accepted': 'QUÊTE ACCEPTÉE', 'onb.you_died': 'TU ES MORT', 'onb.refused': "[SYSTÈME] Le joueur a refusé de s'éveiller...", 'onb.try_again': 'RÉESSAYER',
+            // ===== Auth (modale connexion/inscription + puces de compte) =====
+            "auth.offline_toast": "Mode hors-ligne — configure Supabase (js/config.js) pour le multijoueur.",
+            "auth.offline_alert": "Mode hors-ligne : configure Supabase dans js/config.js pour activer les comptes en ligne.",
+            "auth.close": "Fermer",
+            "auth.subtitle": "Synchronise ta progression · Rejoins le classement",
+            "auth.login": "CONNEXION",
+            "auth.signup": "INSCRIPTION",
+            "auth.skip": "Continuer hors-ligne →",
+            "auth.name_ph": "NOM DE HUNTER",
+            "auth.email_ph": "EMAIL",
+            "auth.pass_ph": "MOT DE PASSE",
+            "auth.signup_btn": "DEVENIR HUNTER",
+            "auth.login_btn": "ENTRER DANS LE DONJON",
+            "auth.err_required": "Email et mot de passe requis.",
+            "auth.err_pass_short": "Mot de passe : 6 caractères minimum.",
+            "auth.loading_btn": "CONNEXION...",
+            "auth.signup_check_email": "Compte créé ! Vérifie ton email pour confirmer.",
+            "auth.waiting_btn": "EN ATTENTE...",
+            "auth.welcome_toast": "Bienvenue, Hunter. Progression synchronisée.",
+            "auth.err_invalid": "Email ou mot de passe incorrect.",
+            "auth.err_registered": "Cet email a déjà un compte.",
+            "auth.err_rate": "Trop de tentatives, réessaie plus tard.",
+            "auth.logout_confirm": "Se déconnecter ?",
+            // ===== Commun : libellés de cartes de quête =====
+            "common.daily": "QUOTIDIEN", "common.weekly": "HEBDO", "common.special": "SPÉCIAL",
+            "common.easy": "FACILE", "common.medium": "MOYEN", "common.hard": "DIFFICILE", "common.extreme": "EXTRÊME",
+            "common.completed": "TERMINÉ", "common.duration": "DURÉE", "common.difficulty": "DIFFICULTÉ", "common.sets_reps": "SÉRIES/RÉPS",
+            // ===== Cartes de quête (séances) =====
+            "quest.reward_xp": "XP GAGNÉ", "quest.stat_boost": "BONUS STAT", "quest.start_quest": "DÉMARRER LA QUÊTE",
+            "quest.accept_challenge": "RELEVER LE DÉFI", "quest.view_progress": "VOIR LA PROGRESSION", "quest.progress": "PROGRESSION",
+            "quest.push_day_title": "PROTOCOLE JOUR DE POUSSÉE",
+            "quest.push_day_desc": "Complète l'entraînement pectoraux, épaules et triceps pour augmenter ta puissance de poussée.",
+            "quest.pull_day_title": "PROTOCOLE JOUR DE TRACTION",
+            "quest.pull_day_desc": "Entraîne ton dos et tes biceps pour développer une force de traction digne d'un vrai chasseur.",
+            "quest.leg_day_title": "DESTRUCTEUR JOUR DES JAMBES",
+            "quest.leg_day_desc": "Forge des jambes puissantes capables de te porter à travers n'importe quel donjon.",
+            "quest.monarch_trial_title": "ÉPREUVE DU MONARQUE DES OMBRES",
+            "quest.monarch_trial_desc": "Termine toutes les quêtes quotidiennes pendant 7 jours consécutifs. Seuls les plus forts survivent.",
+            "quest.reps_challenge_title": "DÉFI DES 100 RÉPÉTITIONS",
+            "quest.reps_challenge_desc": "Effectue 100 répétitions de chaque : pompes, squats, abdos. Une épreuve digne des chasseurs de rang S.",
+            "quest.core_fort_title": "FORTIFICATION DU TRONC",
+            "quest.core_fort_desc": "Renforce ton tronc pour résister à n'importe quelle attaque. Essentiel à la survie du chasseur.",
+            // ===== Accueil =====
+            "dash.fallback_q1": "Faire 50 pompes", "dash.fallback_q2": "Faire 50 squats", "dash.fallback_q3": "Courir 5 kilomètres",
+            "dash.level_up": "Vous avez atteint le Niveau {level} !",
+            // ===== Progression =====
+            "progress.req_level": "Atteindre le niveau {n}", "progress.req_workouts": "Compléter {n} séances",
+            "progress.req_streak": "Série de {n} jours", "progress.req_str": "FOR ≥ {n}", "progress.ach_unlocked": " débloqués",
+            // ===== Avatar =====
+            "avatar.updated": "Avatar mis à jour !",
+            // ===== Profil =====
+            "prof.set_notif": "Notifications", "prof.set_notif_desc": "Reçois des rappels de quêtes et des alertes de niveau supérieur",
+            "prof.set_sound": "Effets sonores", "prof.set_sound_desc": "Joue des sons pour les succès et les montées de niveau",
+            "prof.set_particles": "Effets de particules", "prof.set_particles_desc": "Affiche les particules animées en arrière-plan",
+            "prof.set_dark": "Mode sombre", "prof.set_dark_desc": "Utilise le thème sombre (activé par défaut)",
+            "prof.set_rest": "Rappels de jour de repos", "prof.set_rest_desc": "Sois notifié quand tu devrais prendre un jour de repos",
+            "prof.title_rising": "★ HUNTER MONTANT ★", "prof.title_awakened": "L'ÉVEILLÉ",
+            "prof.title_iron": "🔒 GUERRIER DE FER", "prof.title_soldier": "🔒 SOLDAT DE L'OMBRE",
+            "prof.title_gate": "🔒 BRISEUR DE PORTE", "prof.title_demon": "🔒 POURFENDEUR DE DÉMONS",
+            "prof.title_srank": "🔒 HUNTER RANG S", "prof.title_monarch": "🔒 MONARQUE DE L'OMBRE",
+            "prof.rank_badge": "HUNTER RANG {rank}", "prof.saved": "PROFIL ENREGISTRÉ !"
         },
         en: {
             'nav.dashboard': 'HOME', 'nav.quests': 'QUESTS', 'nav.skills': 'SKILLS',
@@ -280,7 +341,68 @@
             'onb.generating': 'Generating personalized protocol...', 'onb.protocol_ok': 'Protocol generated successfully!',
             'onb.notification': 'NOTIFICATION', 'onb.heart_warning': "If you don't accept, your heart will stop in",
             'onb.seconds': 'seconds', 'onb.accept_q': 'Do you want to accept ?', 'onb.yes': 'Yes', 'onb.no': 'No',
-            'onb.quest_accepted': 'QUEST ACCEPTED', 'onb.you_died': 'YOU DIED', 'onb.refused': '[SYSTEM] The player refused to awaken...', 'onb.try_again': 'TRY AGAIN'
+            'onb.quest_accepted': 'QUEST ACCEPTED', 'onb.you_died': 'YOU DIED', 'onb.refused': '[SYSTEM] The player refused to awaken...', 'onb.try_again': 'TRY AGAIN',
+            // ===== Auth (login/signup modal + account chips) =====
+            "auth.offline_toast": "Offline mode — configure Supabase (js/config.js) for multiplayer.",
+            "auth.offline_alert": "Offline mode: configure Supabase in js/config.js to enable online accounts.",
+            "auth.close": "Close",
+            "auth.subtitle": "Sync your progress · Join the leaderboard",
+            "auth.login": "SIGN IN",
+            "auth.signup": "SIGN UP",
+            "auth.skip": "Continue offline →",
+            "auth.name_ph": "HUNTER NAME",
+            "auth.email_ph": "EMAIL",
+            "auth.pass_ph": "PASSWORD",
+            "auth.signup_btn": "BECOME A HUNTER",
+            "auth.login_btn": "ENTER THE DUNGEON",
+            "auth.err_required": "Email and password required.",
+            "auth.err_pass_short": "Password: 6 characters minimum.",
+            "auth.loading_btn": "SIGNING IN...",
+            "auth.signup_check_email": "Account created! Check your email to confirm.",
+            "auth.waiting_btn": "PENDING...",
+            "auth.welcome_toast": "Welcome, Hunter. Progress synced.",
+            "auth.err_invalid": "Incorrect email or password.",
+            "auth.err_registered": "This email already has an account.",
+            "auth.err_rate": "Too many attempts, try again later.",
+            "auth.logout_confirm": "Sign out?",
+            // ===== Common quest-card labels =====
+            "common.daily": "DAILY", "common.weekly": "WEEKLY", "common.special": "SPECIAL",
+            "common.easy": "EASY", "common.medium": "MEDIUM", "common.hard": "HARD", "common.extreme": "EXTREME",
+            "common.completed": "COMPLETED", "common.duration": "DURATION", "common.difficulty": "DIFFICULTY", "common.sets_reps": "SETS/REPS",
+            // ===== Quest cards (workouts) =====
+            "quest.reward_xp": "REWARD XP", "quest.stat_boost": "STAT BOOST", "quest.start_quest": "START QUEST",
+            "quest.accept_challenge": "ACCEPT CHALLENGE", "quest.view_progress": "VIEW PROGRESS", "quest.progress": "PROGRESS",
+            "quest.push_day_title": "PUSH DAY PROTOCOL",
+            "quest.push_day_desc": "Complete chest, shoulders, and triceps training to increase your pushing power.",
+            "quest.pull_day_title": "PULL DAY PROTOCOL",
+            "quest.pull_day_desc": "Train your back and biceps to develop pulling strength like a true hunter.",
+            "quest.leg_day_title": "LEG DAY DESTROYER",
+            "quest.leg_day_desc": "Build powerful legs that can carry you through any dungeon.",
+            "quest.monarch_trial_title": "SHADOW MONARCH'S TRIAL",
+            "quest.monarch_trial_desc": "Complete all daily quests for 7 consecutive days. Only the strongest survive.",
+            "quest.reps_challenge_title": "100 REPS CHALLENGE",
+            "quest.reps_challenge_desc": "Complete 100 reps of each: Push-ups, Squats, Sit-ups. A trial worthy of S-Rank hunters.",
+            "quest.core_fort_title": "CORE FORTIFICATION",
+            "quest.core_fort_desc": "Strengthen your core to withstand any attack. Essential for hunter survival.",
+            // ===== Dashboard =====
+            "dash.fallback_q1": "Complete 50 Push-ups", "dash.fallback_q2": "Complete 50 Squats", "dash.fallback_q3": "Run 5 kilometers",
+            "dash.level_up": "You have reached Level {level}!",
+            // ===== Progress =====
+            "progress.req_level": "Reach Level {n}", "progress.req_workouts": "Complete {n} Workouts",
+            "progress.req_streak": "{n}-Day Streak", "progress.req_str": "STR ≥ {n}", "progress.ach_unlocked": " Unlocked",
+            // ===== Avatar =====
+            "avatar.updated": "Avatar updated!",
+            // ===== Profile =====
+            "prof.set_notif": "Notifications", "prof.set_notif_desc": "Receive quest reminders and level up alerts",
+            "prof.set_sound": "Sound Effects", "prof.set_sound_desc": "Play sounds for achievements and level ups",
+            "prof.set_particles": "Particle Effects", "prof.set_particles_desc": "Show animated background particles",
+            "prof.set_dark": "Dark Mode", "prof.set_dark_desc": "Use dark theme (default enabled)",
+            "prof.set_rest": "Rest Day Reminders", "prof.set_rest_desc": "Get notified when you should take a rest day",
+            "prof.title_rising": "★ RISING HUNTER ★", "prof.title_awakened": "THE AWAKENED",
+            "prof.title_iron": "🔒 IRON WARRIOR", "prof.title_soldier": "🔒 SHADOW SOLDIER",
+            "prof.title_gate": "🔒 GATE CRUSHER", "prof.title_demon": "🔒 DEMON SLAYER",
+            "prof.title_srank": "🔒 S-RANK HUNTER", "prof.title_monarch": "🔒 SHADOW MONARCH",
+            "prof.rank_badge": "{rank}-RANK HUNTER", "prof.saved": "PROFILE SAVED!"
         }
     };
 
@@ -321,7 +443,7 @@
         setLang: function (lang, opts) {
             this.lang = lang === 'en' ? 'en' : 'fr';
             if (global.Hunter) global.Hunter.setSetting('language', this.lang);
-            this._regenerateQuests();
+            this.syncQuests();
             this.apply();
             this._listeners.forEach(cb => { try { cb(this.lang); } catch (e) {} });
             if (!opts || opts.reload !== false) {
@@ -334,20 +456,59 @@
 
         onChange: function (cb) { this._listeners.push(cb); },
 
-        // Régénère les quêtes du jour dans la nouvelle langue (mêmes exercices, traduits)
-        _regenerateQuests: function () {
+        // Synchronise les quêtes stockées avec la langue courante (mêmes exercices, traduits).
+        // Idempotent et sûr à appeler à chaque chargement de page : corrige aussi le cas
+        // "langue stockée ≠ langue de l'UI" (chargement à froid) en plus du clic FR/EN.
+        syncQuests: function () {
             if (!global.QuestLibrary || !global.localStorage) return;
-            const metaRaw = localStorage.getItem('protocolMeta');
-            if (!metaRaw) return;
+            const lang = this.lang;
+
+            // 1) Quêtes du jour : retraduire EN PLACE via l'id d'exercice.
+            //    L'ordre et les index sont conservés → 'completedDailyQuests' (suivi par index)
+            //    reste valide, et l'XP/series/reps/durée/slName (neutres) ne changent pas.
             try {
-                const meta = JSON.parse(metaRaw);
-                meta.lang = this.lang;
-                const p = global.QuestLibrary.generateProtocol(meta);
-                localStorage.setItem('dailyQuests', JSON.stringify(p.dailyQuests));
-                localStorage.setItem('weeklyQuest', JSON.stringify(p.weeklyQuest));
-                localStorage.setItem('weeklySchedule', JSON.stringify(p.weeklySchedule));
-                localStorage.setItem('nutritionTips', JSON.stringify(p.nutritionTips));
-                localStorage.setItem('protocolMeta', JSON.stringify(p.meta));
+                const dqRaw = localStorage.getItem('dailyQuests');
+                if (dqRaw) {
+                    const dq = JSON.parse(dqRaw);
+                    if (Array.isArray(dq)) {
+                        let changed = false;
+                        dq.forEach(q => {
+                            const ex = q && q.id && global.QuestLibrary.getExercise(q.id);
+                            if (!ex) return;                       // ancien schéma sans id → laissé tel quel
+                            const name = ex[lang];
+                            if (q.name !== name) changed = true;
+                            q.name = name;
+                            q.realName = name;
+                            q.howto = ex[lang === 'en' ? 'hEn' : 'hFr'];
+                            q.muscle = ex[lang === 'en' ? 'mEn' : 'mFr'];
+                            q.description = (q.muscle || '') + (q.target ? ' · ' + q.target : '');
+                        });
+                        if (changed) localStorage.setItem('dailyQuests', JSON.stringify(dq));
+                    }
+                }
+            } catch (e) { /* ignore */ }
+
+            // 2) Hebdo / programme / nutrition : pas d'id → redérivés depuis l'objectif.
+            //    Uniquement si la langue stockée diffère (évite toute dérive au fil des jours).
+            //    On ne réécrit PAS dailyQuests ici (déjà traduit en place, sans reshuffle).
+            try {
+                let meta = null;
+                const metaRaw = localStorage.getItem('protocolMeta');
+                if (metaRaw) {
+                    meta = JSON.parse(metaRaw);
+                } else if (global.Hunter) {
+                    // Pas de meta (ancien repli de setup / génération à la volée) → reconstruite depuis le profil.
+                    const pr = global.Hunter.get('profile') || {};
+                    meta = { objective: pr.objective, fitness: pr.fitness, rank: global.Hunter.get('rank') };
+                }
+                if (meta && meta.lang !== lang) {
+                    meta.lang = lang;
+                    const p = global.QuestLibrary.generateProtocol(meta);
+                    localStorage.setItem('weeklyQuest', JSON.stringify(p.weeklyQuest));
+                    localStorage.setItem('weeklySchedule', JSON.stringify(p.weeklySchedule));
+                    localStorage.setItem('nutritionTips', JSON.stringify(p.nutritionTips));
+                    localStorage.setItem('protocolMeta', JSON.stringify(p.meta));
+                }
             } catch (e) { /* ignore */ }
         },
 

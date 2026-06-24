@@ -17,6 +17,7 @@
     <script src="js/cloud.js"></script>
     <script src="js/ui.js"></script>
     <script src="js/auth-ui.js"></script>
+    <script src="js/auth-gate.js"></script>
     <style>
         body { opacity: 0; animation: fadeIn 0.5s ease-out forwards; overflow-x: hidden; overflow-y: auto; min-height: 100vh; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
@@ -142,7 +143,7 @@
         </div>
     </nav>
 
-    <div class="gym-container" style="align-items: flex-start; padding-top: 90px;">
+    <div class="gym-container" style="align-items: flex-start; padding-top: 120px;">
         <div class="ar-wrap">
             <div class="ar-header">
                 <h1 class="ar-title"><i class="fas fa-khanda" style="color:#9c27b0;"></i> <span data-i18n="ar.title">L'ARÈNE</span></h1>
@@ -201,7 +202,7 @@
                 <!-- Mes défis -->
                 <div class="ar-card">
                     <h3><i class="fas fa-scroll"></i> <span data-i18n="ar.my_challenges">MES DÉFIS</span></h3>
-                    <div id="challengesList"><div class="ar-empty">Chargement...</div></div>
+                    <div id="challengesList"><div class="ar-empty" data-i18n="common.loading">CHARGEMENT...</div></div>
                 </div>
             </div>
         </div>
@@ -221,7 +222,7 @@
         // ============== COMBAT VS (animation cinématique) ==============
         function meFighter() {
             const H = window.Hunter;
-            return { name: H ? H.get('name') : 'Toi', avatar: H ? H.get('avatar') : 'fa-user-ninja', color: H ? H.get('avatarColor') : '#85acb9', power: H ? H.getCombatPower() : 600 };
+            return { name: (H && H.get('name')) || tr('ar.you'), avatar: H ? H.get('avatar') : 'fa-user-ninja', color: H ? H.get('avatarColor') : '#85acb9', power: H ? H.getCombatPower() : 600 };
         }
         function planBattle(myPower, oppPower) {
             const p = myPower / Math.max(1, (myPower + oppPower));
@@ -312,7 +313,7 @@
                 msg.style.color = '#4caf50'; msg.textContent = tr('ar.duel_started') + ' (' + res.opponent.name + ')';
                 if (window.GymUI) GymUI.toast(tr('ar.duel_sent'), 'achievement');
                 loadChallenges();
-            } catch (e) { msg.style.color = '#ff4757'; msg.textContent = e.message || 'Erreur'; }
+            } catch (e) { msg.style.color = '#ff4757'; msg.textContent = e.message || tr('lb.error'); }
             finally { btn.disabled = false; }
         }
 
@@ -382,7 +383,7 @@
                 selectedOpponent = null;
                 loadChallenges();
             } catch (e) {
-                msg.style.color = '#ff4757'; msg.textContent = e.message || 'Erreur';
+                msg.style.color = '#ff4757'; msg.textContent = e.message || tr('lb.error');
             } finally { btn.disabled = false; }
         });
 
@@ -452,8 +453,8 @@
                     if (!c._oppName && Cloud.enabled) {
                         try {
                             const { data } = await Cloud.client.from('profiles').select('name').eq('id', oppId).single();
-                            c._oppName = data ? data.name : 'Hunter';
-                        } catch (e) { c._oppName = 'Hunter'; }
+                            c._oppName = data ? data.name : tr('ar.opponent');
+                        } catch (e) { c._oppName = tr('ar.opponent'); }
                     }
                 }
                 // Réclame la mise des duels gagnés (le gagnant rafle le pot, une seule fois)
@@ -506,6 +507,9 @@
             refresh();
             Cloud.on('auth', refresh);
             Cloud.on('ready', refresh);
+
+            // Re-render le DOM construit en JS lors du changement de langue FR/EN
+            if (window.I18n) I18n.onChange(() => { if (Cloud.enabled && Cloud.isLoggedIn()) loadChallenges(); });
 
             // Rafraîchit la progression des défis au chargement
             if (Cloud.isLoggedIn()) { try { await Cloud.updateChallengeProgress(); } catch(e){} }

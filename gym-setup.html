@@ -522,13 +522,16 @@
             } catch (genError) {
                 console.error('Erreur de génération:', genError);
                 // Repli : protocole par défaut garanti (jamais d'échec visible pour le Hunter)
+                const fbLang = (window.Hunter && Hunter.get('settings') && Hunter.get('settings').language) || 'en';
+                const fbMeta = { objective: objective, fitness: fitness, rank: hunterRank, lang: fbLang };
                 const fallback = (typeof QuestLibrary !== 'undefined')
-                    ? QuestLibrary.generateProtocol({ objective: 'maintain', fitness: 'beginner', rank: hunterRank })
-                    : { dailyQuests: [], weeklyQuest: {}, weeklySchedule: {}, nutritionTips: [] };
+                    ? QuestLibrary.generateProtocol(fbMeta)
+                    : { dailyQuests: [], weeklyQuest: {}, weeklySchedule: {}, nutritionTips: [], meta: fbMeta };
                 localStorage.setItem('dailyQuests', JSON.stringify(fallback.dailyQuests));
                 localStorage.setItem('weeklyQuest', JSON.stringify(fallback.weeklyQuest));
                 localStorage.setItem('weeklySchedule', JSON.stringify(fallback.weeklySchedule));
                 localStorage.setItem('nutritionTips', JSON.stringify(fallback.nutritionTips));
+                localStorage.setItem('protocolMeta', JSON.stringify(fallback.meta || fbMeta));
                 localStorage.setItem('protocolGenerated', 'true');
 
                 document.getElementById('loadingContainer').style.display = 'none';
@@ -537,14 +540,29 @@
             }
         }
 
-        // Continue to dashboard
-        document.getElementById('continueBtn').addEventListener('click', function() {
+        // Continue : connexion/inscription OBLIGATOIRE après les questions, puis gym-accept.
+        function proceedToAccept() {
             document.body.style.transition = 'opacity 0.5s ease-out';
             document.body.style.opacity = '0';
-            
             setTimeout(() => {
                 window.location.href = 'gym-accept.html';
             }, 500);
+        }
+        document.getElementById('continueBtn').addEventListener('click', function() {
+            const cfg = window.isCloudConfigured && window.isCloudConfigured();
+            if (cfg && window.Cloud && window.AuthUI) {
+                // Attend la fin de Cloud.init() (session restaurée) avant de décider.
+                Promise.resolve(Cloud.init && Cloud.init()).then(() => {
+                    if (Cloud.isLoggedIn()) {
+                        proceedToAccept();
+                    } else {
+                        // La progression du setup (nom, rang, profil) est migrée vers le compte à la connexion.
+                        AuthUI.open('login', { mandatory: true, onSuccess: proceedToAccept });
+                    }
+                });
+            } else {
+                proceedToAccept();
+            }
         });
 
         // Initialize particles

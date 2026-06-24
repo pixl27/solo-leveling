@@ -17,6 +17,7 @@
     <script src="js/cloud.js"></script>
     <script src="js/ui.js"></script>
     <script src="js/auth-ui.js"></script>
+    <script src="js/auth-gate.js"></script>
     <style>
         body {
             opacity: 0;
@@ -822,10 +823,11 @@
             document.getElementById('reqStr').classList.toggle('complete', str >= reqs.str);
             
             // Update requirement labels
-            document.querySelector('.requirement-item:nth-child(2) .requirement-label').textContent = `Reach Level ${reqs.level}`;
-            document.querySelector('.requirement-item:nth-child(3) .requirement-label').textContent = `Complete ${reqs.workouts} Workouts`;
-            document.querySelector('.requirement-item:nth-child(4) .requirement-label').textContent = `${reqs.streak}-Day Streak`;
-            document.querySelector('.requirement-item:nth-child(5) .requirement-label').textContent = `STR ≥ ${reqs.str}`;
+            const T = (k, vars) => (window.I18n ? I18n.t(k, vars) : '');
+            document.querySelector('.requirement-item:nth-child(2) .requirement-label').textContent = T('progress.req_level', { n: reqs.level });
+            document.querySelector('.requirement-item:nth-child(3) .requirement-label').textContent = T('progress.req_workouts', { n: reqs.workouts });
+            document.querySelector('.requirement-item:nth-child(4) .requirement-label').textContent = T('progress.req_streak', { n: reqs.streak });
+            document.querySelector('.requirement-item:nth-child(5) .requirement-label').textContent = T('progress.req_str', { n: reqs.str });
 
             // Generate streak calendar
             generateStreakCalendar();
@@ -864,7 +866,8 @@
             const countEl = document.getElementById('achievementCount');
             if (countEl) {
                 const n = ids.filter(id => unlocked.indexOf(id) >= 0).length;
-                countEl.textContent = n + ' / ' + ids.length + (L === 'fr' ? ' débloqués' : ' Unlocked');
+                const suffix = (window.I18n ? I18n.t('progress.ach_unlocked') : ' Unlocked');
+                countEl.textContent = n + ' / ' + ids.length + suffix;
             }
         }
 
@@ -917,6 +920,8 @@
         }
 
         loadHunterData();
+        // Re-render rank labels + achievements on FR/EN toggle
+        if (window.I18n) I18n.onChange(loadHunterData);
     </script>
     <script src="js/solo-leveling.js"></script>
 </body>

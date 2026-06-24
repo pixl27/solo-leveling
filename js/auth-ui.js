@@ -15,6 +15,14 @@
     const Cloud = global.Cloud;
     const AuthUI = { _booted: false };
 
+    // Raccourci de traduction : retombe sur le texte FR fourni si I18n n'est pas chargé.
+    function t(key, fallback, vars) {
+        if (global.I18n && typeof global.I18n.t === 'function') return global.I18n.t(key, vars);
+        let s = fallback;
+        if (vars) for (const k in vars) s = s.replace('{' + k + '}', vars[k]);
+        return s;
+    }
+
     function injectStyles() {
         if (document.getElementById('sg-auth-styles')) return;
         const s = document.createElement('style');
@@ -50,12 +58,15 @@
         document.head.appendChild(s);
     }
 
-    AuthUI.open = function (mode) {
+    AuthUI._openBack = null;   // référence vers la modale ouverte (pour re-traduction sur bascule de langue)
+
+    AuthUI.open = function (mode, opts) {
+        opts = opts || {};
         injectStyles();
         if (!global.isCloudConfigured || !global.isCloudConfigured()) {
             global.GymUI && global.GymUI.toast
-                ? global.GymUI.toast('Mode hors-ligne — configure Supabase (js/config.js) pour le multijoueur.', 'stat')
-                : alert('Mode hors-ligne : configure Supabase dans js/config.js pour activer les comptes en ligne.');
+                ? global.GymUI.toast(t('auth.offline_toast', 'Mode hors-ligne — configure Supabase (js/config.js) pour le multijoueur.'), 'stat')
+                : alert(t('auth.offline_alert', 'Mode hors-ligne : configure Supabase dans js/config.js pour activer les comptes en ligne.'));
             return;
         }
         let tab = mode || 'login';
@@ -63,36 +74,47 @@
         back.className = 'sg-auth-backdrop';
         back.innerHTML = `
             <div class="sg-auth-modal">
-                <button class="sg-auth-close" aria-label="Fermer">&times;</button>
+                <button class="sg-auth-close" aria-label="${t('auth.close', 'Fermer')}">&times;</button>
                 <h2>SHADOW GYM</h2>
-                <div class="sg-auth-sub">Synchronise ta progression · Rejoins le classement</div>
+                <div class="sg-auth-sub" data-i18n="auth.subtitle">Synchronise ta progression · Rejoins le classement</div>
                 <div class="sg-auth-tabs">
-                    <button class="sg-auth-tab" data-tab="login">CONNEXION</button>
-                    <button class="sg-auth-tab" data-tab="signup">INSCRIPTION</button>
+                    <button class="sg-auth-tab" data-tab="login" data-i18n="auth.login">CONNEXION</button>
+                    <button class="sg-auth-tab" data-tab="signup" data-i18n="auth.signup">INSCRIPTION</button>
                 </div>
                 <div class="sg-auth-body"></div>
                 <div class="sg-auth-err"></div>
-                <button class="sg-auth-skip">Continuer hors-ligne →</button>
+                <button class="sg-auth-skip" data-i18n="auth.skip">Continuer hors-ligne →</button>
             </div>`;
         document.body.appendChild(back);
+        if (global.I18n) I18n.apply(back);
+        AuthUI._openBack = back;
 
         const body = back.querySelector('.sg-auth-body');
         const err = back.querySelector('.sg-auth-err');
-        const close = () => back.remove();
-        back.querySelector('.sg-auth-close').onclick = close;
-        back.querySelector('.sg-auth-skip').onclick = close;
-        back.onclick = (e) => { if (e.target === back) close(); };
+        const close = () => { back.remove(); if (AuthUI._openBack === back) AuthUI._openBack = null; };
+        const closeBtn = back.querySelector('.sg-auth-close');
+        const skipBtn = back.querySelector('.sg-auth-skip');
+        if (opts.mandatory) {
+            // Connexion obligatoire : aucune échappatoire (ni croix, ni « continuer hors-ligne », ni clic extérieur).
+            if (closeBtn) closeBtn.style.display = 'none';
+            if (skipBtn) skipBtn.style.display = 'none';
+        } else {
+            closeBtn.onclick = close;
+            skipBtn.onclick = close;
+            back.onclick = (e) => { if (e.target === back) close(); };
+        }
 
         function render() {
             back.querySelectorAll('.sg-auth-tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
             err.textContent = '';
-            body.innerHTML = (tab === 'signup' ? '<input class="sg-auth-field" id="sgName" placeholder="NOM DE HUNTER" maxlength="24">' : '')
-                + '<input class="sg-auth-field" id="sgEmail" type="email" placeholder="EMAIL" autocomplete="email">'
-                + '<input class="sg-auth-field" id="sgPass" type="password" placeholder="MOT DE PASSE" autocomplete="current-password">'
-                + `<button class="sg-auth-btn" id="sgSubmit">${tab === 'signup' ? 'DEVENIR HUNTER' : 'ENTRER DANS LE DONJON'}</button>`;
+            body.innerHTML = (tab === 'signup' ? `<input class="sg-auth-field" id="sgName" placeholder="${t('auth.name_ph', 'NOM DE HUNTER')}" maxlength="24">` : '')
+                + `<input class="sg-auth-field" id="sgEmail" type="email" placeholder="${t('auth.email_ph', 'EMAIL')}" autocomplete="email">`
+                + `<input class="sg-auth-field" id="sgPass" type="password" placeholder="${t('auth.pass_ph', 'MOT DE PASSE')}" autocomplete="current-password">`
+                + `<button class="sg-auth-btn" id="sgSubmit">${tab === 'signup' ? t('auth.signup_btn', 'DEVENIR HUNTER') : t('auth.login_btn', 'ENTRER DANS LE DONJON')}</button>`;
             body.querySelector('#sgSubmit').onclick = submit;
             body.querySelectorAll('.sg-auth-field').forEach(f => f.addEventListener('keydown', e => { if (e.key === 'Enter') submit(); }));
         }
+        AuthUI._openRender = render;   // exposé pour re-rendu sur bascule de langue
 
         async function submit() {
             const email = (body.querySelector('#sgEmail') || {}).value;
@@ -100,28 +122,29 @@
             const name = (body.querySelector('#sgName') || {}).value;
             const btn = body.querySelector('#sgSubmit');
             err.textContent = '';
-            if (!email || !pass) { err.textContent = 'Email et mot de passe requis.'; return; }
-            if (pass.length < 6) { err.textContent = 'Mot de passe : 6 caractères minimum.'; return; }
-            btn.disabled = true; btn.textContent = 'CONNEXION...';
+            if (!email || !pass) { err.textContent = t('auth.err_required', 'Email et mot de passe requis.'); return; }
+            if (pass.length < 6) { err.textContent = t('auth.err_pass_short', 'Mot de passe : 6 caractères minimum.'); return; }
+            btn.disabled = true; btn.textContent = t('auth.loading_btn', 'CONNEXION...');
             try {
                 if (tab === 'signup') {
                     const r = await Cloud.signUp(email, pass, name || undefined);
                     if (r && r.user && !r.session) {
                         err.style.color = '#4caf50';
-                        err.textContent = 'Compte créé ! Vérifie ton email pour confirmer.';
-                        btn.textContent = 'EN ATTENTE...';
+                        err.textContent = t('auth.signup_check_email', 'Compte créé ! Vérifie ton email pour confirmer.');
+                        btn.textContent = t('auth.waiting_btn', 'EN ATTENTE...');
                         return;
                     }
                 } else {
                     await Cloud.signIn(email, pass);
                 }
-                global.GymUI && global.GymUI.toast && global.GymUI.toast('Bienvenue, Hunter. Progression synchronisée.', 'xp');
-                close();
+                global.GymUI && global.GymUI.toast && global.GymUI.toast(t('auth.welcome_toast', 'Bienvenue, Hunter. Progression synchronisée.'), 'xp');
                 AuthUI._refreshChips();
+                if (typeof opts.onSuccess === 'function') opts.onSuccess();
+                else close();
             } catch (e) {
                 err.style.color = '';
                 err.textContent = translateErr(e.message || 'Erreur');
-                btn.disabled = false; btn.textContent = tab === 'signup' ? 'DEVENIR HUNTER' : 'ENTRER DANS LE DONJON';
+                btn.disabled = false; btn.textContent = tab === 'signup' ? t('auth.signup_btn', 'DEVENIR HUNTER') : t('auth.login_btn', 'ENTRER DANS LE DONJON');
             }
         }
 
@@ -130,9 +153,9 @@
     };
 
     function translateErr(m) {
-        if (/Invalid login/i.test(m)) return 'Email ou mot de passe incorrect.';
-        if (/already registered/i.test(m)) return 'Cet email a déjà un compte.';
-        if (/rate limit/i.test(m)) return 'Trop de tentatives, réessaie plus tard.';
+        if (/Invalid login/i.test(m)) return t('auth.err_invalid', 'Email ou mot de passe incorrect.');
+        if (/already registered/i.test(m)) return t('auth.err_registered', 'Cet email a déjà un compte.');
+        if (/rate limit/i.test(m)) return t('auth.err_rate', 'Trop de tentatives, réessaie plus tard.');
         return m;
     }
 
@@ -148,7 +171,7 @@
         this._renderChip(chip);
         chip.onclick = () => {
             if (Cloud && Cloud.isLoggedIn()) {
-                if (confirm('Se déconnecter ?')) Cloud.signOut().then(() => this._refreshChips());
+                if (confirm(t('auth.logout_confirm', 'Se déconnecter ?'))) Cloud.signOut().then(() => this._refreshChips());
             } else {
                 this.open('login');
             }
@@ -157,10 +180,21 @@
     AuthUI._renderChip = function (chip) {
         const online = Cloud && Cloud.isLoggedIn();
         chip.innerHTML = online
-            ? '<i class="fas fa-circle" style="color:#4caf50;font-size:.6em;"></i> EN LIGNE'
-            : '<i class="fas fa-circle" style="color:#888;font-size:.6em;"></i> HORS-LIGNE';
+            ? '<i class="fas fa-circle" style="color:#4caf50;font-size:.6em;"></i> ' + t('common.online', 'EN LIGNE')
+            : '<i class="fas fa-circle" style="color:#888;font-size:.6em;"></i> ' + t('common.offline', 'HORS-LIGNE');
     };
     AuthUI._refreshChips = function () { this._chips.forEach(c => this._renderChip(c)); };
+
+    // Re-traduit les puces et la modale ouverte au changement de langue FR/EN.
+    AuthUI._onLangChange = function () {
+        AuthUI._refreshChips();
+        if (AuthUI._openBack) {
+            if (global.I18n) I18n.apply(AuthUI._openBack);
+            if (typeof AuthUI._openRender === 'function') AuthUI._openRender();
+            const closeBtn = AuthUI._openBack.querySelector('.sg-auth-close');
+            if (closeBtn) closeBtn.setAttribute('aria-label', t('auth.close', 'Fermer'));
+        }
+    };
 
     // ==================== BOOT ====================
     function boot() {
@@ -170,6 +204,7 @@
             Cloud.on('auth', () => AuthUI._refreshChips());
             Cloud.on('ready', () => AuthUI._refreshChips());
         }
+        if (global.I18n && typeof global.I18n.onChange === 'function') global.I18n.onChange(AuthUI._onLangChange);
     }
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
     else boot();

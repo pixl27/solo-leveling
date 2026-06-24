@@ -101,7 +101,7 @@
             back.onclick = e => { if (e.target === back) close(); };
             back.querySelector('#sgAvSave').onclick = () => {
                 if (H && H.setAvatar) H.setAvatar(icon, color);
-                if (global.GymUI && GymUI.toast) GymUI.toast(isFr ? 'Avatar mis à jour !' : 'Avatar updated!', 'xp');
+                if (global.GymUI && GymUI.toast) GymUI.toast(global.I18n ? I18n.t('avatar.updated') : 'Avatar updated!', 'xp');
                 if (opts.onSave) opts.onSave(icon, color);
                 close();
             };

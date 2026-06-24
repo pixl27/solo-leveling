@@ -17,6 +17,7 @@
     <script src="js/cloud.js"></script>
     <script src="js/ui.js"></script>
     <script src="js/auth-ui.js"></script>
+    <script src="js/auth-gate.js"></script>
     <script src="js/avatars.js"></script>
     <style>
         body {
@@ -645,14 +646,14 @@
                 <div class="profile-section">
                     <div class="section-title"><i class="fas fa-tag"></i> <span data-i18n="prof.hunter_title">HUNTER TITLE</span></div>
                     <div class="title-grid">
-                        <div class="title-option selected" data-title="★ RISING HUNTER ★" onclick="selectTitle(this)">★ RISING HUNTER ★</div>
-                        <div class="title-option" data-title="THE AWAKENED" onclick="selectTitle(this)">THE AWAKENED</div>
-                        <div class="title-option locked" data-title="IRON WARRIOR">🔒 IRON WARRIOR</div>
-                        <div class="title-option locked" data-title="SHADOW SOLDIER">🔒 SHADOW SOLDIER</div>
-                        <div class="title-option locked" data-title="GATE CRUSHER">🔒 GATE CRUSHER</div>
-                        <div class="title-option locked" data-title="DEMON SLAYER">🔒 DEMON SLAYER</div>
-                        <div class="title-option locked" data-title="S-RANK HUNTER">🔒 S-RANK HUNTER</div>
-                        <div class="title-option locked" data-title="SHADOW MONARCH">🔒 SHADOW MONARCH</div>
+                        <div class="title-option selected" data-title="★ RISING HUNTER ★" onclick="selectTitle(this)" data-i18n="prof.title_rising">★ RISING HUNTER ★</div>
+                        <div class="title-option" data-title="THE AWAKENED" onclick="selectTitle(this)" data-i18n="prof.title_awakened">THE AWAKENED</div>
+                        <div class="title-option locked" data-title="IRON WARRIOR" data-i18n="prof.title_iron">🔒 IRON WARRIOR</div>
+                        <div class="title-option locked" data-title="SHADOW SOLDIER" data-i18n="prof.title_soldier">🔒 SHADOW SOLDIER</div>
+                        <div class="title-option locked" data-title="GATE CRUSHER" data-i18n="prof.title_gate">🔒 GATE CRUSHER</div>
+                        <div class="title-option locked" data-title="DEMON SLAYER" data-i18n="prof.title_demon">🔒 DEMON SLAYER</div>
+                        <div class="title-option locked" data-title="S-RANK HUNTER" data-i18n="prof.title_srank">🔒 S-RANK HUNTER</div>
+                        <div class="title-option locked" data-title="SHADOW MONARCH" data-i18n="prof.title_monarch">🔒 SHADOW MONARCH</div>
                     </div>
                 </div>
 
@@ -669,36 +670,36 @@
                     <div class="settings-grid">
                         <div class="setting-row">
                             <div class="setting-info">
-                                <div class="setting-name">Notifications</div>
-                                <div class="setting-desc">Receive quest reminders and level up alerts</div>
+                                <div class="setting-name" data-i18n="prof.set_notif">Notifications</div>
+                                <div class="setting-desc" data-i18n="prof.set_notif_desc">Receive quest reminders and level up alerts</div>
                             </div>
                             <div class="toggle-switch active" onclick="toggleSetting(this)"></div>
                         </div>
                         <div class="setting-row">
                             <div class="setting-info">
-                                <div class="setting-name">Sound Effects</div>
-                                <div class="setting-desc">Play sounds for achievements and level ups</div>
+                                <div class="setting-name" data-i18n="prof.set_sound">Sound Effects</div>
+                                <div class="setting-desc" data-i18n="prof.set_sound_desc">Play sounds for achievements and level ups</div>
                             </div>
                             <div class="toggle-switch active" onclick="toggleSetting(this)"></div>
                         </div>
                         <div class="setting-row">
                             <div class="setting-info">
-                                <div class="setting-name">Particle Effects</div>
-                                <div class="setting-desc">Show animated background particles</div>
+                                <div class="setting-name" data-i18n="prof.set_particles">Particle Effects</div>
+                                <div class="setting-desc" data-i18n="prof.set_particles_desc">Show animated background particles</div>
                             </div>
                             <div class="toggle-switch active" onclick="toggleSetting(this)"></div>
                         </div>
                         <div class="setting-row">
                             <div class="setting-info">
-                                <div class="setting-name">Dark Mode</div>
-                                <div class="setting-desc">Use dark theme (default enabled)</div>
+                                <div class="setting-name" data-i18n="prof.set_dark">Dark Mode</div>
+                                <div class="setting-desc" data-i18n="prof.set_dark_desc">Use dark theme (default enabled)</div>
                             </div>
                             <div class="toggle-switch active" onclick="toggleSetting(this)"></div>
                         </div>
                         <div class="setting-row">
                             <div class="setting-info">
-                                <div class="setting-name">Rest Day Reminders</div>
-                                <div class="setting-desc">Get notified when you should take a rest day</div>
+                                <div class="setting-name" data-i18n="prof.set_rest">Rest Day Reminders</div>
+                                <div class="setting-desc" data-i18n="prof.set_rest_desc">Get notified when you should take a rest day</div>
                             </div>
                             <div class="toggle-switch" onclick="toggleSetting(this)"></div>
                         </div>
@@ -743,6 +744,21 @@
         }
 
         createBackgroundParticles();
+
+        // Helper i18n + correspondance titre (data-title canonique EN) -> clé de traduction
+        const tr = (k, v) => (window.I18n ? I18n.t(k, v) : k);
+        const TITLE_KEYS = {
+            '★ RISING HUNTER ★': 'prof.title_rising',
+            'THE AWAKENED': 'prof.title_awakened',
+            'IRON WARRIOR': 'prof.title_iron',
+            'SHADOW SOLDIER': 'prof.title_soldier',
+            'GATE CRUSHER': 'prof.title_gate',
+            'DEMON SLAYER': 'prof.title_demon',
+            'S-RANK HUNTER': 'prof.title_srank',
+            'SHADOW MONARCH': 'prof.title_monarch'
+        };
+        // Affiche un titre traduit (sans le cadenas des verrouillés)
+        const titleLabel = (t) => TITLE_KEYS[t] ? tr(TITLE_KEYS[t]).replace(/^🔒\s*/, '') : t;
 
         // Équipement réel porté (depuis la Forge) — remplace l'ancien affichage statique
         function renderProfileGear() {
@@ -807,7 +823,7 @@
 
             // Profile header
             document.getElementById('hunterName').textContent = hunterName;
-            document.getElementById('hunterTitle').textContent = hunterTitle;
+            document.getElementById('hunterTitle').textContent = titleLabel(hunterTitle);
 
             // Avatar (icône + couleur personnalisées)
             const avIcon = (window.Hunter && Hunter.get('avatar')) || 'fa-user-ninja';
@@ -824,15 +840,7 @@
             document.getElementById('endValue').textContent = end;
             document.getElementById('vitValue').textContent = vit;
 
-            // Rank badge
-            const rankNames = {
-                'E': 'E-RANK HUNTER',
-                'D': 'D-RANK HUNTER',
-                'C': 'C-RANK HUNTER',
-                'B': 'B-RANK HUNTER',
-                'A': 'A-RANK HUNTER',
-                'S': 'S-RANK HUNTER'
-            };
+            // Rank badge (libellé traduit, ex. "E-RANK HUNTER" / "HUNTER RANG E")
             const rankColors = {
                 'E': '#888',
                 'D': '#4caf50',
@@ -842,7 +850,7 @@
                 'S': '#ffd700'
             };
             const rankBadge = document.getElementById('rankBadge');
-            rankBadge.textContent = rankNames[rank];
+            rankBadge.textContent = tr('prof.rank_badge', { rank: rank });
             rankBadge.style.color = rankColors[rank];
             rankBadge.style.borderColor = rankColors[rank];
 
@@ -863,7 +871,7 @@
             element.classList.add('selected');
             
             const title = element.dataset.title;
-            document.getElementById('hunterTitle').textContent = title;
+            document.getElementById('hunterTitle').textContent = titleLabel(title);
             localStorage.setItem('hunterTitle', title);
         }
 
@@ -905,7 +913,7 @@
                 z-index: 1000;
                 box-shadow: 0 0 30px rgba(0, 255, 98, 0.5);
             `;
-            notification.textContent = 'PROFILE SAVED!';
+            notification.textContent = tr('prof.saved');
             document.body.appendChild(notification);
             
             setTimeout(() => notification.remove(), 2000);
@@ -950,6 +958,10 @@
         }
 
         loadProfile();
+
+        // Re-render le DOM construit en JS lors du changement de langue FR/EN
+        // (les attributs data-i18n du markup statique sont gérés par I18n.apply)
+        if (window.I18n) I18n.onChange(() => { loadProfile(); renderProfileGear(); renderRankPerks(); });
     </script>
     <script src="js/solo-leveling.js"></script>
 </body>

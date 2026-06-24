@@ -17,6 +17,7 @@
     <script src="js/cloud.js"></script>
     <script src="js/ui.js"></script>
     <script src="js/auth-ui.js"></script>
+    <script src="js/auth-gate.js"></script>
     <style>
         body {
             opacity: 0;
@@ -797,6 +798,8 @@
 
         // Load AI-generated quests from localStorage
         function loadDailyQuests() {
+            // Aligne les quêtes stockées sur la langue courante (corrige le FR figé en UI EN).
+            if (window.I18n && I18n.syncQuests) I18n.syncQuests();
             const dailyQuestsJSON = localStorage.getItem('dailyQuests');
             const weeklyQuestJSON = localStorage.getItem('weeklyQuest');
             const weeklyScheduleJSON = localStorage.getItem('weeklySchedule');
@@ -848,25 +851,26 @@
                     <div class="daily-quest-item" data-quest-index="0">
                         <div class="quest-info">
                             <div class="quest-check"><i class="fas fa-check"></i></div>
-                            <span class="quest-name">Complete 50 Push-ups</span>
+                            <span class="quest-name" data-i18n="dash.fallback_q1">Complete 50 Push-ups</span>
                         </div>
                         <span class="quest-xp">+20 XP</span>
                     </div>
                     <div class="daily-quest-item" data-quest-index="1">
                         <div class="quest-info">
                             <div class="quest-check"><i class="fas fa-check"></i></div>
-                            <span class="quest-name">Complete 50 Squats</span>
+                            <span class="quest-name" data-i18n="dash.fallback_q2">Complete 50 Squats</span>
                         </div>
                         <span class="quest-xp">+20 XP</span>
                     </div>
                     <div class="daily-quest-item" data-quest-index="2">
                         <div class="quest-info">
                             <div class="quest-check"><i class="fas fa-check"></i></div>
-                            <span class="quest-name">Run 5 kilometers</span>
+                            <span class="quest-name" data-i18n="dash.fallback_q3">Run 5 kilometers</span>
                         </div>
                         <span class="quest-xp">+30 XP</span>
                     </div>
                 `;
+                if (window.I18n) I18n.apply(questList);
                 document.getElementById('questProgress').textContent = '0/3';
                 attachQuestClickHandlers();
             }
@@ -973,6 +977,9 @@
         }
         renderGlobalWeekly();
 
+        // Re-render quest/activity DOM built in JS when the FR/EN toggle fires.
+        if (window.I18n) I18n.onChange(() => { loadDailyQuests(); renderGlobalWeekly(); });
+
         // Quest completion handled in attachQuestClickHandlers()
 
         function updateQuestProgress() {
@@ -992,7 +999,7 @@
                     <i class="fas fa-check-circle" style="color: #00ff62;"></i>
                 </div>
                 <div class="activity-text">${text} <span style="color: #85acb9;">+${xp} XP</span></div>
-                <div class="activity-time">Just now</div>
+                <div class="activity-time">${window.I18n ? I18n.t('dash.just_now') : 'Just now'}</div>
             `;
             activityList.insertBefore(item, activityList.firstChild);
         }
@@ -1034,7 +1041,7 @@
 
         function showLevelUpNotification(level) {
             const notification = document.getElementById('levelUpNotification');
-            document.getElementById('levelUpMessage').textContent = `You have reached Level ${level}!`;
+            document.getElementById('levelUpMessage').textContent = window.I18n ? I18n.t('dash.level_up', { level: level }) : `You have reached Level ${level}!`;
             notification.classList.add('show');
             
             // Create dramatic effect

@@ -5,7 +5,7 @@
  *   - Statique même origine   → cache d'abord + rafraîchissement en arrière-plan
  *   - Externe (CDN, Supabase) → réseau direct (non intercepté)
  */
-const CACHE = 'shadow-gym-v5';
+const CACHE = 'shadow-gym-v6';
 
 const APP_SHELL = [
     'start.html',
@@ -14,7 +14,7 @@ const APP_SHELL = [
     'gym-leaderboard.html', 'gym-challenges.html', 'gym-guilds.html', 'gym-inventory.html',
     'css/solo-leveling.css', 'css/gym.css',
     'js/config.js', 'js/store.js', 'js/equipment.js', 'js/i18n.js', 'js/cloud.js', 'js/ui.js',
-    'js/auth-ui.js', 'js/avatars.js', 'js/quests.js', 'js/solo-leveling.js',
+    'js/auth-ui.js', 'js/auth-gate.js', 'js/avatars.js', 'js/quests.js', 'js/solo-leveling.js',
     'icon.svg', 'manifest.json'
 ];
 

@@ -17,6 +17,7 @@
     <script src="js/cloud.js"></script>
     <script src="js/ui.js"></script>
     <script src="js/auth-ui.js"></script>
+    <script src="js/auth-gate.js"></script>
     <style>
         body { opacity: 0; animation: fadeIn 0.5s ease-out forwards; overflow-x: hidden; overflow-y: auto; min-height: 100vh; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
@@ -61,7 +62,8 @@
         .fg-btn { width:100%; padding:11px; background:rgba(255,215,0,.12); border:1px solid #ffd700; color:#fff; letter-spacing:2px;
             cursor:pointer; font-family:inherit; font-size:.85em; transition:all .2s; }
         .fg-btn:hover { background:rgba(255,215,0,.28); box-shadow:0 0 18px rgba(255,215,0,.4); }
-        .fg-btn:disabled { opacity:.4; cursor:not-allowed; box-shadow:none; }
+        /* Désactivé : grisé lisible (pas un fondu à ~40% qui rend le libellé illisible) */
+        .fg-btn:disabled { opacity:1; cursor:not-allowed; box-shadow:none; color:rgba(255,255,255,.78); background:rgba(255,255,255,.05); }
 
         /* Sac */
         .fg-bag { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:14px; }
@@ -82,6 +84,8 @@
         .fg-tools { display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; }
 
         @media (max-width: 1200px) { .gym-container { padding-top: 190px !important; } }
+        /* Bande desktop où la nav fixe passe sur 2 lignes : réserve assez pour ne pas masquer le titre */
+        @media (min-width: 1201px) and (max-width: 1500px) { .gym-container { padding-top: 140px !important; } }
         @media (max-width: 600px) { .fg-wrap { padding: 8px; } .fg-card { padding: 14px; } .fg-title { font-size: 1.5em; letter-spacing: 2px; } }
     </style>
 </head>
@@ -114,7 +118,7 @@
         </div>
     </nav>
 
-    <div class="gym-container" style="align-items: flex-start; padding-top: 90px;">
+    <div class="gym-container" style="align-items: flex-start; padding-top: 120px;">
         <div class="fg-wrap">
             <div class="fg-header">
                 <h1 class="fg-title"><i class="fas fa-hammer" style="color:#ffd700;"></i> <span data-i18n="inv.title">LA FORGE</span></h1>
@@ -184,7 +188,7 @@
             ['STR','AGI','END','VIT'].forEach(s => { if(b[s]) chips.push(`<span class="fg-chip" style="border-color:${STAT_COLORS[s]};color:${STAT_COLORS[s]};">+${b[s]} ${s}</span>`); });
             if(b.xpPct) chips.push(`<span class="fg-chip" style="border-color:#9c27b0;color:#9c27b0;">+${b.xpPct}% XP</span>`);
             if(b.power) chips.push(`<span class="fg-chip" style="border-color:#85acb9;color:#85acb9;"><i class="fas fa-bolt"></i> +${b.power} ${t('inv.power')}</span>`);
-            document.getElementById('bonusChips').innerHTML = chips.length ? chips.join('') : `<span style="color:rgba(255,255,255,.35);font-size:.82em;">${t('inv.no_bonus')}</span>`;
+            document.getElementById('bonusChips').innerHTML = chips.length ? chips.join('') : `<span style="color:rgba(255,255,255,.55);font-size:.82em;">${t('inv.no_bonus')}</span>`;
         }
 
         function renderSlots(){
@@ -196,7 +200,7 @@
                     return `<div class="fg-slot">
                         <div class="fg-slot-ic fg-slot-empty" style="border-color:rgba(255,255,255,.12);"><i class="fas ${slotInfo.icon}"></i></div>
                         <div class="fg-slot-label">${E.slotName(slot)}</div>
-                        <div class="fg-slot-name" style="color:rgba(255,255,255,.3);">${t('inv.empty_slot')}</div>
+                        <div class="fg-slot-name" style="color:rgba(255,255,255,.5);">${t('inv.empty_slot')}</div>
                     </div>`;
                 }
                 const col = E.rarityColor(it.rarity);

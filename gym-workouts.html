@@ -17,6 +17,7 @@
     <script src="js/cloud.js"></script>
     <script src="js/ui.js"></script>
     <script src="js/auth-ui.js"></script>
+    <script src="js/auth-gate.js"></script>
     <style>
         body {
             opacity: 0;
@@ -494,10 +495,10 @@
                     <div id="defaultQuestsContainer">
                     <!-- Daily Quest: Push Day -->
                     <div class="workout-quest" data-type="daily">
-                        <span class="quest-badge badge-daily">DAILY</span>
+                        <span class="quest-badge badge-daily" data-i18n="common.daily">DAILY</span>
                         <div class="quest-icon"><i class="fas fa-fist-raised"></i></div>
-                        <h3 class="quest-title">PUSH DAY PROTOCOL</h3>
-                        <p class="quest-desc">Complete chest, shoulders, and triceps training to increase your pushing power.</p>
+                        <h3 class="quest-title" data-i18n="quest.push_day_title">PUSH DAY PROTOCOL</h3>
+                        <p class="quest-desc" data-i18n="quest.push_day_desc">Complete chest, shoulders, and triceps training to increase your pushing power.</p>
                         
                         <div class="difficulty-indicator">
                             <div class="difficulty-dot active"></div>
@@ -509,20 +510,20 @@
 
                         <div class="quest-details">
                             <div class="detail-item">
-                                <div class="detail-label">REWARD XP</div>
+                                <div class="detail-label" data-i18n="quest.reward_xp">REWARD XP</div>
                                 <div class="detail-value xp">+50 XP</div>
                             </div>
                             <div class="detail-item">
-                                <div class="detail-label">STAT BOOST</div>
+                                <div class="detail-label" data-i18n="quest.stat_boost">STAT BOOST</div>
                                 <div class="detail-value stat-boost">+2 STR</div>
                             </div>
                             <div class="detail-item">
-                                <div class="detail-label">DURATION</div>
+                                <div class="detail-label" data-i18n="common.duration">DURATION</div>
                                 <div class="detail-value">45 MIN</div>
                             </div>
                             <div class="detail-item">
-                                <div class="detail-label">DIFFICULTY</div>
-                                <div class="detail-value" style="color: #4caf50;">EASY</div>
+                                <div class="detail-label" data-i18n="common.difficulty">DIFFICULTY</div>
+                                <div class="detail-value" style="color: #4caf50;" data-i18n="common.easy">EASY</div>
                             </div>
                         </div>
 
@@ -546,16 +547,16 @@
                         </div>
 
                         <div class="quest-actions">
-                            <button class="quest-btn primary" onclick="startQuest(this)">START QUEST</button>
+                            <button class="quest-btn primary" onclick="startQuest(this)" data-i18n="quest.start_quest">START QUEST</button>
                         </div>
                     </div>
 
                     <!-- Daily Quest: Pull Day -->
                     <div class="workout-quest" data-type="daily">
-                        <span class="quest-badge badge-daily">DAILY</span>
+                        <span class="quest-badge badge-daily" data-i18n="common.daily">DAILY</span>
                         <div class="quest-icon"><i class="fas fa-dumbbell"></i></div>
-                        <h3 class="quest-title">PULL DAY PROTOCOL</h3>
-                        <p class="quest-desc">Train your back and biceps to develop pulling strength like a true hunter.</p>
+                        <h3 class="quest-title" data-i18n="quest.pull_day_title">PULL DAY PROTOCOL</h3>
+                        <p class="quest-desc" data-i18n="quest.pull_day_desc">Train your back and biceps to develop pulling strength like a true hunter.</p>
                         
                         <div class="difficulty-indicator">
                             <div class="difficulty-dot active"></div>
@@ -567,20 +568,20 @@
 
                         <div class="quest-details">
                             <div class="detail-item">
-                                <div class="detail-label">REWARD XP</div>
+                                <div class="detail-label" data-i18n="quest.reward_xp">REWARD XP</div>
                                 <div class="detail-value xp">+60 XP</div>
                             </div>
                             <div class="detail-item">
-                                <div class="detail-label">STAT BOOST</div>
+                                <div class="detail-label" data-i18n="quest.stat_boost">STAT BOOST</div>
                                 <div class="detail-value stat-boost">+2 STR</div>
                             </div>
                             <div class="detail-item">
-                                <div class="detail-label">DURATION</div>
+                                <div class="detail-label" data-i18n="common.duration">DURATION</div>
                                 <div class="detail-value">50 MIN</div>
                             </div>
                             <div class="detail-item">
-                                <div class="detail-label">DIFFICULTY</div>
-                                <div class="detail-value" style="color: #ff9800;">MEDIUM</div>
+                                <div class="detail-label" data-i18n="common.difficulty">DIFFICULTY</div>
+                                <div class="detail-value" style="color: #ff9800;" data-i18n="common.medium">MEDIUM</div>
                             </div>
                         </div>
 
@@ -604,16 +605,16 @@
                         </div>
 
                         <div class="quest-actions">
-                            <button class="quest-btn primary" onclick="startQuest(this)">START QUEST</button>
+                            <button class="quest-btn primary" onclick="startQuest(this)" data-i18n="quest.start_quest">START QUEST</button>
                         </div>
                     </div>
 
                     <!-- Daily Quest: Leg Day -->
                     <div class="workout-quest" data-type="daily">
-                        <span class="quest-badge badge-daily">DAILY</span>
+                        <span class="quest-badge badge-daily" data-i18n="common.daily">DAILY</span>
                         <div class="quest-icon"><i class="fas fa-running"></i></div>
-                        <h3 class="quest-title">LEG DAY DESTROYER</h3>
-                        <p class="quest-desc">Build powerful legs that can carry you through any dungeon.</p>
+                        <h3 class="quest-title" data-i18n="quest.leg_day_title">LEG DAY DESTROYER</h3>
+                        <p class="quest-desc" data-i18n="quest.leg_day_desc">Build powerful legs that can carry you through any dungeon.</p>
                         
                         <div class="difficulty-indicator">
                             <div class="difficulty-dot active hard"></div>
@@ -625,20 +626,20 @@
 
                         <div class="quest-details">
                             <div class="detail-item">
-                                <div class="detail-label">REWARD XP</div>
+                                <div class="detail-label" data-i18n="quest.reward_xp">REWARD XP</div>
                                 <div class="detail-value xp">+80 XP</div>
                             </div>
                             <div class="detail-item">
-                                <div class="detail-label">STAT BOOST</div>
+                                <div class="detail-label" data-i18n="quest.stat_boost">STAT BOOST</div>
                                 <div class="detail-value stat-boost">+3 AGI</div>
                             </div>
                             <div class="detail-item">
-                                <div class="detail-label">DURATION</div>
+                                <div class="detail-label" data-i18n="common.duration">DURATION</div>
                                 <div class="detail-value">60 MIN</div>
                             </div>
                             <div class="detail-item">
-                                <div class="detail-label">DIFFICULTY</div>
-                                <div class="detail-value" style="color: #f44336;">HARD</div>
+                                <div class="detail-label" data-i18n="common.difficulty">DIFFICULTY</div>
+                                <div class="detail-value" style="color: #f44336;" data-i18n="common.hard">HARD</div>
                             </div>
                         </div>
 
@@ -662,16 +663,16 @@
                         </div>
 
                         <div class="quest-actions">
-                            <button class="quest-btn primary" onclick="startQuest(this)">START QUEST</button>
+                            <button class="quest-btn primary" onclick="startQuest(this)" data-i18n="quest.start_quest">START QUEST</button>
                         </div>
                     </div>
 
                     <!-- Weekly Quest -->
                     <div class="workout-quest" data-type="weekly">
-                        <span class="quest-badge badge-weekly">WEEKLY</span>
+                        <span class="quest-badge badge-weekly" data-i18n="common.weekly">WEEKLY</span>
                         <div class="quest-icon"><i class="fas fa-fire-alt"></i></div>
-                        <h3 class="quest-title">SHADOW MONARCH'S TRIAL</h3>
-                        <p class="quest-desc">Complete all daily quests for 7 consecutive days. Only the strongest survive.</p>
+                        <h3 class="quest-title" data-i18n="quest.monarch_trial_title">SHADOW MONARCH'S TRIAL</h3>
+                        <p class="quest-desc" data-i18n="quest.monarch_trial_desc">Complete all daily quests for 7 consecutive days. Only the strongest survive.</p>
                         
                         <div class="difficulty-indicator">
                             <div class="difficulty-dot active extreme"></div>
@@ -683,20 +684,20 @@
 
                         <div class="quest-details">
                             <div class="detail-item">
-                                <div class="detail-label">REWARD XP</div>
+                                <div class="detail-label" data-i18n="quest.reward_xp">REWARD XP</div>
                                 <div class="detail-value xp">+500 XP</div>
                             </div>
                             <div class="detail-item">
-                                <div class="detail-label">STAT BOOST</div>
+                                <div class="detail-label" data-i18n="quest.stat_boost">STAT BOOST</div>
                                 <div class="detail-value stat-boost">+5 ALL</div>
                             </div>
                             <div class="detail-item">
-                                <div class="detail-label">PROGRESS</div>
+                                <div class="detail-label" data-i18n="quest.progress">PROGRESS</div>
                                 <div class="detail-value" id="weeklyProgress">0/7 DAYS</div>
                             </div>
                             <div class="detail-item">
-                                <div class="detail-label">DIFFICULTY</div>
-                                <div class="detail-value" style="color: #9c27b0;">EXTREME</div>
+                                <div class="detail-label" data-i18n="common.difficulty">DIFFICULTY</div>
+                                <div class="detail-value" style="color: #9c27b0;" data-i18n="common.extreme">EXTREME</div>
                             </div>
                         </div>
 
@@ -705,16 +706,16 @@
                         </div>
 
                         <div class="quest-actions">
-                            <button class="quest-btn">VIEW PROGRESS</button>
+                            <button class="quest-btn" data-i18n="quest.view_progress">VIEW PROGRESS</button>
                         </div>
                     </div>
 
                     <!-- Special Quest -->
                     <div class="workout-quest" data-type="special">
-                        <span class="quest-badge badge-special">SPECIAL</span>
+                        <span class="quest-badge badge-special" data-i18n="common.special">SPECIAL</span>
                         <div class="quest-icon"><i class="fas fa-skull"></i></div>
-                        <h3 class="quest-title">100 REPS CHALLENGE</h3>
-                        <p class="quest-desc">Complete 100 reps of each: Push-ups, Squats, Sit-ups. A trial worthy of S-Rank hunters.</p>
+                        <h3 class="quest-title" data-i18n="quest.reps_challenge_title">100 REPS CHALLENGE</h3>
+                        <p class="quest-desc" data-i18n="quest.reps_challenge_desc">Complete 100 reps of each: Push-ups, Squats, Sit-ups. A trial worthy of S-Rank hunters.</p>
                         
                         <div class="difficulty-indicator">
                             <div class="difficulty-dot active extreme"></div>
@@ -726,20 +727,20 @@
 
                         <div class="quest-details">
                             <div class="detail-item">
-                                <div class="detail-label">REWARD XP</div>
+                                <div class="detail-label" data-i18n="quest.reward_xp">REWARD XP</div>
                                 <div class="detail-value xp">+200 XP</div>
                             </div>
                             <div class="detail-item">
-                                <div class="detail-label">STAT BOOST</div>
+                                <div class="detail-label" data-i18n="quest.stat_boost">STAT BOOST</div>
                                 <div class="detail-value stat-boost">+5 END</div>
                             </div>
                             <div class="detail-item">
-                                <div class="detail-label">DURATION</div>
+                                <div class="detail-label" data-i18n="common.duration">DURATION</div>
                                 <div class="detail-value">~90 MIN</div>
                             </div>
                             <div class="detail-item">
-                                <div class="detail-label">DIFFICULTY</div>
-                                <div class="detail-value" style="color: #9c27b0;">EXTREME</div>
+                                <div class="detail-label" data-i18n="common.difficulty">DIFFICULTY</div>
+                                <div class="detail-value" style="color: #9c27b0;" data-i18n="common.extreme">EXTREME</div>
                             </div>
                         </div>
 
@@ -759,16 +760,16 @@
                         </div>
 
                         <div class="quest-actions">
-                            <button class="quest-btn primary" onclick="startQuest(this)">ACCEPT CHALLENGE</button>
+                            <button class="quest-btn primary" onclick="startQuest(this)" data-i18n="quest.accept_challenge">ACCEPT CHALLENGE</button>
                         </div>
                     </div>
 
                     <!-- Core Quest -->
                     <div class="workout-quest" data-type="daily">
-                        <span class="quest-badge badge-daily">DAILY</span>
+                        <span class="quest-badge badge-daily" data-i18n="common.daily">DAILY</span>
                         <div class="quest-icon"><i class="fas fa-shield-alt"></i></div>
-                        <h3 class="quest-title">CORE FORTIFICATION</h3>
-                        <p class="quest-desc">Strengthen your core to withstand any attack. Essential for hunter survival.</p>
+                        <h3 class="quest-title" data-i18n="quest.core_fort_title">CORE FORTIFICATION</h3>
+                        <p class="quest-desc" data-i18n="quest.core_fort_desc">Strengthen your core to withstand any attack. Essential for hunter survival.</p>
                         
                         <div class="difficulty-indicator">
                             <div class="difficulty-dot active"></div>
@@ -780,20 +781,20 @@
 
                         <div class="quest-details">
                             <div class="detail-item">
-                                <div class="detail-label">REWARD XP</div>
+                                <div class="detail-label" data-i18n="quest.reward_xp">REWARD XP</div>
                                 <div class="detail-value xp">+40 XP</div>
                             </div>
                             <div class="detail-item">
-                                <div class="detail-label">STAT BOOST</div>
+                                <div class="detail-label" data-i18n="quest.stat_boost">STAT BOOST</div>
                                 <div class="detail-value stat-boost">+2 END</div>
                             </div>
                             <div class="detail-item">
-                                <div class="detail-label">DURATION</div>
+                                <div class="detail-label" data-i18n="common.duration">DURATION</div>
                                 <div class="detail-value">30 MIN</div>
                             </div>
                             <div class="detail-item">
-                                <div class="detail-label">DIFFICULTY</div>
-                                <div class="detail-value" style="color: #4caf50;">EASY</div>
+                                <div class="detail-label" data-i18n="common.difficulty">DIFFICULTY</div>
+                                <div class="detail-value" style="color: #4caf50;" data-i18n="common.easy">EASY</div>
                             </div>
                         </div>
 
@@ -817,7 +818,7 @@
                         </div>
 
                         <div class="quest-actions">
-                            <button class="quest-btn primary" onclick="startQuest(this)">START QUEST</button>
+                            <button class="quest-btn primary" onclick="startQuest(this)" data-i18n="quest.start_quest">START QUEST</button>
                         </div>
                     </div>
                     </div><!-- End defaultQuestsContainer -->
@@ -899,6 +900,8 @@
 
         // Load AI-generated quests from localStorage
         function loadAIQuests() {
+            // Aligne les quêtes stockées sur la langue courante (corrige le FR figé en UI EN).
+            if (window.I18n && I18n.syncQuests) I18n.syncQuests();
             const dailyQuestsJSON = localStorage.getItem('dailyQuests');
             const weeklyQuestJSON = localStorage.getItem('weeklyQuest');
             const completedQuestsJSON = localStorage.getItem('completedDailyQuests');
@@ -926,6 +929,9 @@
                 const p = QuestLibrary.generateProtocol({ objective: 'maintain', fitness: 'beginner', rank: rank, lang: lang });
                 localStorage.setItem('dailyQuests', JSON.stringify(p.dailyQuests || []));
                 if (p.weeklyQuest) localStorage.setItem('weeklyQuest', JSON.stringify(p.weeklyQuest));
+                if (p.weeklySchedule) localStorage.setItem('weeklySchedule', JSON.stringify(p.weeklySchedule));
+                if (p.nutritionTips) localStorage.setItem('nutritionTips', JSON.stringify(p.nutritionTips));
+                if (p.meta) localStorage.setItem('protocolMeta', JSON.stringify(p.meta));
                 defaultContainer.style.display = 'none';
                 (p.dailyQuests || []).forEach((quest, index) => {
                     aiContainer.appendChild(createQuestCard(quest, index, 'daily', false));
@@ -945,13 +951,15 @@
         }
         
         function createQuestCard(quest, index, type, isCompleted) {
+            // Helper local : tr (const) est déclaré plus bas → TDZ au premier loadAIQuests(). On résout via I18n directement.
+            const t = (k) => (window.I18n ? I18n.t(k) : k);
             const card = document.createElement('div');
             card.className = 'workout-quest' + (isCompleted ? ' completed' : '');
             card.dataset.type = type;
             card.dataset.questIndex = index;
-            
+
             const badgeClass = type === 'weekly' ? 'badge-weekly' : 'badge-daily';
-            const badgeText = type === 'weekly' ? 'WEEKLY' : 'DAILY';
+            const badgeText = type === 'weekly' ? t('common.weekly') : t('common.daily');
             
             // Get icon based on quest type
             let icon = 'fa-dumbbell';
@@ -984,15 +992,15 @@
             // Difficulty based on XP
             let difficulty = 1;
             let diffColor = '#4caf50';
-            let diffText = 'EASY';
+            let diffText = t('common.easy');
             if (quest.xp >= 100) {
-                difficulty = 5; diffColor = '#9c27b0'; diffText = 'EXTREME';
+                difficulty = 5; diffColor = '#9c27b0'; diffText = t('common.extreme');
             } else if (quest.xp >= 70) {
-                difficulty = 4; diffColor = '#f44336'; diffText = 'HARD';
+                difficulty = 4; diffColor = '#f44336'; diffText = t('common.hard');
             } else if (quest.xp >= 50) {
-                difficulty = 3; diffColor = '#ff9800'; diffText = 'MEDIUM';
+                difficulty = 3; diffColor = '#ff9800'; diffText = t('common.medium');
             } else if (quest.xp >= 30) {
-                difficulty = 2; diffColor = '#4caf50'; diffText = 'EASY';
+                difficulty = 2; diffColor = '#4caf50'; diffText = t('common.easy');
             }
             
             let diffDots = '';
@@ -1015,19 +1023,19 @@
 
                 <div class="quest-details">
                     <div class="detail-item">
-                        <div class="detail-label">REWARD XP</div>
+                        <div class="detail-label">${t('quest.reward_xp')}</div>
                         <div class="detail-value xp">+${quest.xp} XP</div>
                     </div>
                     <div class="detail-item">
-                        <div class="detail-label">STAT BOOST</div>
+                        <div class="detail-label">${t('quest.stat_boost')}</div>
                         <div class="detail-value stat-boost">+1 ${quest.stat || (quest.type === 'cardio' ? 'AGI' : 'STR')}</div>
                     </div>
                     <div class="detail-item">
-                        <div class="detail-label">SETS/REPS</div>
+                        <div class="detail-label">${t('common.sets_reps')}</div>
                         <div class="detail-value">${quest.sets ? quest.sets + '×' + quest.reps : (quest.duration || '-')}</div>
                     </div>
                     <div class="detail-item">
-                        <div class="detail-label">DIFFICULTY</div>
+                        <div class="detail-label">${t('common.difficulty')}</div>
                         <div class="detail-value" style="color: ${diffColor};">${diffText}</div>
                     </div>
                 </div>
@@ -1035,9 +1043,9 @@
                 ${exerciseHTML}
 
                 <div class="quest-actions">
-                    ${isCompleted 
-                        ? '<button class="quest-btn complete" disabled><i class="fas fa-check"></i> COMPLETED</button>'
-                        : '<button class="quest-btn primary" onclick="startAIQuest(this, ' + index + ')">START QUEST</button>'
+                    ${isCompleted
+                        ? '<button class="quest-btn complete" disabled><i class="fas fa-check"></i> ' + t('common.completed') + '</button>'
+                        : '<button class="quest-btn primary" onclick="startAIQuest(this, ' + index + ')">' + t('quest.start_quest') + '</button>'
                     }
                 </div>
             `;
@@ -1048,6 +1056,19 @@
         // startQuest / startAIQuest sont définis plus bas (moteur d'entraînement chronométré).
 
         loadAIQuests();
+
+        // Re-render quests on language toggle : on vide les conteneurs IA, on relance loadAIQuests
+        // (qui resynchronise les quêtes via I18n.syncQuests) et on ré-applique les traductions statiques.
+        if (window.I18n && I18n.onChange) {
+            I18n.onChange(function () {
+                const aiC = document.getElementById('aiQuestsContainer');
+                const weeklyC = document.getElementById('aiWeeklyQuestContainer');
+                if (aiC) aiC.innerHTML = '';
+                if (weeklyC) weeklyC.innerHTML = '';
+                loadAIQuests();
+                if (I18n.apply) I18n.apply();
+            });
+        }
 
         // Filter functionality
         document.querySelectorAll('.filter-btn').forEach(btn => {
@@ -1244,7 +1265,7 @@
                 if (card) {
                     card.classList.add('completed');
                     const a = card.querySelector('.quest-actions');
-                    if (a) a.innerHTML = '<button class="quest-btn complete" disabled><i class="fas fa-check"></i> COMPLETED</button>';
+                    if (a) a.innerHTML = '<button class="quest-btn complete" disabled><i class="fas fa-check"></i> ' + tr('common.completed') + '</button>';
                 }
             }
 
