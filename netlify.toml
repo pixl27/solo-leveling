@@ -7,11 +7,14 @@
   publish = "."
   command = ""
 
-# La racine "/" sert l'index du gym (réécriture, l'URL reste "/")
+# La racine "/" sert l'index du gym (réécriture, l'URL reste "/").
+# force = true est OBLIGATOIRE : sinon Netlify sert le fichier index.html
+# existant (ancienne app) au lieu d'appliquer la réécriture ("shadowing").
 [[redirects]]
   from = "/"
   to = "/gym-index.html"
   status = 200
+  force = true
 
 # En-têtes de sécurité sur toutes les pages
 [[headers]]
