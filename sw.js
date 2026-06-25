@@ -5,7 +5,7 @@
  *   - Statique même origine   → cache d'abord + rafraîchissement en arrière-plan
  *   - Externe (CDN, Supabase) → réseau direct (non intercepté)
  */
-const CACHE = 'shadow-gym-v8';
+const CACHE = 'shadow-gym-v9';
 
 const APP_SHELL = [
     'start.html', 'support.html',
@@ -54,7 +54,17 @@ self.addEventListener('fetch', (e) => {
         return;
     }
 
-    // Statique → cache d'abord, mise à jour en arrière-plan
+    // JS / CSS → réseau d'abord : toujours frais en ligne (évite le code périmé),
+    // repli sur le cache uniquement hors-ligne.
+    if (/\.(?:js|css)(?:\?|$)/.test(url.pathname)) {
+        e.respondWith(
+            fetch(req).then(res => { cachePut(req, res.clone()); return res; })
+                .catch(() => caches.match(req))
+        );
+        return;
+    }
+
+    // Autres statiques (images, polices…) → cache d'abord, mise à jour en arrière-plan
     e.respondWith(
         caches.match(req).then(cached => {
             const network = fetch(req).then(res => { cachePut(req, res.clone()); return res; }).catch(() => cached);
