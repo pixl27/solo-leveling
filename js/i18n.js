@@ -16,7 +16,7 @@
             // Navigation
             'nav.dashboard': 'ACCUEIL', 'nav.quests': 'QUÊTES', 'nav.skills': 'TALENTS',
             'nav.progress': 'PROGRÈS', 'nav.ranking': 'CLASSEMENT', 'nav.arena': 'ARÈNE',
-            'nav.guilds': 'GUILDES', 'nav.profile': 'PROFIL',
+            'nav.guilds': 'GUILDES', 'nav.profile': 'PROFIL', 'nav.support': 'SOUTIEN',
             // Commun
             'common.online': 'EN LIGNE', 'common.offline': 'HORS-LIGNE', 'common.loading': 'CHARGEMENT...',
             'common.level': 'NIV.', 'common.power': 'PUISSANCE', 'common.rank': 'RANG',
@@ -194,6 +194,12 @@
             "support.thanks": "Chaque café est un soldat d'ombre ajouté à l'armée. Merci, Hunter.",
             "support.back": "← Retour",
             "support.cta_landing": "Dév solo — soutiens le projet",
+            "support.about_h": "À PROPOS DE MOI",
+            "support.about_1": "Je suis développeur solo et fan d'anime depuis toujours. Shadow Gym est né d'une idée : et si monter de niveau dans la vraie vie ressemblait à Solo Leveling ? J'ai donc tout construit moi-même — les quêtes, les rangs, l'Arène, la Forge, le design et le code.",
+            "support.about_2": "Ce n'est pas un hobby du week-end — j'en fais mon métier. Pas d'équipe, pas de studio, pas de pub, pas de paywall. Juste un Hunter qui livre des mises à jour, un commit à la fois.",
+            "support.why_h": "POURQUOI SOUTENIR",
+            "support.why_1": "Ton soutien finance le temps de continuer à créer — nouvelles quêtes, fonctionnalités et langues — et garde Shadow Gym gratuit, en ligne et sans pub pour chaque Hunter.",
+            "support.sign": "— Mahery, dév solo",
             // ===== Commun : libellés de cartes de quête =====
             "common.daily": "QUOTIDIEN", "common.weekly": "HEBDO", "common.special": "SPÉCIAL",
             "common.easy": "FACILE", "common.medium": "MOYEN", "common.hard": "DIFFICILE", "common.extreme": "EXTRÊME",
@@ -231,12 +237,13 @@
             "prof.title_iron": "🔒 GUERRIER DE FER", "prof.title_soldier": "🔒 SOLDAT DE L'OMBRE",
             "prof.title_gate": "🔒 BRISEUR DE PORTE", "prof.title_demon": "🔒 POURFENDEUR DE DÉMONS",
             "prof.title_srank": "🔒 HUNTER RANG S", "prof.title_monarch": "🔒 MONARQUE DE L'OMBRE",
-            "prof.rank_badge": "HUNTER RANG {rank}", "prof.saved": "PROFIL ENREGISTRÉ !"
+            "prof.rank_badge": "HUNTER RANG {rank}", "prof.saved": "PROFIL ENREGISTRÉ !",
+            "prof.support": "SOUTENIR LE DÉV", "prof.signout": "SE DÉCONNECTER", "prof.signin": "SE CONNECTER"
         },
         en: {
             'nav.dashboard': 'HOME', 'nav.quests': 'QUESTS', 'nav.skills': 'SKILLS',
             'nav.progress': 'PROGRESS', 'nav.ranking': 'RANKING', 'nav.arena': 'ARENA',
-            'nav.guilds': 'GUILDS', 'nav.profile': 'PROFILE',
+            'nav.guilds': 'GUILDS', 'nav.profile': 'PROFILE', 'nav.support': 'SUPPORT',
             'common.online': 'ONLINE', 'common.offline': 'OFFLINE', 'common.loading': 'LOADING...',
             'common.level': 'LV.', 'common.power': 'POWER', 'common.rank': 'RANK',
             'weekly.global': 'GLOBAL WEEKLY CHALLENGE', 'weekly.claim': 'CLAIM', 'weekly.claimed': 'Reward claimed', 'weekly.done': 'Weekly challenge complete!',
@@ -407,6 +414,12 @@
             "support.thanks": "Every coffee is a shadow soldier added to the army. Thank you, Hunter.",
             "support.back": "← Back",
             "support.cta_landing": "Solo dev — support the project",
+            "support.about_h": "ABOUT ME",
+            "support.about_1": "I'm a solo developer and a lifelong anime fan. Shadow Gym began with one idea: what if leveling up in real life felt like leveling up in Solo Leveling? So I built all of it myself — the quests, the ranks, the Arena, the Forge, the art and the code.",
+            "support.about_2": "This isn't a weekend hobby — I'm doing it for a living. No team, no studio, no ads, no paywalls. Just one Hunter shipping updates one commit at a time.",
+            "support.why_h": "WHY SUPPORT",
+            "support.why_1": "Your support buys the time to keep building — new quests, features and languages — and keeps Shadow Gym free, online and ad-free for every Hunter.",
+            "support.sign": "— Mahery, solo dev",
             // ===== Common quest-card labels =====
             "common.daily": "DAILY", "common.weekly": "WEEKLY", "common.special": "SPECIAL",
             "common.easy": "EASY", "common.medium": "MEDIUM", "common.hard": "HARD", "common.extreme": "EXTREME",
@@ -444,7 +457,8 @@
             "prof.title_iron": "🔒 IRON WARRIOR", "prof.title_soldier": "🔒 SHADOW SOLDIER",
             "prof.title_gate": "🔒 GATE CRUSHER", "prof.title_demon": "🔒 DEMON SLAYER",
             "prof.title_srank": "🔒 S-RANK HUNTER", "prof.title_monarch": "🔒 SHADOW MONARCH",
-            "prof.rank_badge": "{rank}-RANK HUNTER", "prof.saved": "PROFILE SAVED!"
+            "prof.rank_badge": "{rank}-RANK HUNTER", "prof.saved": "PROFILE SAVED!",
+            "prof.support": "SUPPORT THE DEV", "prof.signout": "SIGN OUT", "prof.signin": "SIGN IN"
         }
     };
 
@@ -473,7 +487,7 @@
                 'gym-exercises.html': 'nav.skills', 'gym-progress.html': 'nav.progress',
                 'gym-leaderboard.html': 'nav.ranking', 'gym-challenges.html': 'nav.arena',
                 'gym-guilds.html': 'nav.guilds', 'gym-inventory.html': 'nav.forge',
-                'gym-profile.html': 'nav.profile'
+                'gym-profile.html': 'nav.profile', 'support.html': 'nav.support'
             };
             scope.querySelectorAll('a.nav-link').forEach(a => {
                 const key = navMap[a.getAttribute('href')];
@@ -518,9 +532,11 @@
                             const ex = q && q.id && global.QuestLibrary.getExercise(q.id);
                             if (!ex) return;                       // ancien schéma sans id → laissé tel quel
                             const name = ex[lang];
-                            if (q.name !== name) changed = true;
+                            const slName = (lang === 'en' && ex.slEn) ? ex.slEn : ex.sl;
+                            if (q.name !== name || q.slName !== slName) changed = true;
                             q.name = name;
                             q.realName = name;
+                            q.slName = slName;                     // nom d'ombre localisé
                             q.howto = ex[lang === 'en' ? 'hEn' : 'hFr'];
                             q.muscle = ex[lang === 'en' ? 'mEn' : 'mFr'];
                             q.description = (q.muscle || '') + (q.target ? ' · ' + q.target : '');
@@ -562,16 +578,22 @@
             btn.className = 'sg-lang-toggle';
             btn.type = 'button';
             const render = () => {
-                btn.innerHTML = `<span class="${this.lang === 'fr' ? 'on' : ''}">FR</span><span class="sep">|</span><span class="${this.lang === 'en' ? 'on' : ''}">EN</span>`;
+                btn.innerHTML = `<span class="lang-opt ${this.lang === 'fr' ? 'on' : ''}" data-lang="fr">FR</span><span class="sep">|</span><span class="lang-opt ${this.lang === 'en' ? 'on' : ''}" data-lang="en">EN</span>`;
             };
             render();
-            btn.onclick = () => this.toggle();
+            // Sélecteur : cliquer FR met le français, cliquer EN met l'anglais (plus une simple bascule de secours).
+            btn.onclick = (e) => {
+                const opt = e.target.closest('[data-lang]');
+                const target = opt ? opt.dataset.lang : (this.lang === 'fr' ? 'en' : 'fr');
+                if (target !== this.lang) this.setLang(target);
+            };
             if (!document.getElementById('sg-lang-styles')) {
                 const st = document.createElement('style');
                 st.id = 'sg-lang-styles';
                 st.textContent = `.sg-lang-toggle{background:transparent;border:1px solid rgba(133,172,185,.4);color:rgba(255,255,255,.5);
                     padding:5px 10px;cursor:pointer;font-family:inherit;font-size:.72em;letter-spacing:1px;}
                     .sg-lang-toggle:hover{border-color:#85acb9;} .sg-lang-toggle .on{color:#85acb9;font-weight:700;text-shadow:0 0 8px rgba(133,172,185,.5);}
+                    .sg-lang-toggle .lang-opt{cursor:pointer;transition:color .15s;} .sg-lang-toggle .lang-opt:not(.on):hover{color:#fff;}
                     .sg-lang-toggle .sep{margin:0 5px;opacity:.4;}`;
                 document.head.appendChild(st);
             }

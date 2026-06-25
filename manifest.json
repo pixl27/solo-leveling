@@ -8,7 +8,7 @@
   "orientation": "portrait-primary",
   "background_color": "#060d18",
   "theme_color": "#0a1628",
-  "lang": "fr",
+  "lang": "en",
   "categories": ["health", "fitness", "lifestyle", "games"],
   "icons": [
     { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },

@@ -547,6 +547,7 @@
             <a href="gym-guilds.html" class="nav-link">GUILDES</a>
             <a href="gym-inventory.html" class="nav-link">FORGE</a>
             <a href="gym-profile.html" class="nav-link active">PROFIL</a>
+            <a href="support.html" class="nav-link">SUPPORT</a>
         </div>
         <div class="nav-profile">
             <div class="nav-xp-bar">
@@ -711,6 +712,12 @@
                     <button class="profile-btn" onclick="saveProfile()" data-i18n="prof.save">SAVE CHANGES</button>
                     <button class="profile-btn" onclick="exportData()" data-i18n="prof.export">EXPORT DATA</button>
                     <button class="profile-btn danger" onclick="resetProgress()" data-i18n="prof.reset">RESET PROGRESS</button>
+                </div>
+
+                <!-- Account -->
+                <div class="profile-actions" style="margin-top: 15px;">
+                    <button class="profile-btn" onclick="window.location.href='support.html'"><i class="fas fa-mug-hot" style="margin-right:8px;color:#ffd700;"></i><span data-i18n="prof.support">SUPPORT THE DEV</span></button>
+                    <button class="profile-btn" id="authActionBtn"></button>
                 </div>
             </div>
         </div>
@@ -957,11 +964,35 @@
             }
         }
 
+        // Bouton de compte : Déconnexion (si connecté) ou Connexion (si invité).
+        function renderAuthAction() {
+            const btn = document.getElementById('authActionBtn');
+            if (!btn) return;
+            const T = (k) => (window.I18n ? I18n.t(k) : k);
+            const loggedIn = !!(window.Cloud && Cloud.isLoggedIn && Cloud.isLoggedIn());
+            btn.innerHTML = '<i class="fas fa-' + (loggedIn ? 'right-from-bracket' : 'right-to-bracket') + '" style="margin-right:8px;"></i>'
+                + (loggedIn ? T('prof.signout') : T('prof.signin'));
+            btn.onclick = function () {
+                if (loggedIn) {
+                    if (confirm(T('auth.logout_confirm'))) {
+                        Promise.resolve(window.Cloud && Cloud.signOut && Cloud.signOut()).then(function () { window.location.href = 'start.html'; });
+                    }
+                } else if (window.AuthUI) {
+                    AuthUI.open('login', { onSuccess: function () { window.location.reload(); } });
+                }
+            };
+        }
+
         loadProfile();
+        renderAuthAction();
+        if (window.Cloud) {
+            Promise.resolve(Cloud.init && Cloud.init()).then(renderAuthAction);
+            if (Cloud.on) Cloud.on('auth', renderAuthAction);
+        }
 
         // Re-render le DOM construit en JS lors du changement de langue FR/EN
         // (les attributs data-i18n du markup statique sont gérés par I18n.apply)
-        if (window.I18n) I18n.onChange(() => { loadProfile(); renderProfileGear(); renderRankPerks(); });
+        if (window.I18n) I18n.onChange(() => { loadProfile(); renderProfileGear(); renderRankPerks(); renderAuthAction(); });
     </script>
     <script src="js/solo-leveling.js"></script>
 </body>
