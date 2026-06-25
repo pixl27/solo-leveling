@@ -490,7 +490,11 @@
                 'gym-profile.html': 'nav.profile', 'support.html': 'nav.support'
             };
             scope.querySelectorAll('a.nav-link').forEach(a => {
-                const key = navMap[a.getAttribute('href')];
+                // Normalise le href : Netlify "Pretty URLs" enlève le .html (gym-dashboard.html → gym-dashboard),
+                // ce qui faisait échouer la correspondance et laissait la nav non traduite.
+                let href = (a.getAttribute('href') || '').split('?')[0].split('#')[0].split('/').pop();
+                if (href && href.slice(-5) !== '.html') href += '.html';
+                const key = navMap[href];
                 if (key) a.textContent = this.t(key);
             });
             document.documentElement.lang = this.lang;
