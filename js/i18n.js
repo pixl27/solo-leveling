@@ -577,24 +577,23 @@
             const btn = document.createElement('button');
             btn.className = 'sg-lang-toggle';
             btn.type = 'button';
-            const render = () => {
-                btn.innerHTML = `<span class="lang-opt ${this.lang === 'fr' ? 'on' : ''}" data-lang="fr">FR</span><span class="sep">|</span><span class="lang-opt ${this.lang === 'en' ? 'on' : ''}" data-lang="en">EN</span>`;
-            };
-            render();
-            // Sélecteur : cliquer FR met le français, cliquer EN met l'anglais (plus une simple bascule de secours).
-            btn.onclick = (e) => {
-                const opt = e.target.closest('[data-lang]');
-                const target = opt ? opt.dataset.lang : (this.lang === 'fr' ? 'en' : 'fr');
-                if (target !== this.lang) this.setLang(target);
-            };
+            btn.innerHTML = `<span class="lang-opt ${this.lang === 'fr' ? 'on' : ''}" data-lang="fr">FR</span><span class="sep">|</span><span class="lang-opt ${this.lang === 'en' ? 'on' : ''}" data-lang="en">EN</span>`;
+            // Sélecteur robuste : chaque option (FR / EN) est cliquable directement — cliquer EN met l'anglais, FR le français.
+            btn.querySelectorAll('[data-lang]').forEach(function (span) {
+                span.addEventListener('click', function (e) {
+                    e.stopPropagation();
+                    const target = span.getAttribute('data-lang');
+                    if (target !== I18n.lang) I18n.setLang(target);
+                });
+            });
             if (!document.getElementById('sg-lang-styles')) {
                 const st = document.createElement('style');
                 st.id = 'sg-lang-styles';
                 st.textContent = `.sg-lang-toggle{background:transparent;border:1px solid rgba(133,172,185,.4);color:rgba(255,255,255,.5);
-                    padding:5px 10px;cursor:pointer;font-family:inherit;font-size:.72em;letter-spacing:1px;}
+                    padding:4px 8px;cursor:pointer;font-family:inherit;font-size:.72em;letter-spacing:1px;white-space:nowrap;line-height:1;flex-shrink:0;}
                     .sg-lang-toggle:hover{border-color:#85acb9;} .sg-lang-toggle .on{color:#85acb9;font-weight:700;text-shadow:0 0 8px rgba(133,172,185,.5);}
-                    .sg-lang-toggle .lang-opt{cursor:pointer;transition:color .15s;} .sg-lang-toggle .lang-opt:not(.on):hover{color:#fff;}
-                    .sg-lang-toggle .sep{margin:0 5px;opacity:.4;}`;
+                    .sg-lang-toggle .lang-opt{display:inline-block;padding:2px 5px;cursor:pointer;transition:color .15s;} .sg-lang-toggle .lang-opt:not(.on):hover{color:#fff;}
+                    .sg-lang-toggle .sep{opacity:.35;}`;
                 document.head.appendChild(st);
             }
             host.appendChild(btn);
