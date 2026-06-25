@@ -5,7 +5,7 @@
  *   - Statique même origine   → cache d'abord + rafraîchissement en arrière-plan
  *   - Externe (CDN, Supabase) → réseau direct (non intercepté)
  */
-const CACHE = 'shadow-gym-v10';
+const CACHE = 'shadow-gym-v11';
 
 const APP_SHELL = [
     'start.html', 'support.html',

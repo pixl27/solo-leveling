@@ -262,10 +262,82 @@
     });
     Hunter.on('change', syncNav);
 
+    // ==================== BOÎTE DE CONFIRMATION (thématisée) ====================
+    function confirmStyles() {
+        if (document.getElementById('sg-confirm-styles')) return;
+        const s = document.createElement('style');
+        s.id = 'sg-confirm-styles';
+        s.textContent = `
+            .sg-confirm-back { position: fixed; inset: 0; background: rgba(2,6,12,.85); backdrop-filter: blur(6px);
+                z-index: 12000; display: flex; align-items: center; justify-content: center; padding: 20px; animation: sgcFade .2s ease-out; }
+            .sg-confirm { width: 360px; max-width: 92vw; background: rgba(8,14,24,.97); border: 2px solid #85acb9; position: relative;
+                box-shadow: 0 0 40px rgba(133,172,185,.4); padding: 30px 28px 24px; text-align: center; animation: sgcScale .25s ease-out; }
+            .sg-confirm::before { content:''; position:absolute; inset:-4px; border:1px solid rgba(133,172,185,.25); pointer-events:none; }
+            .sg-confirm-ic { width: 64px; height: 64px; margin: 0 auto 16px; border: 2px solid #85acb9; border-radius: 50%;
+                display: flex; align-items: center; justify-content: center; color: #85acb9; font-size: 1.6em;
+                text-shadow: 0 0 14px #85acb9; box-shadow: 0 0 22px rgba(133,172,185,.45), inset 0 0 14px rgba(133,172,185,.3); }
+            .sg-confirm-ic.danger { border-color:#ff4757; color:#ff4757; text-shadow:0 0 14px #ff4757; box-shadow:0 0 22px rgba(255,71,87,.45), inset 0 0 14px rgba(255,71,87,.3); }
+            .sg-confirm-title { color:#fff; letter-spacing:2px; font-size:1.15em; text-shadow:0 0 12px rgba(133,172,185,.6); margin-bottom:8px; }
+            .sg-confirm-msg { color: rgba(255,255,255,.6); font-size:.85em; letter-spacing:.5px; line-height:1.5; margin-bottom:22px; }
+            .sg-confirm-actions { display:flex; gap:12px; }
+            .sg-confirm-btn { flex:1; padding:12px; border:1px solid; background:transparent; color:#fff; letter-spacing:1.5px;
+                font-size:.8em; font-family:inherit; cursor:pointer; transition:all .2s; }
+            .sg-confirm-btn.cancel { border-color: rgba(133,172,185,.4); color: rgba(255,255,255,.7); }
+            .sg-confirm-btn.cancel:hover { border-color:#85acb9; color:#fff; background:rgba(133,172,185,.1); }
+            .sg-confirm-btn.ok { border-color:#85acb9; color:#fff; background:rgba(133,172,185,.18); }
+            .sg-confirm-btn.ok:hover { background:rgba(133,172,185,.34); box-shadow:0 0 18px rgba(133,172,185,.5); }
+            .sg-confirm-btn.ok.danger { border-color:#ff4757; background:rgba(255,71,87,.16); }
+            .sg-confirm-btn.ok.danger:hover { background:rgba(255,71,87,.3); box-shadow:0 0 18px rgba(255,71,87,.5); }
+            @keyframes sgcFade { from { opacity:0; } to { opacity:1; } }
+            @keyframes sgcScale { from { opacity:0; transform:scale(.92); } to { opacity:1; transform:scale(1); } }
+            @keyframes sgcOut { to { opacity:0; } }`;
+        document.head.appendChild(s);
+    }
+
+    // Remplace window.confirm par une boîte thématisée. Retourne une Promise<boolean>.
+    function confirmDialog(opts) {
+        opts = opts || {};
+        confirmStyles();
+        return new Promise(function (resolve) {
+            const danger = !!opts.danger;
+            const icon = opts.icon || (danger ? 'fa-triangle-exclamation' : 'fa-circle-question');
+            const back = document.createElement('div');
+            back.className = 'sg-confirm-back';
+            back.innerHTML = `
+                <div class="sg-confirm" role="alertdialog" aria-modal="true">
+                    <div class="sg-confirm-ic ${danger ? 'danger' : ''}"><i class="fas ${icon}"></i></div>
+                    <div class="sg-confirm-title">${opts.title || ''}</div>
+                    ${opts.message ? `<div class="sg-confirm-msg">${opts.message}</div>` : ''}
+                    <div class="sg-confirm-actions">
+                        <button class="sg-confirm-btn cancel">${opts.cancelText || 'Cancel'}</button>
+                        <button class="sg-confirm-btn ok ${danger ? 'danger' : ''}">${opts.confirmText || 'OK'}</button>
+                    </div>
+                </div>`;
+            document.body.appendChild(back);
+            const okBtn = back.querySelector('.ok');
+            const cancelBtn = back.querySelector('.cancel');
+            let closed = false;
+            function close(val) {
+                if (closed) return; closed = true;
+                document.removeEventListener('keydown', onKey);
+                back.style.animation = 'sgcOut .18s ease-out forwards';
+                setTimeout(function () { back.remove(); }, 180);
+                resolve(val);
+            }
+            function onKey(e) { if (e.key === 'Escape') close(false); else if (e.key === 'Enter') close(true); }
+            okBtn.onclick = function () { close(true); };
+            cancelBtn.onclick = function () { close(false); };
+            back.onclick = function (e) { if (e.target === back) close(false); };
+            document.addEventListener('keydown', onKey);
+            try { okBtn.focus(); } catch (e) { /* ignore */ }
+        });
+    }
+
     // ==================== API PUBLIQUE ====================
     global.GymUI = {
         toast: toast,
         sound: sound,
+        confirm: confirmDialog,
         initParticles: initParticles,
         syncNav: syncNav,
         levelUpOverlay: levelUpOverlay,

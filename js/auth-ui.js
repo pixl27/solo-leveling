@@ -255,7 +255,16 @@
         this._renderChip(chip);
         chip.onclick = () => {
             if (Cloud && Cloud.isLoggedIn()) {
-                if (confirm(t('auth.logout_confirm', 'Se déconnecter ?'))) Cloud.signOut().then(() => this._refreshChips());
+                const ask = (global.GymUI && global.GymUI.confirm)
+                    ? global.GymUI.confirm({
+                        icon: 'fa-right-from-bracket',
+                        title: t('auth.logout_confirm', 'Se déconnecter ?'),
+                        message: t('auth.logout_msg', 'Ta progression est sauvegardée.'),
+                        confirmText: t('prof.signout', 'SE DÉCONNECTER'),
+                        cancelText: t('common.cancel', 'ANNULER')
+                    })
+                    : Promise.resolve(confirm(t('auth.logout_confirm', 'Se déconnecter ?')));
+                ask.then((ok) => { if (ok) Cloud.signOut().then(() => AuthUI._refreshChips()); });
             } else {
                 this.open('login');
             }

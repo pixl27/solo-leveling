@@ -974,9 +974,13 @@
                 + (loggedIn ? T('prof.signout') : T('prof.signin'));
             btn.onclick = function () {
                 if (loggedIn) {
-                    if (confirm(T('auth.logout_confirm'))) {
-                        Promise.resolve(window.Cloud && Cloud.signOut && Cloud.signOut()).then(function () { window.location.href = 'start.html'; });
-                    }
+                    var ask = (window.GymUI && GymUI.confirm)
+                        ? GymUI.confirm({ icon: 'fa-right-from-bracket', title: T('auth.logout_confirm'),
+                            message: T('auth.logout_msg'), confirmText: T('prof.signout'), cancelText: T('common.cancel') })
+                        : Promise.resolve(confirm(T('auth.logout_confirm')));
+                    ask.then(function (ok) {
+                        if (ok) Promise.resolve(window.Cloud && Cloud.signOut && Cloud.signOut()).then(function () { window.location.href = 'start.html'; });
+                    });
                 } else if (window.AuthUI) {
                     AuthUI.open('login', { onSuccess: function () { window.location.reload(); } });
                 }
